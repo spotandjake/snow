@@ -1,0 +1,5 @@
+module Main
+
+// Read Arguments
+// Test rnix host
+print("Hello World")

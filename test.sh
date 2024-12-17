@@ -1,0 +1,1 @@
+cargo run compile nix ./shell.nix ./shell.snow

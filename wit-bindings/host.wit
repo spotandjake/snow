@@ -1,0 +1,10 @@
+package snow:host@0.0.1;
+
+interface rnix {
+  // Parse a nix expression
+  parse: func(str: string) -> string;
+}
+
+world host {
+  import rnix;
+}

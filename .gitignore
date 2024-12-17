@@ -1,0 +1,5 @@
+target/
+.direnv/
+wit-bindgen/
+bin/
+dist/
