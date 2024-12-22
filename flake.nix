@@ -19,6 +19,9 @@
         # For `nix develop`:
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [ rustc cargo ];
+          shellHooks = ''
+            export WASMTIME_DEBUG_BINDGEN=1
+          '';
         };
       }
     );

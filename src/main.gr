@@ -1,5 +1,15 @@
-module Main
+module Command
 
-// Read Arguments
-// Test rnix host
-print("Hello World")
+from "./libs/host.gr" include Host
+
+// Wit re-export
+@unsafe
+provide let cabi_realloc = (originalPtr, originalSize, alignment, newSize) => {
+  Host.cabi_realloc(originalPtr, originalSize, alignment, newSize)
+}
+
+// Program Entry
+// fail "test"
+provide let _start = () => {
+  print("Hello, world!")
+}

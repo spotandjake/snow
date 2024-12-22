@@ -5,6 +5,6 @@ interface rnix {
   parse: func(str: string) -> string;
 }
 
-world host {
+world parent {
   import rnix;
 }

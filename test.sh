@@ -1,1 +1,2 @@
-cargo run compile nix ./shell.nix ./shell.snow
+bash compile.sh
+cargo run nix2-snow ./flake.nix ./flake.snow

@@ -1,6 +1,6 @@
-use std::path::PathBuf;
-
+mod host;
 use clap::{Args, Parser, Subcommand};
+use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
 #[command(name = "snow")]
@@ -12,20 +12,8 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-  /// Compiles either a Nix or Snow directory
-  Compile(CompileArgs),
-}
-
-#[derive(Debug, Args)]
-struct CompileArgs {
-  #[command(subcommand)]
-  command: CompileCommands,
-}
-
-#[derive(Debug, Subcommand)]
-enum CompileCommands {
-  Nix(CompileTargetArgs),
-  Snow(CompileTargetArgs),
+  Nix2Snow(CompileTargetArgs),
+  Snow2Nix(CompileTargetArgs),
 }
 
 #[derive(Debug, Args)]
@@ -37,17 +25,19 @@ struct CompileTargetArgs {
 fn main() {
   let args = Cli::parse();
   match args.command {
-    Commands::Compile(command) => match command.command {
-      CompileCommands::Nix(args) => {
-        println!("Compiling Nix from {0:?} to {1:?}", args.input, args.output);
+    Commands::Nix2Snow(args) => {
+      println!("Compiling Nix from {0:?} to {1:?}", args.input, args.output);
+      match host::start() {
+        Ok(_) => println!("Success"),
+        Err(e) => println!("Error: {:?}", e),
       }
-      CompileCommands::Snow(args) => {
-        println!(
-          "Compiling Snow from {0:?} to {1:?}",
-          args.input, args.output
-        );
-      }
-    },
+    }
+    Commands::Snow2Nix(args) => {
+      println!(
+        "Compiling Snow from {0:?} to {1:?}",
+        args.input, args.output
+      );
+    }
   }
   // Continued program logic goes here...
 }
