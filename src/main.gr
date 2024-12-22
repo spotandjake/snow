@@ -1,5 +1,8 @@
 module Command
 
+from "wasi/process" include Process
+from "array" include Array
+from "./libs/reaper.gr" include Reaper
 from "./libs/snow.gr" include Snow
 
 // Wit re-export
@@ -8,8 +11,61 @@ provide let cabi_realloc = (originalPtr, originalSize, alignment, newSize) => {
   Snow.cabi_realloc(originalPtr, originalSize, alignment, newSize)
 }
 
+// Helpers
+// TODO: NixToSnow
+// TODO: SnowToNix
+
 // Program Entry
-fail "test"
-provide let _start = () => {
-  print("Hello, world!")
+provide let run: () => Void = () => {
+  // Get the command line arguments
+  let args = match (Process.argv()) {
+    // Trim the runner binary or file (Different per wasm runtime)
+    Ok(args) => Array.slice(1, args),
+    // Note: Most likely a wasi permissions error
+    Err(_) => fail "Failed to read command line arguments",
+  }
+  // Parse the arguments
+  let options = Reaper.parse(
+    aliases=[> ("h", "help")],
+    presence=[>],
+    bools=[>],
+    numbers=[>],
+    ints=[>],
+    strings=[>],
+    multi=[>],
+    args
+  )
+  // Print the parsed options
+  match (options) {
+    // Note: The arguments were parsed successfully
+    Ok({ rest, _ }) => {
+      // Match top level command
+      match (rest) {
+        [> "nix2snow", input, output] => {
+          print("nix2snow")
+        },
+        [> "snow2nix", input, output] => {
+          print("snow2nix")
+        },
+        [> "help"] => {
+          print("help")
+        },
+      }
+      print(options)
+      // print("Presence: " ++ toString(Set.Immutable.toList(options.presence)))
+      // print("Bools: " ++ toString(Map.Immutable.toList(options.bools)))
+      // print("Numbers: " ++ toString(Map.Immutable.toList(options.numbers)))
+      // print("Ints: " ++ toString(Map.Immutable.toList(options.ints)))
+      // print("Strings: " ++ toString(Map.Immutable.toList(options.strings)))
+      // print("Multi: " ++ toString(Map.Immutable.toList(options.multi)))
+      // print("Rest: " ++ toString(options.rest))
+      // print("Passed Args: " ++ toString(options.passedArgs))
+    },
+    // Note: An unknown argument was given
+    Err(err) => fail Reaper.toStringError(err),
+  }
+  // Call the multiply function from the host
+  let result = Snow.Host.multiply(3.0f, 4.0f)
+  print(result)
+  void
 }

@@ -6,6 +6,9 @@ interface host {
 
 world snow {
   import host;
-  // /// Exported function for computing: (°C × 9/5) + 32 = °F
-  // export convert-celsius-to-fahrenheit: func(x: f32) -> f32;
+}
+
+world snow-host {
+  include snow;
+  export run: func();
 }

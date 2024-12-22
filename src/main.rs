@@ -8,8 +8,9 @@ use wasmtime::{
 use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
 
 // Generate bindings of the guest and host components.
-bindgen!("snow" in "./wit/snow.wit");
+bindgen!("snow-host" in "./wit/snow.wit");
 
+// TODO: Instead of a rust host consider composing rnix as a wasm component using wac.I/
 struct HostInterface;
 
 // Implementation of the host interface defined in the wit file.
@@ -58,14 +59,18 @@ fn main() -> Result<()> {
   let engine = Engine::new(Config::new().wasm_component_model(true))?;
 
   // Create our component and call our generated host function.
-  // TODO: In development we want to read the file that way we do not need to constantly recompile
-  let component = Component::new(&engine, include_bytes!("./main.c.wasm"))?;
+  // TODO: Use include_bytes in a release mode, and from_file in a debug build to prevent constant rebuilds.
+  // let component = Component::new(&engine, include_bytes!("./main.c.wasm"))?;
+  let component = Component::from_file(&engine, "./src/main.c.wasm")?;
   let snow_state = SnowState::new();
   let mut store = Store::new(&engine, snow_state);
-  let mut linker = Linker::new(&engine);
+  let mut linker = Linker::<SnowState>::new(&engine);
   snow::host::host::add_to_linker(&mut linker, |state: &mut SnowState| &mut state.host)?;
   wasmtime_wasi::add_to_linker_sync(&mut linker)?;
-  let _snow = Snow::instantiate(&mut store, &component, &linker)?;
+  let snow = SnowHost::instantiate(&mut store, &component, &linker)?;
+  snow.call_run(&mut store)?;
+  // snow.call_start(&mut store)?;
+  // snow.wasi_cli_run().call_run(&mut store)?;
   println!("Instantiated successfully!");
   // let result = snow.call_convert_celsius_to_fahrenheit(&mut store, 23.4)?;
   // println!("Converted to: {result:?}");
