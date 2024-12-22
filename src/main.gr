@@ -1,15 +1,15 @@
 module Command
 
-from "./libs/host.gr" include Host
+from "./libs/snow.gr" include Snow
 
 // Wit re-export
 @unsafe
 provide let cabi_realloc = (originalPtr, originalSize, alignment, newSize) => {
-  Host.cabi_realloc(originalPtr, originalSize, alignment, newSize)
+  Snow.cabi_realloc(originalPtr, originalSize, alignment, newSize)
 }
 
 // Program Entry
-// fail "test"
+fail "test"
 provide let _start = () => {
   print("Hello, world!")
 }

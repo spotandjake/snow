@@ -1,138 +1,73 @@
-mod host;
-use clap::{Args, Parser, Subcommand};
-use std::path::PathBuf;
+// use anyhow::Context;
+// use std::{fs, path::Path};
 
-#[derive(Debug, Parser)]
-#[command(name = "snow")]
-#[command(about = "A modern wrapper for Nix", long_about = None)]
-struct Cli {
-  #[command(subcommand)]
-  command: Commands,
-}
+use wasmtime::{
+  component::{bindgen, Component, Linker, ResourceTable},
+  Config, Engine, Result, Store,
+};
+use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
 
-#[derive(Debug, Subcommand)]
-enum Commands {
-  Nix2Snow(CompileTargetArgs),
-  Snow2Nix(CompileTargetArgs),
-}
+// Generate bindings of the guest and host components.
+bindgen!("snow" in "./wit/snow.wit");
 
-#[derive(Debug, Args)]
-struct CompileTargetArgs {
-  input: PathBuf,
-  output: PathBuf,
-}
+struct HostInterface;
 
-fn main() {
-  let args = Cli::parse();
-  match args.command {
-    Commands::Nix2Snow(args) => {
-      println!("Compiling Nix from {0:?} to {1:?}", args.input, args.output);
-      match host::start() {
-        Ok(_) => println!("Success"),
-        Err(e) => println!("Error: {:?}", e),
-      }
-    }
-    Commands::Snow2Nix(args) => {
-      println!(
-        "Compiling Snow from {0:?} to {1:?}",
-        args.input, args.output
-      );
-    }
+// Implementation of the host interface defined in the wit file.
+impl snow::host::host::Host for HostInterface {
+  fn multiply(&mut self, a: f32, b: f32) -> f32 {
+    a * b
   }
-  // Continued program logic goes here...
 }
-// compile fromNix <directory> -o <outputDirectory>
-// compile toNix <directory> -o <outputDirectory>
-// #[macro_use]
-// extern crate clap;
 
-// use cursive::{
-//     Cursive,
-//     theme::Effect,
-//     utils::markup::StyledString,
-//     view::{Identifiable, Scrollable},
-//     views::{Checkbox, Dialog, LinearLayout, SelectView, TextView}
-// };
-// use clap::Arg;
-// use failure::Error;
-// use rnix::nodes::syntax_name;
-// use rowan::{TextRange, SyntaxElement, WalkEvent};
-// use std::fs;
+struct SnowState {
+  host: HostInterface,
+  // Wasi
+  table: ResourceTable,
+  ctx: WasiCtx,
+}
 
-// fn main() -> Result<(), Error> {
-//     let matches = app_from_crate!()
-//         .arg(Arg::with_name("file")
-//             .help("The input file which to explore")
-//             .required(true)
-//             .takes_value(true))
-//         .get_matches();
+impl SnowState {
+  pub fn new() -> Self {
+    // Create Host Interface
+    let host = HostInterface {};
+    // Create Wasi
+    let table = ResourceTable::new();
+    let ctx = WasiCtxBuilder::new()
+      .inherit_stdio()
+      .inherit_stdout()
+      .inherit_stderr()
+      .inherit_env()
+      .inherit_args()
+      .build();
+    // Build Self
+    Self { host, table, ctx }
+  }
+}
 
-//     let file = matches.value_of("file").unwrap();
+impl WasiView for SnowState {
+  fn table(&mut self) -> &mut ResourceTable {
+    &mut self.table
+  }
+  fn ctx(&mut self) -> &mut WasiCtx {
+    &mut self.ctx
+  }
+}
 
-//     let code = fs::read_to_string(file)?;
-//     let ast = rnix::parse(&code);
+fn main() -> Result<()> {
+  // Create an engine with the component model enabled (disabled by default).
+  let engine = Engine::new(Config::new().wasm_component_model(true))?;
 
-//     let mut screen = Cursive::default();
-//     let mut ast_view = SelectView::new();
-//     let code_view = TextView::new(code.clone());
-
-//     fill_view(&mut ast_view, ast.node().preorder());
-
-//     ast_view.set_on_select(move |screen, range| {
-//         screen.call_on_id("code", |code_view: &mut TextView| {
-//             let start = range.start().to_usize();
-//             let end = range.end().to_usize();
-//             let mut styled = StyledString::plain(&code[..start]);
-//             styled.append_styled(&code[start..end], Effect::Underline);
-//             styled.append_plain(&code[end..]);
-//             code_view.set_content(styled);
-//         });
-//     });
-
-//     let mut toggle_tokens = Checkbox::new();
-//     toggle_tokens.set_on_change(move |screen, checked| {
-//         screen.call_on_id("ast", |ast_view: &mut SelectView<TextRange>| {
-//             ast_view.clear();
-//             if checked {
-//                 fill_view(ast_view, ast.node().preorder_with_tokens());
-//             } else {
-//                 fill_view(ast_view, ast.node().preorder());
-//             }
-//         });
-//     });
-
-//     screen.add_fullscreen_layer(
-//         Dialog::around(LinearLayout::horizontal()
-//             .child(LinearLayout::vertical()
-//                 .child(LinearLayout::horizontal()
-//                     .child(toggle_tokens)
-//                     .child(TextView::new("Show tokens?")))
-//                 .child(ast_view.with_id("ast").scrollable()))
-//             .child(code_view.with_id("code").scrollable()))
-//             .title("Nix Explorer")
-//     );
-//     let _ = screen.focus_id("ast");
-
-//     screen.run();
-//     Ok(())
-// }
-// fn fill_view<'a, E, I>(view: &mut SelectView<TextRange>, iter: I)
-// where
-//     E: Into<SyntaxElement<'a>>,
-//     I: Iterator<Item = WalkEvent<E>>
-// {
-//     let mut indent = 0;
-//     for event in iter {
-//         match event {
-//             WalkEvent::Enter(node) => {
-//                 let node = node.into();
-//                 view.add_item(
-//                     format!("{:indent$}- {}", "", syntax_name(node.kind()).unwrap(), indent = indent),
-//                     node.range()
-//                 );
-//                 indent += 2;
-//             },
-//             WalkEvent::Leave(_) => indent -= 2
-//         }
-//     }
-// }
+  // Create our component and call our generated host function.
+  // TODO: In development we want to read the file that way we do not need to constantly recompile
+  let component = Component::new(&engine, include_bytes!("./main.c.wasm"))?;
+  let snow_state = SnowState::new();
+  let mut store = Store::new(&engine, snow_state);
+  let mut linker = Linker::new(&engine);
+  snow::host::host::add_to_linker(&mut linker, |state: &mut SnowState| &mut state.host)?;
+  wasmtime_wasi::add_to_linker_sync(&mut linker)?;
+  let _snow = Snow::instantiate(&mut store, &component, &linker)?;
+  println!("Instantiated successfully!");
+  // let result = snow.call_convert_celsius_to_fahrenheit(&mut store, 23.4)?;
+  // println!("Converted to: {result:?}");
+  Ok(())
+}

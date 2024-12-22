@@ -1,0 +1,11 @@
+package snow:host@0.0.1;
+
+interface host {
+  multiply: func(a: f32, b: f32) -> f32;
+}
+
+world snow {
+  import host;
+  // /// Exported function for computing: (°C × 9/5) + 32 = °F
+  // export convert-celsius-to-fahrenheit: func(x: f32) -> f32;
+}
