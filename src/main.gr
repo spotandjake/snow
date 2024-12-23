@@ -14,7 +14,7 @@ provide let cabi_realloc = (originalPtr, originalSize, alignment, newSize) => {
 // Helpers
 // TODO: NixToSnow
 // TODO: SnowToNix
-
+// TODO: Test
 // Program Entry
 provide let run: () => Void = () => {
   // Get the command line arguments
@@ -41,15 +41,16 @@ provide let run: () => Void = () => {
     Ok({ rest, _ }) => {
       // Match top level command
       match (rest) {
-        [> "nix2snow", input, output] => {
+        ["nix2snow", input, output] => {
           print("nix2snow")
         },
-        [> "snow2nix", input, output] => {
+        ["snow2nix", input, output] => {
           print("snow2nix")
         },
-        [> "help"] => {
+        ["help"] => {
           print("help")
         },
+        _ => print("unknown"),
       }
       print(options)
       // print("Presence: " ++ toString(Set.Immutable.toList(options.presence)))
