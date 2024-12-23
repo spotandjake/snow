@@ -1,7 +1,8 @@
 package snow:host@0.0.1;
 
 interface host {
-  multiply: func(a: f32, b: f32) -> f32;
+  read-file: func(path: string) -> string;
+  parse-nix: func(code: string);
 }
 
 world snow {
