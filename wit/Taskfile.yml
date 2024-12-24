@@ -1,0 +1,17 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  default:
+    deps: [clean]
+    cmds:
+      # Build
+      - wit build
+  publish:
+    deps: [default]
+    cmds:
+      - warg publish release --name spotandjake:snow --version 0.0.2 snow.wasm
+  clean:
+    cmds:
+      - rm -rf *.wasm

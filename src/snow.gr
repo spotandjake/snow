@@ -1,0 +1,10 @@
+module Main
+
+from "./libs/snow.gr" include Snow
+
+provide let cabi_realloc = Snow.cabi_realloc
+
+provide let _start: () => Void = () => {
+  print("Hello From Grain")
+  print(Snow.Nix.parse("test"))
+}

@@ -1,15 +1,5 @@
-package snow:host@0.0.1;
-
-interface host {
-  read-file: func(path: string) -> string;
-  parse-nix: func(code: string);
-}
+package spotandjake:snow;
 
 world snow {
-  import host;
-}
-
-world snow-host {
-  include snow;
-  export run: func();
+  import nix;
 }

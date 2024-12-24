@@ -32,22 +32,19 @@ provide record Resource<a> {
   rep: a
 }
 
-provide record NixParse {
-  handle: Int32
-}
 
 
-provide module Host {
+provide module Nix {
 
-  @externalName("read-file")
-  foreign wasm wit_bindgen_readFile: (WasmI32, WasmI32, WasmI32) => Void from "snow:host/host@0.0.1"
+  @externalName("parse")
+  foreign wasm wit_bindgen_parse: (WasmI32, WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
   @unsafe
-  provide let readFile: (String) => String = (path) => {
-    let vec_list_canon_lower = path
+  provide let parse: (String) => String = (nixSource) => {
+    let vec_list_canon_lower = nixSource
     let ptr_list_canon_lower = WasmI32.(+)(WasmI32.fromGrain(vec_list_canon_lower), 8n)
     let len_list_canon_lower = WasmI32.load(WasmI32.fromGrain(vec_list_canon_lower), 4n)
-    wit_bindgen_readFile(ptr_list_canon_lower, len_list_canon_lower, _RET_AREA)
+    wit_bindgen_parse(ptr_list_canon_lower, len_list_canon_lower, _RET_AREA)
     let len_string_lift = WasmI32.load(_RET_AREA, 4n)
     let str_string_lift = DataStructures.allocateString(len_string_lift)
     Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 0n), len_string_lift)
@@ -55,21 +52,5 @@ provide module Host {
     str_string_lift
   }
 
-
-  @externalName("parse-nix")
-  foreign wasm wit_bindgen_parseNix: (WasmI32, WasmI32) => WasmI32 from "snow:host/host@0.0.1"
-
-  @unsafe
-  provide let parseNix: (String) => NixParse = (code) => {
-    let vec_list_canon_lower = code
-    let ptr_list_canon_lower = WasmI32.(+)(WasmI32.fromGrain(vec_list_canon_lower), 8n)
-    let len_list_canon_lower = WasmI32.load(WasmI32.fromGrain(vec_list_canon_lower), 4n)
-    let ret = wit_bindgen_parseNix(ptr_list_canon_lower, len_list_canon_lower)
-    let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(ret)),}: NixParse
-    handle_lift
-  }
-
-
-  provide module NixParse {}
 }
 

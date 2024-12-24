@@ -1,0 +1,11 @@
+# One CLI to format the code tree - https://github.com/numtide/treefmt
+
+[formatter.rust]
+command = "rustfmt"
+options = ["--edition", "2021"]
+includes = ["*.rs"]
+
+[formatter.grain]
+command = "grain"
+options = ["format"]
+includes = ["*.gr"]

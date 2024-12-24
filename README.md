@@ -1,15 +1,26 @@
 # Snow
 
-## TODO
+## Plan
 
-- Nix
-- compile fromNix
-- compile fromSnow
-- compile toNix
-- compile toSnow
-- home-manager replacement
-  - package library
-- integrated tooling
+- Build a hello-world wasm component
+- Call the hello-world component from grain using wac composition
+- Package rnix into a wasm component
+- Demonstrate Parsing from grain
+- Build a frontend using Reaper
+- Build nix2Snow
+- Build snow2Nix
+
+- How to handle cargo pkgs
+  - wasm-tools
+  - warg-cli
+- how to handle versioning rnix
+  - if the wit has changed and we run publish
+  - increment release version
+    - automate how we do this
+    - ask user
+  - update rnix cargo
+  - try rebuild cargo
+  - rebuild grain dep
 
 
 # Language thoughts

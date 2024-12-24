@@ -1,0 +1,9 @@
+package spotandjake:snow;
+
+interface nix {
+    parse: func(nix-source: string) -> string;
+}
+
+world rnix {
+    export nix;
+}

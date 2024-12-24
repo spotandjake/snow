@@ -2,6 +2,7 @@
   "recommendations": [
     "grain-lang.vscode-grain",
     "rust-lang.rust-analyzer",
-    "bytecodealliance.wit-idl"
+    "bytecodealliance.wit-idl",
+    "tamasfe.even-better-toml"
   ]
 }
