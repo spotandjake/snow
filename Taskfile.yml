@@ -32,19 +32,33 @@ tasks:
       - wasm-tools component embed wit  --world snow -o ./dist/snow.e.wasm ./dist/snow.gr.wasm
       # Form Component
       - wasm-tools component new -o ./dist/snow.c.wasm --adapt ./adapters/wasi_snapshot_preview1.command.wasm ./dist/snow.e.wasm
+    sources:
+      - ./src/*.gr
+      - ./adapters/wasi_snapshot_preview1.command.wasm
+      - ./wit/*.wit
+    generates:
+      - ./dist/snow.gr.wasm
+      - ./dist/snow.e.wasm
+      - ./dist/snow.c.wasm
   compose:
     # TODO: Validate that we have snow.c.wasm and nix.wasm
     cmds:
       - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
+    sources:
+      - ./dist/snow.c.wasm
+      - ./dist/nix.wasm
+    generates:
+      - ./dist/snow.wasm
   gen_libs:
-    deps: [clean_lib]
     cmds:
       # Generate Rnix Lib
       - ./bin/wit-bindgen grain wit --out-dir ./src/libs --world snow
-  clean_lib:
-    cmds:
-      - rm -f ./src/libs/rnix.gr
+    sources:
+      - wit/*.wit
+    generates:
+      - src/libs/snow.gr
   clean:
     cmds:
+      - rm -f ./src/libs/rnix.gr
       - rm -f ./dist/
       - rm **.gr.wasm

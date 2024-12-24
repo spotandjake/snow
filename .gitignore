@@ -2,6 +2,7 @@
 .direnv/
 wit-bindgen/
 old/
+.task/
 
 # General
 *.wasm

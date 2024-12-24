@@ -156,7 +156,7 @@ impl Guest for Component {
         let ast = rnix::Root::parse(&nix_source);
 
         match ast.ok() {
-            Ok(_) => Ok("Hello From Rust!".to_string()),
+            Ok(_) => Ok("Hello From Rust!!".to_string()),
             Err(e) => Err(ParseError::from(e)),
         }
     }

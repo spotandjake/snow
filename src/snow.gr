@@ -13,6 +13,7 @@ provide let _start: () => Void = () => {
     Ok(contents) => contents,
     Err(err) => fail "Failed to read file",
   }
+
   let ast = Snow.Nix.parse(contents)
   print(ast)
 }
