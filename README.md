@@ -2,8 +2,6 @@
 
 ## Plan
 
-- Build a hello-world wasm component
-- Call the hello-world component from grain using wac composition
 - Package rnix into a wasm component
 - Demonstrate Parsing from grain
 - Build a frontend using Reaper
