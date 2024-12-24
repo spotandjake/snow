@@ -8,7 +8,7 @@ tasks:
     cmds:
       - mkdir -p ../dist/
       - cargo component build --release
-      - cp target/wasm32-wasip1/release/rnix.wasm ../dist/rnix.wasm
+      - cp target/wasm32-wasip1/release/nix.wasm ../dist/nix.wasm
   clean:
     cmds:
-      - rm -f ../dist/rnix.wasm
+      - rm -f ../dist/nix.wasm

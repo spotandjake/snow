@@ -12,7 +12,7 @@ from "char" include Char
 from "list" include List
 
 @unsafe
-let _RET_AREA = Memory.malloc(8n)
+let _RET_AREA = Memory.malloc(28n)
 
 @unsafe
 provide let cabi_realloc = (originalPtr: WasmI32, originalSize: WasmI32, alignment: WasmI32, newSize: WasmI32) => {
@@ -32,6 +32,107 @@ provide record Resource<a> {
   rep: a
 }
 
+provide record TextRange {
+  start: Uint32,
+  end: Uint32,
+}
+provide enum SyntaxKind {
+  TokenComment,
+  TokenError,
+  TokenWhitespace,
+  TokenAssert,
+  TokenElse,
+  TokenIf,
+  TokenIn,
+  TokenInherit,
+  TokenLet,
+  TokenOr,
+  TokenRec,
+  TokenThen,
+  TokenWith,
+  TokenLBrace,
+  TokenRBrace,
+  TokenLBrack,
+  TokenRBrack,
+  TokenAssign,
+  TokenAt,
+  TokenColon,
+  TokenComma,
+  TokenDot,
+  TokenEllipsis,
+  TokenQuestion,
+  TokenSemicolon,
+  TokenLParen,
+  TokenRParen,
+  TokenConcat,
+  TokenInvert,
+  TokenUpdate,
+  TokenAdd,
+  TokenSub,
+  TokenMul,
+  TokenDiv,
+  TokenAndAnd,
+  TokenEqual,
+  TokenImplication,
+  TokenLess,
+  TokenLessOrEq,
+  TokenMore,
+  TokenMoreOrEq,
+  TokenNotEqual,
+  TokenOrOr,
+  TokenFloat,
+  TokenIdent,
+  TokenInteger,
+  TokenInterpolEnd,
+  TokenInterpolStart,
+  TokenPath,
+  TokenUri,
+  TokenStringContent,
+  TokenStringEnd,
+  TokenStringStart,
+  NodeApply,
+  NodeAssert,
+  NodeAttrpath,
+  NodeDynamic,
+  NodeError,
+  NodeIdent,
+  NodeIfElse,
+  NodeSelect,
+  NodeInherit,
+  NodeInheritFrom,
+  NodeString,
+  NodeInterpol,
+  NodeLambda,
+  NodeIdentParam,
+  NodeLegacyLet,
+  NodeLetIn,
+  NodeList,
+  NodeBinOp,
+  NodeParen,
+  NodePattern,
+  NodePatBind,
+  NodePatEntry,
+  NodeRoot,
+  NodeAttrSet,
+  NodeAttrpathValue,
+  NodeUnaryOp,
+  NodeLiteral,
+  NodeWith,
+  NodePath,
+  NodeHasAttr,
+  Last,
+}
+provide enum ParseError {
+  Unexpected(TextRange),
+  UnexpectedExtra(TextRange),
+  UnexpectedWanted((SyntaxKind, TextRange, List<SyntaxKind>)),
+  UnexpectedDoubleBind(TextRange),
+  UnexpectedEof,
+  UnexpectedEofWanted(List<SyntaxKind>),
+  DuplicatedArgs((TextRange, String)),
+  RecursionLimitExceeded,
+  Unknown,
+}
 
 
 provide module Nix {
@@ -40,16 +141,833 @@ provide module Nix {
   foreign wasm wit_bindgen_parse: (WasmI32, WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
   @unsafe
-  provide let parse: (String) => String = (nixSource) => {
+  provide let parse: (String) => Result<String, ParseError> = (nixSource) => {
     let vec_list_canon_lower = nixSource
     let ptr_list_canon_lower = WasmI32.(+)(WasmI32.fromGrain(vec_list_canon_lower), 8n)
     let len_list_canon_lower = WasmI32.load(WasmI32.fromGrain(vec_list_canon_lower), 4n)
     wit_bindgen_parse(ptr_list_canon_lower, len_list_canon_lower, _RET_AREA)
-    let len_string_lift = WasmI32.load(_RET_AREA, 4n)
-    let str_string_lift = DataStructures.allocateString(len_string_lift)
-    Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 0n), len_string_lift)
-    let str_string_lift = WasmI32.toGrain(str_string_lift): String
-    str_string_lift
+    match (WasmI32.load8U(_RET_AREA, 0n)) {
+      0n => {
+        let len_string_lift = WasmI32.load(_RET_AREA, 8n)
+        let str_string_lift = DataStructures.allocateString(len_string_lift)
+        Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 4n), len_string_lift)
+        let str_string_lift = WasmI32.toGrain(str_string_lift): String
+
+        Ok(str_string_lift)
+      },
+      1n => {
+        
+        Err(match (WasmI32.load8U(_RET_AREA, 4n)) {
+          0n => {
+            Unexpected({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 })
+          },
+          1n => {
+            UnexpectedExtra({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 })
+          },
+          2n => {
+            let base_list_lift = WasmI32.load(_RET_AREA, 20n)
+            let len_list_lift = WasmI32.load(_RET_AREA, 24n)
+            let mut result_list_lift = []
+            Memory.incRef(WasmI32.fromGrain(result_list_lift))
+            for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+              let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 1n))
+              result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+                0n => {
+                  TokenComment
+                },
+                1n => {
+                  TokenError
+                },
+                2n => {
+                  TokenWhitespace
+                },
+                3n => {
+                  TokenAssert
+                },
+                4n => {
+                  TokenElse
+                },
+                5n => {
+                  TokenIf
+                },
+                6n => {
+                  TokenIn
+                },
+                7n => {
+                  TokenInherit
+                },
+                8n => {
+                  TokenLet
+                },
+                9n => {
+                  TokenOr
+                },
+                10n => {
+                  TokenRec
+                },
+                11n => {
+                  TokenThen
+                },
+                12n => {
+                  TokenWith
+                },
+                13n => {
+                  TokenLBrace
+                },
+                14n => {
+                  TokenRBrace
+                },
+                15n => {
+                  TokenLBrack
+                },
+                16n => {
+                  TokenRBrack
+                },
+                17n => {
+                  TokenAssign
+                },
+                18n => {
+                  TokenAt
+                },
+                19n => {
+                  TokenColon
+                },
+                20n => {
+                  TokenComma
+                },
+                21n => {
+                  TokenDot
+                },
+                22n => {
+                  TokenEllipsis
+                },
+                23n => {
+                  TokenQuestion
+                },
+                24n => {
+                  TokenSemicolon
+                },
+                25n => {
+                  TokenLParen
+                },
+                26n => {
+                  TokenRParen
+                },
+                27n => {
+                  TokenConcat
+                },
+                28n => {
+                  TokenInvert
+                },
+                29n => {
+                  TokenUpdate
+                },
+                30n => {
+                  TokenAdd
+                },
+                31n => {
+                  TokenSub
+                },
+                32n => {
+                  TokenMul
+                },
+                33n => {
+                  TokenDiv
+                },
+                34n => {
+                  TokenAndAnd
+                },
+                35n => {
+                  TokenEqual
+                },
+                36n => {
+                  TokenImplication
+                },
+                37n => {
+                  TokenLess
+                },
+                38n => {
+                  TokenLessOrEq
+                },
+                39n => {
+                  TokenMore
+                },
+                40n => {
+                  TokenMoreOrEq
+                },
+                41n => {
+                  TokenNotEqual
+                },
+                42n => {
+                  TokenOrOr
+                },
+                43n => {
+                  TokenFloat
+                },
+                44n => {
+                  TokenIdent
+                },
+                45n => {
+                  TokenInteger
+                },
+                46n => {
+                  TokenInterpolEnd
+                },
+                47n => {
+                  TokenInterpolStart
+                },
+                48n => {
+                  TokenPath
+                },
+                49n => {
+                  TokenUri
+                },
+                50n => {
+                  TokenStringContent
+                },
+                51n => {
+                  TokenStringEnd
+                },
+                52n => {
+                  TokenStringStart
+                },
+                53n => {
+                  NodeApply
+                },
+                54n => {
+                  NodeAssert
+                },
+                55n => {
+                  NodeAttrpath
+                },
+                56n => {
+                  NodeDynamic
+                },
+                57n => {
+                  NodeError
+                },
+                58n => {
+                  NodeIdent
+                },
+                59n => {
+                  NodeIfElse
+                },
+                60n => {
+                  NodeSelect
+                },
+                61n => {
+                  NodeInherit
+                },
+                62n => {
+                  NodeInheritFrom
+                },
+                63n => {
+                  NodeString
+                },
+                64n => {
+                  NodeInterpol
+                },
+                65n => {
+                  NodeLambda
+                },
+                66n => {
+                  NodeIdentParam
+                },
+                67n => {
+                  NodeLegacyLet
+                },
+                68n => {
+                  NodeLetIn
+                },
+                69n => {
+                  NodeList
+                },
+                70n => {
+                  NodeBinOp
+                },
+                71n => {
+                  NodeParen
+                },
+                72n => {
+                  NodePattern
+                },
+                73n => {
+                  NodePatBind
+                },
+                74n => {
+                  NodePatEntry
+                },
+                75n => {
+                  NodeRoot
+                },
+                76n => {
+                  NodeAttrSet
+                },
+                77n => {
+                  NodeAttrpathValue
+                },
+                78n => {
+                  NodeUnaryOp
+                },
+                79n => {
+                  NodeLiteral
+                },
+                80n => {
+                  NodeWith
+                },
+                81n => {
+                  NodePath
+                },
+                82n => {
+                  NodeHasAttr
+                },
+                _ => {
+                  Last
+                },
+              }, ...result_list_lift]
+            }
+            UnexpectedWanted((match (WasmI32.load8U(_RET_AREA, 8n)) {
+              0n => {
+                TokenComment
+              },
+              1n => {
+                TokenError
+              },
+              2n => {
+                TokenWhitespace
+              },
+              3n => {
+                TokenAssert
+              },
+              4n => {
+                TokenElse
+              },
+              5n => {
+                TokenIf
+              },
+              6n => {
+                TokenIn
+              },
+              7n => {
+                TokenInherit
+              },
+              8n => {
+                TokenLet
+              },
+              9n => {
+                TokenOr
+              },
+              10n => {
+                TokenRec
+              },
+              11n => {
+                TokenThen
+              },
+              12n => {
+                TokenWith
+              },
+              13n => {
+                TokenLBrace
+              },
+              14n => {
+                TokenRBrace
+              },
+              15n => {
+                TokenLBrack
+              },
+              16n => {
+                TokenRBrack
+              },
+              17n => {
+                TokenAssign
+              },
+              18n => {
+                TokenAt
+              },
+              19n => {
+                TokenColon
+              },
+              20n => {
+                TokenComma
+              },
+              21n => {
+                TokenDot
+              },
+              22n => {
+                TokenEllipsis
+              },
+              23n => {
+                TokenQuestion
+              },
+              24n => {
+                TokenSemicolon
+              },
+              25n => {
+                TokenLParen
+              },
+              26n => {
+                TokenRParen
+              },
+              27n => {
+                TokenConcat
+              },
+              28n => {
+                TokenInvert
+              },
+              29n => {
+                TokenUpdate
+              },
+              30n => {
+                TokenAdd
+              },
+              31n => {
+                TokenSub
+              },
+              32n => {
+                TokenMul
+              },
+              33n => {
+                TokenDiv
+              },
+              34n => {
+                TokenAndAnd
+              },
+              35n => {
+                TokenEqual
+              },
+              36n => {
+                TokenImplication
+              },
+              37n => {
+                TokenLess
+              },
+              38n => {
+                TokenLessOrEq
+              },
+              39n => {
+                TokenMore
+              },
+              40n => {
+                TokenMoreOrEq
+              },
+              41n => {
+                TokenNotEqual
+              },
+              42n => {
+                TokenOrOr
+              },
+              43n => {
+                TokenFloat
+              },
+              44n => {
+                TokenIdent
+              },
+              45n => {
+                TokenInteger
+              },
+              46n => {
+                TokenInterpolEnd
+              },
+              47n => {
+                TokenInterpolStart
+              },
+              48n => {
+                TokenPath
+              },
+              49n => {
+                TokenUri
+              },
+              50n => {
+                TokenStringContent
+              },
+              51n => {
+                TokenStringEnd
+              },
+              52n => {
+                TokenStringStart
+              },
+              53n => {
+                NodeApply
+              },
+              54n => {
+                NodeAssert
+              },
+              55n => {
+                NodeAttrpath
+              },
+              56n => {
+                NodeDynamic
+              },
+              57n => {
+                NodeError
+              },
+              58n => {
+                NodeIdent
+              },
+              59n => {
+                NodeIfElse
+              },
+              60n => {
+                NodeSelect
+              },
+              61n => {
+                NodeInherit
+              },
+              62n => {
+                NodeInheritFrom
+              },
+              63n => {
+                NodeString
+              },
+              64n => {
+                NodeInterpol
+              },
+              65n => {
+                NodeLambda
+              },
+              66n => {
+                NodeIdentParam
+              },
+              67n => {
+                NodeLegacyLet
+              },
+              68n => {
+                NodeLetIn
+              },
+              69n => {
+                NodeList
+              },
+              70n => {
+                NodeBinOp
+              },
+              71n => {
+                NodeParen
+              },
+              72n => {
+                NodePattern
+              },
+              73n => {
+                NodePatBind
+              },
+              74n => {
+                NodePatEntry
+              },
+              75n => {
+                NodeRoot
+              },
+              76n => {
+                NodeAttrSet
+              },
+              77n => {
+                NodeAttrpathValue
+              },
+              78n => {
+                NodeUnaryOp
+              },
+              79n => {
+                NodeLiteral
+              },
+              80n => {
+                NodeWith
+              },
+              81n => {
+                NodePath
+              },
+              82n => {
+                NodeHasAttr
+              },
+              _ => {
+                Last
+              },
+            }, { start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 16n))): Uint32 }, result_list_lift))
+          },
+          3n => {
+            UnexpectedDoubleBind({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 })
+          },
+          4n => {
+            UnexpectedEof
+          },
+          5n => {
+            let base_list_lift0 = WasmI32.load(_RET_AREA, 8n)
+            let len_list_lift0 = WasmI32.load(_RET_AREA, 12n)
+            let mut result_list_lift0 = []
+            Memory.incRef(WasmI32.fromGrain(result_list_lift0))
+            for (let mut i = WasmI32.(-)(len_list_lift0, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+              let base = WasmI32.(+)(base_list_lift0, WasmI32.(*)(i, 1n))
+              result_list_lift0 = [match (WasmI32.load8U(base, 0n)) {
+                0n => {
+                  TokenComment
+                },
+                1n => {
+                  TokenError
+                },
+                2n => {
+                  TokenWhitespace
+                },
+                3n => {
+                  TokenAssert
+                },
+                4n => {
+                  TokenElse
+                },
+                5n => {
+                  TokenIf
+                },
+                6n => {
+                  TokenIn
+                },
+                7n => {
+                  TokenInherit
+                },
+                8n => {
+                  TokenLet
+                },
+                9n => {
+                  TokenOr
+                },
+                10n => {
+                  TokenRec
+                },
+                11n => {
+                  TokenThen
+                },
+                12n => {
+                  TokenWith
+                },
+                13n => {
+                  TokenLBrace
+                },
+                14n => {
+                  TokenRBrace
+                },
+                15n => {
+                  TokenLBrack
+                },
+                16n => {
+                  TokenRBrack
+                },
+                17n => {
+                  TokenAssign
+                },
+                18n => {
+                  TokenAt
+                },
+                19n => {
+                  TokenColon
+                },
+                20n => {
+                  TokenComma
+                },
+                21n => {
+                  TokenDot
+                },
+                22n => {
+                  TokenEllipsis
+                },
+                23n => {
+                  TokenQuestion
+                },
+                24n => {
+                  TokenSemicolon
+                },
+                25n => {
+                  TokenLParen
+                },
+                26n => {
+                  TokenRParen
+                },
+                27n => {
+                  TokenConcat
+                },
+                28n => {
+                  TokenInvert
+                },
+                29n => {
+                  TokenUpdate
+                },
+                30n => {
+                  TokenAdd
+                },
+                31n => {
+                  TokenSub
+                },
+                32n => {
+                  TokenMul
+                },
+                33n => {
+                  TokenDiv
+                },
+                34n => {
+                  TokenAndAnd
+                },
+                35n => {
+                  TokenEqual
+                },
+                36n => {
+                  TokenImplication
+                },
+                37n => {
+                  TokenLess
+                },
+                38n => {
+                  TokenLessOrEq
+                },
+                39n => {
+                  TokenMore
+                },
+                40n => {
+                  TokenMoreOrEq
+                },
+                41n => {
+                  TokenNotEqual
+                },
+                42n => {
+                  TokenOrOr
+                },
+                43n => {
+                  TokenFloat
+                },
+                44n => {
+                  TokenIdent
+                },
+                45n => {
+                  TokenInteger
+                },
+                46n => {
+                  TokenInterpolEnd
+                },
+                47n => {
+                  TokenInterpolStart
+                },
+                48n => {
+                  TokenPath
+                },
+                49n => {
+                  TokenUri
+                },
+                50n => {
+                  TokenStringContent
+                },
+                51n => {
+                  TokenStringEnd
+                },
+                52n => {
+                  TokenStringStart
+                },
+                53n => {
+                  NodeApply
+                },
+                54n => {
+                  NodeAssert
+                },
+                55n => {
+                  NodeAttrpath
+                },
+                56n => {
+                  NodeDynamic
+                },
+                57n => {
+                  NodeError
+                },
+                58n => {
+                  NodeIdent
+                },
+                59n => {
+                  NodeIfElse
+                },
+                60n => {
+                  NodeSelect
+                },
+                61n => {
+                  NodeInherit
+                },
+                62n => {
+                  NodeInheritFrom
+                },
+                63n => {
+                  NodeString
+                },
+                64n => {
+                  NodeInterpol
+                },
+                65n => {
+                  NodeLambda
+                },
+                66n => {
+                  NodeIdentParam
+                },
+                67n => {
+                  NodeLegacyLet
+                },
+                68n => {
+                  NodeLetIn
+                },
+                69n => {
+                  NodeList
+                },
+                70n => {
+                  NodeBinOp
+                },
+                71n => {
+                  NodeParen
+                },
+                72n => {
+                  NodePattern
+                },
+                73n => {
+                  NodePatBind
+                },
+                74n => {
+                  NodePatEntry
+                },
+                75n => {
+                  NodeRoot
+                },
+                76n => {
+                  NodeAttrSet
+                },
+                77n => {
+                  NodeAttrpathValue
+                },
+                78n => {
+                  NodeUnaryOp
+                },
+                79n => {
+                  NodeLiteral
+                },
+                80n => {
+                  NodeWith
+                },
+                81n => {
+                  NodePath
+                },
+                82n => {
+                  NodeHasAttr
+                },
+                _ => {
+                  Last
+                },
+              }, ...result_list_lift0]
+            }
+            UnexpectedEofWanted(result_list_lift0)
+          },
+          6n => {
+            let len_string_lift1 = WasmI32.load(_RET_AREA, 20n)
+            let str_string_lift1 = DataStructures.allocateString(len_string_lift1)
+            Memory.copy(WasmI32.(+)(str_string_lift1, 8n), WasmI32.load(_RET_AREA, 16n), len_string_lift1)
+            let str_string_lift1 = WasmI32.toGrain(str_string_lift1): String
+            DuplicatedArgs(({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 }, str_string_lift1))
+          },
+          7n => {
+            RecursionLimitExceeded
+          },
+          _ => {
+            Unknown
+          },
+        })
+      },
+      _ => fail "invalid enum discriminant",
+    }
   }
 
 }

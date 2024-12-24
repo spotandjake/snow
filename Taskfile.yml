@@ -3,9 +3,9 @@
 version: '3'
 
 includes:
-  rnix:
-    taskfile: ./rnix/Taskfile.yml
-    dir: ./rnix
+  nix:
+    taskfile: ./nix/Taskfile.yml
+    dir: ./nix
   wit:
     taskfile: ./wit/Taskfile.yml
     dir: ./wit
@@ -14,14 +14,14 @@ includes:
 tasks:
   default:
     cmds:
-      - task: rnix
+      - task: nix
       - task: gen_libs
       - task: compile
       - task: compose
   dev:
     deps: [default]
     cmds:
-      - wasmtime run ./dist/snow.wasm
+      - wasmtime --dir=. ./dist/snow.wasm 
   compile:
     # TODO: Validate that we have ./src/libs/snow.gr
     cmds:
@@ -33,9 +33,9 @@ tasks:
       # Form Component
       - wasm-tools component new -o ./dist/snow.c.wasm --adapt ./adapters/wasi_snapshot_preview1.command.wasm ./dist/snow.e.wasm
   compose:
-    # TODO: Validate that we have snow.c.wasm and rnix.wasm
+    # TODO: Validate that we have snow.c.wasm and nix.wasm
     cmds:
-      - wac plug ./dist/snow.c.wasm --plug ./dist/rnix.wasm -o ./dist/snow.wasm
+      - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
   gen_libs:
     deps: [clean_lib]
     cmds:
