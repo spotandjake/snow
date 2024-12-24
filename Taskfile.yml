@@ -9,8 +9,10 @@ includes:
   wit:
     taskfile: ./wit/Taskfile.yml
     dir: ./wit
+  tasks:
+    taskfile: ./tasks/Taskfile.yml
+    dir: ./tasks
 
-# TODO: Look into caching tasks to prevent reruns
 tasks:
   default:
     cmds:
@@ -19,44 +21,39 @@ tasks:
       - task: compile
       - task: compose
   dev:
-    deps: [default]
+    deps:
+      - default
     cmds:
       - wasmtime --dir=. ./dist/snow.wasm 
   compile:
-    # TODO: Validate that we have ./src/libs/snow.gr
-    cmds:
-      - mkdir -p dist
-      # Compile Grain
-      - grain compile ./src/snow.gr --use-start-section --release -o ./dist/snow.gr.wasm
-      # Embed wit
-      - wasm-tools component embed wit  --world snow -o ./dist/snow.e.wasm ./dist/snow.gr.wasm
-      # Form Component
-      - wasm-tools component new -o ./dist/snow.c.wasm --adapt ./adapters/wasi_snapshot_preview1.command.wasm ./dist/snow.e.wasm
     sources:
       - ./src/*.gr
       - ./adapters/wasi_snapshot_preview1.command.wasm
       - ./wit/*.wit
     generates:
       - ./dist/snow.gr.wasm
-      - ./dist/snow.e.wasm
       - ./dist/snow.c.wasm
-  compose:
-    # TODO: Validate that we have snow.c.wasm and nix.wasm
     cmds:
-      - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
+      - mkdir -p dist
+      # Compile Grain component
+      # grain_component <wit> <world> <adapter> <input> <output>
+      - ./tasks/grain_component.sh ./wit snow ./adapters/wasi_snapshot_preview1.command.wasm  ./src/snow.gr ./dist/snow.c.wasm
+  compose:
     sources:
       - ./dist/snow.c.wasm
       - ./dist/nix.wasm
     generates:
       - ./dist/snow.wasm
-  gen_libs:
     cmds:
-      # Generate Rnix Lib
-      - ./bin/wit-bindgen grain wit --out-dir ./src/libs --world snow
+      - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
+  gen_libs:
     sources:
       - wit/*.wit
     generates:
       - src/libs/snow.gr
+    cmds:
+      # Generate Rnix Lib
+      - ./bin/wit-bindgen grain wit --out-dir ./src/libs --world snow
   clean:
     cmds:
       - rm -f ./src/libs/rnix.gr

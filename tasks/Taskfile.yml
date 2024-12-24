@@ -1,0 +1,12 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  default:
+    sources:
+      - ./grain_component.ab
+    generates:
+      - ./grain_component.sh
+    cmds:
+      - amber build grain_component.sh

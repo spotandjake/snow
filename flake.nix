@@ -7,6 +7,7 @@
       url = "https://flakehub.com/f/nix-community/fenix/*.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    amber.url = "github:amber-lang/Amber";
   };
 
   outputs = { self, ... }@inputs:
@@ -44,8 +45,9 @@
               wabt # WebAssembly Binary Toolkit
               wasmtime # Wasm runtime
               tree # for visualizing results
-              go-task
-              treefmt
+              go-task # task runner like cmake
+              treefmt # tree formatting
+              inputs.amber.packages.${pkgs.system}.default
             ]);
           };
       });

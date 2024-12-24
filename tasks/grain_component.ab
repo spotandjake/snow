@@ -1,0 +1,72 @@
+import { file_exists, dir_exists } from "std/fs"
+import { join, split } from "std/text"
+
+pub fun grain_component(wit: Text, world: Text, adapater: Text, input: Text, output: Text): Null {
+    let embed_artifact_name = "./.grain_component_embed_artifact.wasm"
+    let grain_out_name = input + ".wasm"
+    // Compile Grain
+    $ grain compile {input} --use-start-section --release -o {grain_out_name} $ failed {
+        echo "Grain Compilation Failed"
+        exit 1
+    }
+    // Embed wit
+    $ wasm-tools component embed {wit} --world {world} -o {embed_artifact_name} {grain_out_name} $ failed {
+        echo "Embedding Failed"
+        $ rm -f {embed_artifact_name} $ failed {
+            echo "Failed to delete embed artifact"
+        }
+        exit 1
+    }
+    // Form Component
+    $ wasm-tools component new -o {output} --adapt {adapater} {embed_artifact_name} $ failed {
+        echo "Component Creation Failed"
+        $ rm -f {embed_artifact_name} $ failed {
+            echo "Failed to delete embed artifact"
+        }
+        exit 1
+    }
+    // Delete Embed
+    $ rm -f {embed_artifact_name} $ failed {
+        echo "Failed to delete embed artifact"
+        exit 1
+    }
+}
+
+main (args) {
+    let usage = "Usage: grain_component <wit> <world> <adapter> <input> <output>"
+    let max_args = 6
+    if (len(args) == max_args) {
+        let count = len(args) == max_args then 1 else 0
+        // Args
+        let wit = args[count]
+        count = count + 1
+        let world = args[count]
+        count = count + 1
+        let adapter = args[count]
+        count = count + 1
+        let input = args[count]
+        count = count + 1
+        let output = args[count]
+        count = count + 1
+        // Arg Checks
+        if not (file_exists(wit) or dir_exists(wit)) { 
+            echo "Wit File or Folder not found: {wit}"
+            exit 1
+        }
+        if not file_exists(adapter) {
+            echo "Adapter File not found: {adapter}"
+            exit 1
+        }
+        if not file_exists(input) {
+            echo "Input File not found: {input}"
+            exit 1
+        }
+        grain_component(wit, world, adapter, input, output)
+        echo "Component Created: {output}"
+    } else {
+        echo "{usage}"
+        for arg in args {
+            echo arg
+        }
+    }
+}

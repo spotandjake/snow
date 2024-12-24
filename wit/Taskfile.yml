@@ -9,7 +9,10 @@ tasks:
       # Build
       - wit build
   publish:
-    deps: [default]
+    deps: 
+      - default
+    sources:
+      - ./snow.wasm
     cmds:
       - warg publish release --name spotandjake:snow --version 0.0.6 snow.wasm
   clean:

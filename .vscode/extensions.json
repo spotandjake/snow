@@ -3,6 +3,7 @@
     "grain-lang.vscode-grain",
     "rust-lang.rust-analyzer",
     "bytecodealliance.wit-idl",
-    "tamasfe.even-better-toml"
+    "tamasfe.even-better-toml",
+    "ph0enixkm.amber-language"
   ]
 }

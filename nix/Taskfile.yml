@@ -4,10 +4,6 @@ version: '3'
 
 tasks:
   default:
-    cmds:
-      - mkdir -p ../dist/
-      - cargo component build --release
-      - cp target/wasm32-wasip1/release/nix.wasm ../dist/nix.wasm
     sources:
       - src/*.rs
       - Cargo.lock
@@ -15,6 +11,10 @@ tasks:
       - Cargo-component.lock
     generates:
       - ../dist/nix.wasm
+    cmds:
+      - mkdir -p ../dist/
+      - cargo component build --release
+      - cp target/wasm32-wasip1/release/nix.wasm ../dist/nix.wasm
   clean:
     cmds:
       - rm -f ../dist/nix.wasm
