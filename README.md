@@ -2,7 +2,6 @@
 
 ## Plan
 
-- Package rnix into a wasm component
 - Demonstrate Parsing from grain
 - Build a frontend using Reaper
 - Build nix2Snow
