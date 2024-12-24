@@ -1,0 +1,18 @@
+module Main
+
+from "path" include Path
+from "./libs/fs.gr" include Fs
+from "./libs/snow.gr" include Snow
+
+provide let cabi_realloc = Snow.cabi_realloc
+
+provide let _start: () => Void = () => {
+  // Testing
+  let input = Path.fromString("./flake.nix")
+  let contents = match (Fs.Utf8.readFile(input)) {
+    Ok(contents) => contents,
+    Err(err) => fail "Failed to read file",
+  }
+  let ast = Snow.Nix.parse(contents)
+  print(ast)
+}

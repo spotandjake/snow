@@ -1,5 +1,12 @@
-target/
+# Random
 .direnv/
 wit-bindgen/
-bin/
-dist/
+old/
+
+# General
+*.wasm
+!adapters/*.wasm
+
+
+# Rust
+target/

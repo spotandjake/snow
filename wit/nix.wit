@@ -1,0 +1,135 @@
+package spotandjake:snow;
+
+interface nix {
+    record text-range {
+        start: u32,
+        end: u32,
+    }
+    enum syntax-kind {
+        // Internals
+        token-comment,
+        token-error,
+        token-whitespace,
+
+        // Keywords
+        token-assert,
+        token-else,
+        token-if,
+        token-in,
+        token-inherit,
+        token-let,
+        token-or,
+        token-rec,
+        token-then,
+        token-with,
+
+        // Symbols
+        token-l-brace,
+        token-r-brace,
+        token-l-brack,
+        token-r-brack,
+        token-assign,
+        token-at,
+        token-colon,
+        token-comma,
+        token-dot,
+        token-ellipsis,
+        token-question,
+        token-semicolon,
+
+        // Operators
+        token-l-paren,
+        token-r-paren,
+        token-concat,
+        token-invert,
+        token-update,
+
+        token-add,
+        token-sub,
+        token-mul,
+        token-div,
+
+        token-and-and,
+        token-equal,
+        token-implication,
+        token-less,
+        token-less-or-eq,
+        token-more,
+        token-more-or-eq,
+        token-not-equal,
+        token-or-or,
+
+        // Identifiers and values
+        token-float,
+        token-ident,
+        token-integer,
+        token-interpol-end,
+        token-interpol-start,
+        token-path,
+        token-uri,
+        token-string-content,
+        token-string-end,
+        token-string-start,
+
+        node-apply,
+        node-assert,
+        node-attrpath,
+        node-dynamic,
+        node-error,
+        node-ident,
+        node-if-else,
+        node-select,
+        node-inherit,
+        node-inherit-from,
+        node-string,
+        node-interpol,
+        node-lambda,
+        node-ident-param,
+        // An old let { x = 92; body = x; } syntax
+        node-legacy-let,
+        node-let-in,
+        node-list,
+        node-bin-op,
+        node-paren,
+        node-pattern,
+        node-pat-bind,
+        node-pat-entry,
+        node-root,
+        node-attr-set,
+        node-attrpath-value,
+        node-unary-op,
+        node-literal,
+        node-with,
+        node-path,
+        // Attrpath existence check: foo ? bar.${baz}."bux"
+        node-has-attr,
+
+        last
+    }
+    variant parse-error {
+        /// Unexpected is used when the cause cannot be specified further
+        unexpected(text-range),
+        /// UnexpectedExtra is used when there are additional tokens to the root in the tree
+        unexpected-extra(text-range),
+        /// UnexpectedWanted is used when specific tokens are expected, but different one is found
+        unexpected-wanted(tuple<syntax-kind, text-range, list<syntax-kind>>),
+        /// UnexpectedDoubleBind is used when a pattern is bound twice
+        unexpected-double-bind(text-range),
+        /// UnexpectedEOF is used when the end of file is reached, while tokens are still expected
+        unexpected-eof,
+        /// UnexpectedEOFWanted is used when specific tokens are expected, but the end of file is reached
+        unexpected-eof-wanted(list<syntax-kind>),
+        /// DuplicatedArgs is used when formal arguments are duplicated, e.g. `{ a, a }`
+        duplicated-args(tuple<text-range, string>),
+        /// RecursionLimitExceeded is used when we're unable to parse further due to likely being close to
+        /// a stack overflow.
+        recursion-limit-exceeded,
+        /// Occurs when an unknown error is encountered
+        unknown,
+    }
+    parse: func(nix-source: string) -> result<string, parse-error>;
+}
+
+world rnix {
+    export nix;
+}

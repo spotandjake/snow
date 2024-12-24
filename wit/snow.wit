@@ -1,0 +1,5 @@
+package spotandjake:snow;
+
+world snow {
+  import nix;
+}

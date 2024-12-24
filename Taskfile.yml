@@ -1,0 +1,50 @@
+# https://taskfile.dev
+
+version: '3'
+
+includes:
+  nix:
+    taskfile: ./nix/Taskfile.yml
+    dir: ./nix
+  wit:
+    taskfile: ./wit/Taskfile.yml
+    dir: ./wit
+
+# TODO: Look into caching tasks to prevent reruns
+tasks:
+  default:
+    cmds:
+      - task: nix
+      - task: gen_libs
+      - task: compile
+      - task: compose
+  dev:
+    deps: [default]
+    cmds:
+      - wasmtime --dir=. ./dist/snow.wasm 
+  compile:
+    # TODO: Validate that we have ./src/libs/snow.gr
+    cmds:
+      - mkdir -p dist
+      # Compile Grain
+      - grain compile ./src/snow.gr --use-start-section --release -o ./dist/snow.gr.wasm
+      # Embed wit
+      - wasm-tools component embed wit  --world snow -o ./dist/snow.e.wasm ./dist/snow.gr.wasm
+      # Form Component
+      - wasm-tools component new -o ./dist/snow.c.wasm --adapt ./adapters/wasi_snapshot_preview1.command.wasm ./dist/snow.e.wasm
+  compose:
+    # TODO: Validate that we have snow.c.wasm and nix.wasm
+    cmds:
+      - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
+  gen_libs:
+    deps: [clean_lib]
+    cmds:
+      # Generate Rnix Lib
+      - ./bin/wit-bindgen grain wit --out-dir ./src/libs --world snow
+  clean_lib:
+    cmds:
+      - rm -f ./src/libs/rnix.gr
+  clean:
+    cmds:
+      - rm -f ./dist/
+      - rm **.gr.wasm
