@@ -5,7 +5,7 @@ interface nix {
         start: u32,
         end: u32,
     }
-    enum syntax-kind {
+    enum syntax-token {
         // Internals
         token-comment,
         token-error,
@@ -106,19 +106,77 @@ interface nix {
 
         last
     }
-    variant parse-error {
+    variant nix-expr {
+        apply(apply),
+        assert(assert),
+        error,
+        if-else(if-else),
+        select,
+        str,
+        path,
+        literal,
+        lambda,
+        legacy-let,
+        let-in,
+        %list,
+        bin-op,
+        paren,
+        root,
+        attr-set(attr-set),
+        unary-op,
+        ident,
+        %with,
+        has-attr,
+        invalid-node,
+    }
+    resource apply {
+        constructor(arg: nix-expr, lambda: nix-expr);
+        get-argument: func() -> nix-expr;
+        get-lambda: func() -> nix-expr;
+    }
+    resource assert {
+        constructor(body: nix-expr, condition: nix-expr);
+        get-body: func() -> nix-expr;
+        get-condition: func() -> nix-expr;
+    }
+    resource if-else {
+        constructor(condition: nix-expr, body: nix-expr, else-body: nix-expr);
+        get-condition: func() -> nix-expr;
+        get-body: func() -> nix-expr;
+        get-else-body: func() -> nix-expr;
+    }
+    // TODO: select,
+    // TODO: str,
+    // TODO: path,
+    // TODO: literal,
+    // TODO: lambda,
+    // TODO: legacy-let,
+    // TODO: let-in,
+    // TODO: %list,
+    // TODO: bin-op,
+    // TODO: paren,
+    // TODO: root,
+    resource attr-set {
+        constructor();
+    }
+    // TODO: unary-op,
+    // TODO: ident,
+    // TODO: %with,
+    // TODO: has-attr,
+    // TODO: invalid-node,
+    variant nix-parse-error {
         /// Unexpected is used when the cause cannot be specified further
         unexpected(text-range),
         /// UnexpectedExtra is used when there are additional tokens to the root in the tree
         unexpected-extra(text-range),
         /// UnexpectedWanted is used when specific tokens are expected, but different one is found
-        unexpected-wanted(tuple<syntax-kind, text-range, list<syntax-kind>>),
+        unexpected-wanted(tuple<syntax-token, text-range, list<syntax-token>>),
         /// UnexpectedDoubleBind is used when a pattern is bound twice
         unexpected-double-bind(text-range),
         /// UnexpectedEOF is used when the end of file is reached, while tokens are still expected
         unexpected-eof,
         /// UnexpectedEOFWanted is used when specific tokens are expected, but the end of file is reached
-        unexpected-eof-wanted(list<syntax-kind>),
+        unexpected-eof-wanted(list<syntax-token>),
         /// DuplicatedArgs is used when formal arguments are duplicated, e.g. `{ a, a }`
         duplicated-args(tuple<text-range, string>),
         /// RecursionLimitExceeded is used when we're unable to parse further due to likely being close to
@@ -127,7 +185,7 @@ interface nix {
         /// Occurs when an unknown error is encountered
         unknown,
     }
-    parse: func(nix-source: string) -> result<string, parse-error>;
+    parse: func(nix-source: string) -> result<nix-expr, nix-parse-error>;
 }
 
 world rnix {

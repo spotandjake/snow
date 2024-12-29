@@ -14,7 +14,7 @@ tasks:
     sources:
       - ./snow.wasm
     cmds:
-      - warg publish release --name spotandjake:snow --version 0.0.6 snow.wasm
+      - warg publish release --name spotandjake:snow --version 0.0.12 snow.wasm
   clean:
     cmds:
       - rm -rf *.wasm

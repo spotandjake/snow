@@ -8,7 +8,7 @@ provide let cabi_realloc = Snow.cabi_realloc
 
 provide let _start: () => Void = () => {
   // Testing
-  let input = Path.fromString("./flake.nix")
+  let input = Path.fromString("./test.nix")
   let contents = match (Fs.Utf8.readFile(input)) {
     Ok(contents) => contents,
     Err(err) => fail "Failed to read file",

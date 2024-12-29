@@ -6,6 +6,6 @@ version = 1
 name = "spotandjake:snow"
 
 [[package.version]]
-requirement = "^0.0.6"
-version = "0.0.6"
-digest = "sha256:2e3139cc61e2136ac6dec314c9fed60a143640d07db30e0bfd53e1a4031ab731"
+requirement = "^0.0.12"
+version = "0.0.12"
+digest = "sha256:6505a76589b68fa884e271fcb385f837d60e7f5c2aa75561137cfa4c9397aeaf"

@@ -19,6 +19,6 @@ lto = true
 
 [package.metadata.component]
 package = "spotandjake:snow"
-target = "spotandjake:snow/rnix@0.0.6"
+target = "spotandjake:snow/rnix@0.0.12"
 
 [package.metadata.component.dependencies]
