@@ -27,6 +27,7 @@
         rustToolchain = with inputs.fenix.packages.${system};
           combine [
             latest.rustc
+            latest.rust-src
             latest.rustfmt
             latest.cargo
             targets.${rustWasmTarget}.latest.rust-std

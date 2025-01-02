@@ -6,6 +6,8 @@ tasks:
   default:
     sources:
       - src/*.rs
+      - src/**/*.rs
+      - wit/*.wit
       - Cargo.lock
       - Cargo.toml
       - Cargo-component.lock

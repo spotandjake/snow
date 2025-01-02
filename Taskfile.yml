@@ -47,6 +47,8 @@ tasks:
     cmds:
       - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
   gen_libs:
+    deps:
+      - wit:source
     sources:
       - wit/*.wit
     generates:
