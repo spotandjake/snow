@@ -407,6 +407,125 @@ pub mod exports {
                 /// Expressions
                 #[derive(Debug)]
                 #[repr(transparent)]
+                pub struct Select {
+                    handle: _rt::Resource<Select>,
+                }
+                type _SelectRep<T> = Option<T>;
+                impl Select {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Select`.
+                    pub fn new<T: GuestSelect>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _SelectRep<T> = Some(val);
+                        let ptr: *mut _SelectRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestSelect>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestSelect>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestSelect>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _SelectRep<T>);
+                    }
+                    fn as_ptr<T: GuestSelect>(&self) -> *mut _SelectRep<T> {
+                        Select::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Select`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct SelectBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Select>,
+                }
+                impl<'a> SelectBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestSelect>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _SelectRep<T> {
+                        Select::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Select {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]select"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
                 pub struct Assert {
                     handle: _rt::Resource<Assert>,
                 }
@@ -2342,6 +2461,7 @@ pub mod exports {
                     }
                 }
                 pub enum Expression {
+                    Select(Select),
                     Assert(Assert),
                     BinaryOperation(BinaryOperation),
                     Error(Error),
@@ -2366,6 +2486,9 @@ pub mod exports {
                         f: &mut ::core::fmt::Formatter<'_>,
                     ) -> ::core::fmt::Result {
                         match self {
+                            Expression::Select(e) => {
+                                f.debug_tuple("Expression::Select").field(e).finish()
+                            }
                             Expression::Assert(e) => {
                                 f.debug_tuple("Expression::Assert").field(e).finish()
                             }
@@ -2447,6 +2570,25 @@ pub mod exports {
                         }
                     }
                 }
+                pub enum StringPart {
+                    Raw(_rt::String),
+                    Dynamic(Expression),
+                }
+                impl ::core::fmt::Debug for StringPart {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            StringPart::Raw(e) => {
+                                f.debug_tuple("StringPart::Raw").field(e).finish()
+                            }
+                            StringPart::Dynamic(e) => {
+                                f.debug_tuple("StringPart::Dynamic").field(e).finish()
+                            }
+                        }
+                    }
+                }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
                 pub unsafe fn _export_method_attribute_path_value_get_attr_list_cabi<
@@ -2492,56 +2634,60 @@ pub mod exports {
                                 Attr::Dynamic(e) => {
                                     *base.add(0).cast::<u8>() = (2i32) as u8;
                                     match e {
-                                        Expression::Assert(e) => {
+                                        Expression::Select(e) => {
                                             *base.add(8).cast::<u8>() = (0i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::BinaryOperation(e) => {
+                                        Expression::Assert(e) => {
                                             *base.add(8).cast::<u8>() = (1i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Error(e) => {
+                                        Expression::BinaryOperation(e) => {
                                             *base.add(8).cast::<u8>() = (2i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Function(e) => {
+                                        Expression::Error(e) => {
                                             *base.add(8).cast::<u8>() = (3i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::FunctionApplication(e) => {
+                                        Expression::Function(e) => {
                                             *base.add(8).cast::<u8>() = (4i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::HasAttribute(e) => {
+                                        Expression::FunctionApplication(e) => {
                                             *base.add(8).cast::<u8>() = (5i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Identifier(e) => {
+                                        Expression::HasAttribute(e) => {
                                             *base.add(8).cast::<u8>() = (6i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::IfThenElse(e) => {
+                                        Expression::Identifier(e) => {
                                             *base.add(8).cast::<u8>() = (7i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::LetIn(e) => {
+                                        Expression::IfThenElse(e) => {
                                             *base.add(8).cast::<u8>() = (8i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::List(e) => {
+                                        Expression::LetIn(e) => {
                                             *base.add(8).cast::<u8>() = (9i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Path(e) => {
+                                        Expression::List(e) => {
                                             *base.add(8).cast::<u8>() = (10i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::String(e) => {
+                                        Expression::Path(e) => {
                                             *base.add(8).cast::<u8>() = (11i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Literal(e) => {
+                                        Expression::String(e) => {
                                             *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
                                             match e {
                                                 Literal::Float(e) => {
                                                     *base.add(16).cast::<u8>() = (0i32) as u8;
@@ -2557,19 +2703,19 @@ pub mod exports {
                                             }
                                         }
                                         Expression::UnaryOperation(e) => {
-                                            *base.add(8).cast::<u8>() = (13i32) as u8;
-                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
-                                        }
-                                        Expression::With(e) => {
                                             *base.add(8).cast::<u8>() = (14i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Root(e) => {
+                                        Expression::With(e) => {
                                             *base.add(8).cast::<u8>() = (15i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::AttributeSet(e) => {
+                                        Expression::Root(e) => {
                                             *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
                                     }
@@ -2618,56 +2764,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -2683,19 +2833,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -2715,56 +2865,60 @@ pub mod exports {
                         Some(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             match e {
-                                Expression::Assert(e) => {
+                                Expression::Select(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::BinaryOperation(e) => {
+                                Expression::Assert(e) => {
                                     *ptr1.add(8).cast::<u8>() = (1i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Error(e) => {
+                                Expression::BinaryOperation(e) => {
                                     *ptr1.add(8).cast::<u8>() = (2i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Function(e) => {
+                                Expression::Error(e) => {
                                     *ptr1.add(8).cast::<u8>() = (3i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::FunctionApplication(e) => {
+                                Expression::Function(e) => {
                                     *ptr1.add(8).cast::<u8>() = (4i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::HasAttribute(e) => {
+                                Expression::FunctionApplication(e) => {
                                     *ptr1.add(8).cast::<u8>() = (5i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Identifier(e) => {
+                                Expression::HasAttribute(e) => {
                                     *ptr1.add(8).cast::<u8>() = (6i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::IfThenElse(e) => {
+                                Expression::Identifier(e) => {
                                     *ptr1.add(8).cast::<u8>() = (7i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::LetIn(e) => {
+                                Expression::IfThenElse(e) => {
                                     *ptr1.add(8).cast::<u8>() = (8i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::List(e) => {
+                                Expression::LetIn(e) => {
                                     *ptr1.add(8).cast::<u8>() = (9i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Path(e) => {
+                                Expression::List(e) => {
                                     *ptr1.add(8).cast::<u8>() = (10i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::String(e) => {
+                                Expression::Path(e) => {
                                     *ptr1.add(8).cast::<u8>() = (11i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Literal(e) => {
+                                Expression::String(e) => {
                                     *ptr1.add(8).cast::<u8>() = (12i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (13i32) as u8;
                                     match e {
                                         Literal::Float(e) => {
                                             *ptr1.add(16).cast::<u8>() = (0i32) as u8;
@@ -2780,19 +2934,19 @@ pub mod exports {
                                     }
                                 }
                                 Expression::UnaryOperation(e) => {
-                                    *ptr1.add(8).cast::<u8>() = (13i32) as u8;
-                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
-                                }
-                                Expression::With(e) => {
                                     *ptr1.add(8).cast::<u8>() = (14i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Root(e) => {
+                                Expression::With(e) => {
                                     *ptr1.add(8).cast::<u8>() = (15i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::AttributeSet(e) => {
+                                Expression::Root(e) => {
                                     *ptr1.add(8).cast::<u8>() = (16i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (17i32) as u8;
                                     *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
                             }
@@ -2848,56 +3002,60 @@ pub mod exports {
                                 Attr::Dynamic(e) => {
                                     *base.add(0).cast::<u8>() = (2i32) as u8;
                                     match e {
-                                        Expression::Assert(e) => {
+                                        Expression::Select(e) => {
                                             *base.add(8).cast::<u8>() = (0i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::BinaryOperation(e) => {
+                                        Expression::Assert(e) => {
                                             *base.add(8).cast::<u8>() = (1i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Error(e) => {
+                                        Expression::BinaryOperation(e) => {
                                             *base.add(8).cast::<u8>() = (2i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Function(e) => {
+                                        Expression::Error(e) => {
                                             *base.add(8).cast::<u8>() = (3i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::FunctionApplication(e) => {
+                                        Expression::Function(e) => {
                                             *base.add(8).cast::<u8>() = (4i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::HasAttribute(e) => {
+                                        Expression::FunctionApplication(e) => {
                                             *base.add(8).cast::<u8>() = (5i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Identifier(e) => {
+                                        Expression::HasAttribute(e) => {
                                             *base.add(8).cast::<u8>() = (6i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::IfThenElse(e) => {
+                                        Expression::Identifier(e) => {
                                             *base.add(8).cast::<u8>() = (7i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::LetIn(e) => {
+                                        Expression::IfThenElse(e) => {
                                             *base.add(8).cast::<u8>() = (8i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::List(e) => {
+                                        Expression::LetIn(e) => {
                                             *base.add(8).cast::<u8>() = (9i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Path(e) => {
+                                        Expression::List(e) => {
                                             *base.add(8).cast::<u8>() = (10i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::String(e) => {
+                                        Expression::Path(e) => {
                                             *base.add(8).cast::<u8>() = (11i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Literal(e) => {
+                                        Expression::String(e) => {
                                             *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
                                             match e {
                                                 Literal::Float(e) => {
                                                     *base.add(16).cast::<u8>() = (0i32) as u8;
@@ -2913,19 +3071,19 @@ pub mod exports {
                                             }
                                         }
                                         Expression::UnaryOperation(e) => {
-                                            *base.add(8).cast::<u8>() = (13i32) as u8;
-                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
-                                        }
-                                        Expression::With(e) => {
                                             *base.add(8).cast::<u8>() = (14i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::Root(e) => {
+                                        Expression::With(e) => {
                                             *base.add(8).cast::<u8>() = (15i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
-                                        Expression::AttributeSet(e) => {
+                                        Expression::Root(e) => {
                                             *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
                                             *base.add(16).cast::<i32>() = (e).take_handle() as i32;
                                         }
                                     }
@@ -2965,65 +3123,69 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_assert_get_expression_cabi<T: GuestAssert>(
+                pub unsafe fn _export_method_select_get_base_expr_cabi<T: GuestSelect>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_expression(
-                        AssertBorrow::lift(arg0 as u32 as usize).get(),
+                    let result0 = T::get_base_expr(
+                        SelectBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3039,19 +3201,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3059,65 +3221,175 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_assert_get_target_cabi<T: GuestAssert>(
+                pub unsafe fn _export_method_select_get_default_expr_cabi<
+                    T: GuestSelect,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_default_expr(
+                        SelectBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Some(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            match e {
+                                Expression::Select(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Assert(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::BinaryOperation(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Error(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (3i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Function(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (4i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::FunctionApplication(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (5i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::HasAttribute(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (6i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Identifier(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (7i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::IfThenElse(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (8i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::LetIn(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (9i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::List(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (10i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Path(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (11i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::String(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (12i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (13i32) as u8;
+                                    match e {
+                                        Literal::Float(e) => {
+                                            *ptr1.add(16).cast::<u8>() = (0i32) as u8;
+                                            *ptr1.add(24).cast::<f64>() = _rt::as_f64(e);
+                                        }
+                                        Literal::Integer(e) => {
+                                            *ptr1.add(16).cast::<u8>() = (1i32) as u8;
+                                            *ptr1.add(24).cast::<i64>() = _rt::as_i64(e);
+                                        }
+                                        Literal::Uri => {
+                                            *ptr1.add(16).cast::<u8>() = (2i32) as u8;
+                                        }
+                                    }
+                                }
+                                Expression::UnaryOperation(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (14i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::With(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (15i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Root(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (16i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (17i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                            }
+                        }
+                        None => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                        }
+                    };
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_assert_get_expr_cabi<T: GuestAssert>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_target(
+                    let result0 = T::get_expr(
                         AssertBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3133,19 +3405,117 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_assert_get_condition_cabi<T: GuestAssert>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_condition(
+                        AssertBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3162,56 +3532,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3227,19 +3601,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3267,56 +3641,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3332,19 +3710,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3388,56 +3766,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3453,19 +3835,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3482,56 +3864,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3547,19 +3933,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3576,56 +3962,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3641,19 +4031,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3661,65 +4051,69 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_has_attribute_get_expression_cabi<
+                pub unsafe fn _export_method_has_attribute_get_expr_cabi<
                     T: GuestHasAttribute,
                 >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_expression(
+                    let result0 = T::get_expr(
                         HasAttributeBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3735,19 +4129,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3791,56 +4185,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3856,19 +4254,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3885,56 +4283,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -3950,19 +4352,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -3979,56 +4381,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -4044,19 +4450,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -4128,56 +4534,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -4193,19 +4603,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -4240,56 +4650,60 @@ pub mod exports {
                         let base = result2.add(i * 24);
                         {
                             match e {
-                                Expression::Assert(e) => {
+                                Expression::Select(e) => {
                                     *base.add(0).cast::<u8>() = (0i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::BinaryOperation(e) => {
+                                Expression::Assert(e) => {
                                     *base.add(0).cast::<u8>() = (1i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Error(e) => {
+                                Expression::BinaryOperation(e) => {
                                     *base.add(0).cast::<u8>() = (2i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Function(e) => {
+                                Expression::Error(e) => {
                                     *base.add(0).cast::<u8>() = (3i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::FunctionApplication(e) => {
+                                Expression::Function(e) => {
                                     *base.add(0).cast::<u8>() = (4i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::HasAttribute(e) => {
+                                Expression::FunctionApplication(e) => {
                                     *base.add(0).cast::<u8>() = (5i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Identifier(e) => {
+                                Expression::HasAttribute(e) => {
                                     *base.add(0).cast::<u8>() = (6i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::IfThenElse(e) => {
+                                Expression::Identifier(e) => {
                                     *base.add(0).cast::<u8>() = (7i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::LetIn(e) => {
+                                Expression::IfThenElse(e) => {
                                     *base.add(0).cast::<u8>() = (8i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::List(e) => {
+                                Expression::LetIn(e) => {
                                     *base.add(0).cast::<u8>() = (9i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Path(e) => {
+                                Expression::List(e) => {
                                     *base.add(0).cast::<u8>() = (10i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::String(e) => {
+                                Expression::Path(e) => {
                                     *base.add(0).cast::<u8>() = (11i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Literal(e) => {
+                                Expression::String(e) => {
                                     *base.add(0).cast::<u8>() = (12i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *base.add(0).cast::<u8>() = (13i32) as u8;
                                     match e {
                                         Literal::Float(e) => {
                                             *base.add(8).cast::<u8>() = (0i32) as u8;
@@ -4305,19 +4719,19 @@ pub mod exports {
                                     }
                                 }
                                 Expression::UnaryOperation(e) => {
-                                    *base.add(0).cast::<u8>() = (13i32) as u8;
-                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
-                                }
-                                Expression::With(e) => {
                                     *base.add(0).cast::<u8>() = (14i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Root(e) => {
+                                Expression::With(e) => {
                                     *base.add(0).cast::<u8>() = (15i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::AttributeSet(e) => {
+                                Expression::Root(e) => {
                                     *base.add(0).cast::<u8>() = (16i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *base.add(0).cast::<u8>() = (17i32) as u8;
                                     *base.add(8).cast::<i32>() = (e).take_handle() as i32;
                                 }
                             }
@@ -4375,12 +4789,128 @@ pub mod exports {
                         NixStringBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
-                    let vec2 = (result0.into_bytes()).into_boxed_slice();
-                    let ptr2 = vec2.as_ptr().cast::<u8>();
-                    let len2 = vec2.len();
-                    ::core::mem::forget(vec2);
-                    *ptr1.add(4).cast::<usize>() = len2;
-                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    let vec3 = result0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 32,
+                        8,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 32);
+                        {
+                            match e {
+                                StringPart::Raw(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    let vec2 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                                    let len2 = vec2.len();
+                                    ::core::mem::forget(vec2);
+                                    *base.add(12).cast::<usize>() = len2;
+                                    *base.add(8).cast::<*mut u8>() = ptr2.cast_mut();
+                                }
+                                StringPart::Dynamic(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    match e {
+                                        Expression::Select(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Assert(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::BinaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Error(e) => {
+                                            *base.add(8).cast::<u8>() = (3i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Function(e) => {
+                                            *base.add(8).cast::<u8>() = (4i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::FunctionApplication(e) => {
+                                            *base.add(8).cast::<u8>() = (5i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::HasAttribute(e) => {
+                                            *base.add(8).cast::<u8>() = (6i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Identifier(e) => {
+                                            *base.add(8).cast::<u8>() = (7i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::IfThenElse(e) => {
+                                            *base.add(8).cast::<u8>() = (8i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::LetIn(e) => {
+                                            *base.add(8).cast::<u8>() = (9i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::List(e) => {
+                                            *base.add(8).cast::<u8>() = (10i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Path(e) => {
+                                            *base.add(8).cast::<u8>() = (11i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::String(e) => {
+                                            *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
+                                            match e {
+                                                Literal::Float(e) => {
+                                                    *base.add(16).cast::<u8>() = (0i32) as u8;
+                                                    *base.add(24).cast::<f64>() = _rt::as_f64(e);
+                                                }
+                                                Literal::Integer(e) => {
+                                                    *base.add(16).cast::<u8>() = (1i32) as u8;
+                                                    *base.add(24).cast::<i64>() = _rt::as_i64(e);
+                                                }
+                                                Literal::Uri => {
+                                                    *base.add(16).cast::<u8>() = (2i32) as u8;
+                                                }
+                                            }
+                                        }
+                                        Expression::UnaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (14i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::With(e) => {
+                                            *base.add(8).cast::<u8>() = (15i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Root(e) => {
+                                            *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len3;
+                    *ptr1.add(0).cast::<*mut u8>() = result3;
                     ptr1
                 }
                 #[doc(hidden)]
@@ -4390,7 +4920,23 @@ pub mod exports {
                 >(arg0: *mut u8) {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
                     let l1 = *arg0.add(4).cast::<usize>();
-                    _rt::cabi_dealloc(l0, l1, 1);
+                    let base5 = l0;
+                    let len5 = l1;
+                    for i in 0..len5 {
+                        let base = base5.add(i * 32);
+                        {
+                            let l2 = i32::from(*base.add(0).cast::<u8>());
+                            match l2 {
+                                0 => {
+                                    let l3 = *base.add(8).cast::<*mut u8>();
+                                    let l4 = *base.add(12).cast::<usize>();
+                                    _rt::cabi_dealloc(l3, l4, 1);
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    _rt::cabi_dealloc(base5, len5 * 32, 8);
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -4414,56 +4960,60 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -4479,19 +5029,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -4499,65 +5049,167 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_nix_with_get_expression_cabi<
+                pub unsafe fn _export_method_nix_with_get_body_cabi<T: GuestNixWith>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_body(
+                        NixWithBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_nix_with_get_namespace_cabi<
                     T: GuestNixWith,
                 >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_expression(
+                    let result0 = T::get_namespace(
                         NixWithBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -4573,19 +5225,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -4593,159 +5245,69 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_nix_with_get_target_cabi<T: GuestNixWith>(
+                pub unsafe fn _export_method_root_get_expr_cabi<T: GuestRoot>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_target(
-                        NixWithBorrow::lift(arg0 as u32 as usize).get(),
-                    );
-                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
-                    match result0 {
-                        Expression::Assert(e) => {
-                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::BinaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::Error(e) => {
-                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::Function(e) => {
-                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::FunctionApplication(e) => {
-                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::HasAttribute(e) => {
-                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::Identifier(e) => {
-                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::IfThenElse(e) => {
-                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::LetIn(e) => {
-                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::List(e) => {
-                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::Path(e) => {
-                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::String(e) => {
-                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::Literal(e) => {
-                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
-                            match e {
-                                Literal::Float(e) => {
-                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
-                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
-                                }
-                                Literal::Integer(e) => {
-                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
-                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
-                                }
-                                Literal::Uri => {
-                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
-                                }
-                            }
-                        }
-                        Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
-                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::Root(e) => {
-                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::AttributeSet(e) => {
-                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                    }
-                    ptr1
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn _export_method_root_get_expression_cabi<T: GuestRoot>(
-                    arg0: *mut u8,
-                ) -> *mut u8 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_expression(
+                    let result0 = T::get_expr(
                         RootBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        Expression::Assert(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::BinaryOperation(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Error(e) => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Function(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::FunctionApplication(e) => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::HasAttribute(e) => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Identifier(e) => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::IfThenElse(e) => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::LetIn(e) => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::List(e) => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Path(e) => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::String(e) => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Literal(e) => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
                             match e {
                                 Literal::Float(e) => {
                                     *ptr1.add(8).cast::<u8>() = (0i32) as u8;
@@ -4761,19 +5323,19 @@ pub mod exports {
                             }
                         }
                         Expression::UnaryOperation(e) => {
-                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
-                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::Root(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        Expression::AttributeSet(e) => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
                             *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
@@ -4849,56 +5411,60 @@ pub mod exports {
                         Ok(e) => {
                             *ptr2.add(0).cast::<u8>() = (0i32) as u8;
                             match e {
-                                Expression::Assert(e) => {
+                                Expression::Select(e) => {
                                     *ptr2.add(8).cast::<u8>() = (0i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::BinaryOperation(e) => {
+                                Expression::Assert(e) => {
                                     *ptr2.add(8).cast::<u8>() = (1i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Error(e) => {
+                                Expression::BinaryOperation(e) => {
                                     *ptr2.add(8).cast::<u8>() = (2i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Function(e) => {
+                                Expression::Error(e) => {
                                     *ptr2.add(8).cast::<u8>() = (3i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::FunctionApplication(e) => {
+                                Expression::Function(e) => {
                                     *ptr2.add(8).cast::<u8>() = (4i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::HasAttribute(e) => {
+                                Expression::FunctionApplication(e) => {
                                     *ptr2.add(8).cast::<u8>() = (5i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Identifier(e) => {
+                                Expression::HasAttribute(e) => {
                                     *ptr2.add(8).cast::<u8>() = (6i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::IfThenElse(e) => {
+                                Expression::Identifier(e) => {
                                     *ptr2.add(8).cast::<u8>() = (7i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::LetIn(e) => {
+                                Expression::IfThenElse(e) => {
                                     *ptr2.add(8).cast::<u8>() = (8i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::List(e) => {
+                                Expression::LetIn(e) => {
                                     *ptr2.add(8).cast::<u8>() = (9i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Path(e) => {
+                                Expression::List(e) => {
                                     *ptr2.add(8).cast::<u8>() = (10i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::String(e) => {
+                                Expression::Path(e) => {
                                     *ptr2.add(8).cast::<u8>() = (11i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Literal(e) => {
+                                Expression::String(e) => {
                                     *ptr2.add(8).cast::<u8>() = (12i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (13i32) as u8;
                                     match e {
                                         Literal::Float(e) => {
                                             *ptr2.add(16).cast::<u8>() = (0i32) as u8;
@@ -4914,19 +5480,19 @@ pub mod exports {
                                     }
                                 }
                                 Expression::UnaryOperation(e) => {
-                                    *ptr2.add(8).cast::<u8>() = (13i32) as u8;
-                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
-                                }
-                                Expression::With(e) => {
                                     *ptr2.add(8).cast::<u8>() = (14i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::Root(e) => {
+                                Expression::With(e) => {
                                     *ptr2.add(8).cast::<u8>() = (15i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                Expression::AttributeSet(e) => {
+                                Expression::Root(e) => {
                                     *ptr2.add(8).cast::<u8>() = (16i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (17i32) as u8;
                                     *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
                             }
@@ -4959,6 +5525,7 @@ pub mod exports {
                 pub trait Guest {
                     type AttributePathValue: GuestAttributePathValue;
                     type Inherit: GuestInherit;
+                    type Select: GuestSelect;
                     type Assert: GuestAssert;
                     type BinaryOperation: GuestBinaryOperation;
                     type Error: GuestError;
@@ -5065,6 +5632,50 @@ pub mod exports {
                     fn get_expr_from(&self) -> Option<Expression>;
                     fn get_attr_list(&self) -> _rt::Vec<Attr>;
                 }
+                pub trait GuestSelect: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]select"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]select"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_base_expr(&self) -> Expression;
+                    fn get_default_expr(&self) -> Option<Expression>;
+                }
                 pub trait GuestAssert: 'static {
                     #[doc(hidden)]
                     unsafe fn _resource_new(val: *mut u8) -> u32
@@ -5106,8 +5717,8 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn get_expression(&self) -> Expression;
-                    fn get_target(&self) -> Expression;
+                    fn get_expr(&self) -> Expression;
+                    fn get_condition(&self) -> Expression;
                 }
                 pub trait GuestBinaryOperation: 'static {
                     #[doc(hidden)]
@@ -5326,7 +5937,7 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn get_expression(&self) -> Expression;
+                    fn get_expr(&self) -> Expression;
                 }
                 pub trait GuestIdentifier: 'static {
                     #[doc(hidden)]
@@ -5587,7 +6198,7 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn get_parts(&self) -> _rt::String;
+                    fn get_parts(&self) -> _rt::Vec<StringPart>;
                 }
                 pub trait GuestUnaryOperation: 'static {
                     #[doc(hidden)]
@@ -5674,8 +6285,8 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn get_expression(&self) -> Expression;
-                    fn get_target(&self) -> Expression;
+                    fn get_body(&self) -> Expression;
+                    fn get_namespace(&self) -> Expression;
                 }
                 pub trait GuestRoot: 'static {
                     #[doc(hidden)]
@@ -5718,7 +6329,7 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn get_expression(&self) -> Expression;
+                    fn get_expr(&self) -> Expression;
                 }
                 pub trait GuestAttributeSet: 'static {
                     #[doc(hidden)]
@@ -5804,15 +6415,24 @@ pub mod exports {
                         $($path_to_types)*::
                         __post_return_method_inherit_get_attr_list::<<$ty as
                         $($path_to_types)*:: Guest >::Inherit > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]assert.get-expression"] unsafe
-                        extern "C" fn export_method_assert_get_expression(arg0 : * mut
+                        "spotandjake:snow/nix#[method]select.get-base-expr"] unsafe
+                        extern "C" fn export_method_select_get_base_expr(arg0 : * mut
                         u8,) -> * mut u8 { $($path_to_types)*::
-                        _export_method_assert_get_expression_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Assert > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]assert.get-target"] unsafe extern
-                        "C" fn export_method_assert_get_target(arg0 : * mut u8,) -> * mut
-                        u8 { $($path_to_types)*::
-                        _export_method_assert_get_target_cabi::<<$ty as
+                        _export_method_select_get_base_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]select.get-default-expr"] unsafe
+                        extern "C" fn export_method_select_get_default_expr(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_select_get_default_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]assert.get-expr"] unsafe extern "C"
+                        fn export_method_assert_get_expr(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_assert_get_expr_cabi::<<$ty
+                        as $($path_to_types)*:: Guest >::Assert > (arg0) } #[export_name
+                        = "spotandjake:snow/nix#[method]assert.get-condition"] unsafe
+                        extern "C" fn export_method_assert_get_condition(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_assert_get_condition_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Assert > (arg0) } #[export_name =
                         "spotandjake:snow/nix#[method]binary-operation.get-lhs"] unsafe
                         extern "C" fn export_method_binary_operation_get_lhs(arg0 : * mut
@@ -5861,11 +6481,10 @@ pub mod exports {
                         _export_method_function_application_get_argument_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::FunctionApplication > (arg0) }
                         #[export_name =
-                        "spotandjake:snow/nix#[method]has-attribute.get-expression"]
-                        unsafe extern "C" fn
-                        export_method_has_attribute_get_expression(arg0 : * mut u8,) -> *
-                        mut u8 { $($path_to_types)*::
-                        _export_method_has_attribute_get_expression_cabi::<<$ty as
+                        "spotandjake:snow/nix#[method]has-attribute.get-expr"] unsafe
+                        extern "C" fn export_method_has_attribute_get_expr(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_has_attribute_get_expr_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::HasAttribute > (arg0) }
                         #[export_name = "spotandjake:snow/nix#[method]identifier.get-id"]
                         unsafe extern "C" fn export_method_identifier_get_id(arg0 : * mut
@@ -5953,21 +6572,19 @@ pub mod exports {
                         mut u8 { $($path_to_types)*::
                         _export_method_unary_operation_get_operand_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::UnaryOperation > (arg0) }
-                        #[export_name =
-                        "spotandjake:snow/nix#[method]nix-with.get-expression"] unsafe
-                        extern "C" fn export_method_nix_with_get_expression(arg0 : * mut
+                        #[export_name = "spotandjake:snow/nix#[method]nix-with.get-body"]
+                        unsafe extern "C" fn export_method_nix_with_get_body(arg0 : * mut
                         u8,) -> * mut u8 { $($path_to_types)*::
-                        _export_method_nix_with_get_expression_cabi::<<$ty as
+                        _export_method_nix_with_get_body_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::NixWith > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]nix-with.get-target"] unsafe extern
-                        "C" fn export_method_nix_with_get_target(arg0 : * mut u8,) -> *
-                        mut u8 { $($path_to_types)*::
-                        _export_method_nix_with_get_target_cabi::<<$ty as
+                        "spotandjake:snow/nix#[method]nix-with.get-namespace"] unsafe
+                        extern "C" fn export_method_nix_with_get_namespace(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_nix_with_get_namespace_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::NixWith > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]root.get-expression"] unsafe extern
-                        "C" fn export_method_root_get_expression(arg0 : * mut u8,) -> *
-                        mut u8 { $($path_to_types)*::
-                        _export_method_root_get_expression_cabi::<<$ty as
+                        "spotandjake:snow/nix#[method]root.get-expr"] unsafe extern "C"
+                        fn export_method_root_get_expr(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_root_get_expr_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Root > (arg0) } #[export_name =
                         "spotandjake:snow/nix#[method]attribute-set.get-binds"] unsafe
                         extern "C" fn export_method_attribute_set_get_binds(arg0 : * mut
@@ -5996,6 +6613,10 @@ pub mod exports {
                         "spotandjake:snow/nix#[dtor]inherit"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
                         Inherit::dtor::< <$ty as $($path_to_types)*:: Guest >::Inherit >
+                        (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]select"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Select::dtor::< <$ty as $($path_to_types)*:: Guest >::Select >
                         (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
                         "spotandjake:snow/nix#[dtor]assert"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
@@ -6251,57 +6872,60 @@ pub(crate) use __export_rnix_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:spotandjake:snow:rnix:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2463] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa4\x12\x01A\x02\x01\
-A\x02\x01B}\x04\0\x14attribute-path-value\x03\x01\x04\0\x07inherit\x03\x01\x01i\0\
-\x01i\x01\x01q\x02\x14attribute-path-value\x01\x02\0\x07inherit\x01\x03\0\x04\0\x05\
-entry\x03\0\x04\x01m\x02\x06invert\x06negate\x04\0\x0eunary-operator\x03\0\x06\x01\
-m\x0f\x06concat\x06update\x03add\x03sub\x03mul\x03div\x03and\x05equal\x0bimplica\
-tion\x04less\x0aless-or-eq\x04more\x0amore-or-eq\x09not-equal\x02or\x04\0\x0fbin\
-ary-operator\x03\0\x08\x04\0\x06assert\x03\x01\x04\0\x10binary-operation\x03\x01\
-\x04\0\x05error\x03\x01\x04\0\x08function\x03\x01\x04\0\x14function-application\x03\
-\x01\x04\0\x0dhas-attribute\x03\x01\x04\0\x0aidentifier\x03\x01\x04\0\x0cif-then\
--else\x03\x01\x04\0\x06let-in\x03\x01\x04\0\x09list-node\x03\x01\x04\0\x04path\x03\
-\x01\x04\0\x0anix-string\x03\x01\x01q\x03\x05float\x01u\0\x07integer\x01x\0\x03u\
-ri\0\0\x04\0\x07literal\x03\0\x16\x04\0\x0funary-operation\x03\x01\x04\0\x08nix-\
-with\x03\x01\x04\0\x04root\x03\x01\x04\0\x0dattribute-set\x03\x01\x01i\x0a\x01i\x0b\
-\x01i\x0c\x01i\x0d\x01i\x0e\x01i\x0f\x01i\x10\x01i\x11\x01i\x12\x01i\x13\x01i\x14\
-\x01i\x15\x01i\x18\x01i\x19\x01i\x1a\x01i\x1b\x01q\x11\x06assert\x01\x1c\0\x10bi\
-nary-operation\x01\x1d\0\x05error\x01\x1e\0\x08function\x01\x1f\0\x14function-ap\
-plication\x01\x20\0\x0dhas-attribute\x01!\0\x0aidentifier\x01\"\0\x0cif-then-els\
-e\x01#\0\x06let-in\x01$\0\x04list\x01%\0\x04path\x01&\0\x06string\x01'\0\x07lite\
-ral\x01\x17\0\x0funary-operation\x01(\0\x04with\x01)\0\x04root\x01*\0\x0dattribu\
-te-set\x01+\0\x04\0\x0aexpression\x03\0,\x01q\x03\x03str\x01s\0\x05ident\x01\"\0\
-\x07dynamic\x01-\0\x04\0\x04attr\x03\0.\x01h\0\x01p/\x01@\x01\x04self0\01\x04\0*\
-[method]attribute-path-value.get-attr-list\x012\x01@\x01\x04self0\0-\x04\0%[meth\
-od]attribute-path-value.get-expr\x013\x01h\x01\x01k-\x01@\x01\x04self4\05\x04\0\x1d\
-[method]inherit.get-expr-from\x016\x01@\x01\x04self4\01\x04\0\x1d[method]inherit\
-.get-attr-list\x017\x01h\x0a\x01@\x01\x04self8\0-\x04\0\x1d[method]assert.get-ex\
-pression\x019\x04\0\x19[method]assert.get-target\x019\x01h\x0b\x01@\x01\x04self:\
-\0-\x04\0\x20[method]binary-operation.get-lhs\x01;\x01@\x01\x04self:\0\x09\x04\0\
-%[method]binary-operation.get-operator\x01<\x04\0\x20[method]binary-operation.ge\
-t-rhs\x01;\x01h\x0c\x01@\x01\x04self=\0s\x04\0\x19[method]error.get-message\x01>\
-\x01h\x0d\x01@\x01\x04self?\0-\x04\0\x19[method]function.get-body\x01@\x01h\x0e\x01\
-@\x01\x04self\xc1\0\0-\x04\0)[method]function-application.get-function\x01B\x04\0\
-)[method]function-application.get-argument\x01B\x01h\x0f\x01@\x01\x04self\xc3\0\0\
--\x04\0$[method]has-attribute.get-expression\x01D\x01h\x10\x01@\x01\x04self\xc5\0\
-\0s\x04\0\x19[method]identifier.get-id\x01F\x01h\x11\x01@\x01\x04self\xc7\0\0-\x04\
-\0\"[method]if-then-else.get-condition\x01H\x04\0$[method]if-then-else.get-true-\
-branch\x01H\x04\0%[method]if-then-else.get-false-branch\x01H\x01h\x12\x01p\x05\x01\
-@\x01\x04self\xc9\0\0\xca\0\x04\0\x18[method]let-in.get-binds\x01K\x01@\x01\x04s\
-elf\xc9\0\0-\x04\0\x17[method]let-in.get-body\x01L\x01h\x13\x01p-\x01@\x01\x04se\
-lf\xcd\0\0\xce\0\x04\0\x1e[method]list-node.get-elements\x01O\x01h\x14\x01@\x01\x04\
-self\xd0\0\0s\x04\0\x16[method]path.get-parts\x01Q\x01h\x15\x01@\x01\x04self\xd2\
-\0\0s\x04\0\x1c[method]nix-string.get-parts\x01S\x01h\x18\x01@\x01\x04self\xd4\0\
-\0\x07\x04\0$[method]unary-operation.get-operator\x01U\x01@\x01\x04self\xd4\0\0-\
-\x04\0#[method]unary-operation.get-operand\x01V\x01h\x19\x01@\x01\x04self\xd7\0\0\
--\x04\0\x1f[method]nix-with.get-expression\x01X\x04\0\x1b[method]nix-with.get-ta\
-rget\x01X\x01h\x1a\x01@\x01\x04self\xd9\0\0-\x04\0\x1b[method]root.get-expressio\
-n\x01Z\x01h\x1b\x01@\x01\x04self\xdb\0\0\xca\0\x04\0\x1f[method]attribute-set.ge\
-t-binds\x01\\\x01j\x01-\x01s\x01@\x01\x0anix-sources\0\xdd\0\x04\0\x05parse\x01^\
-\x04\0\x14spotandjake:snow/nix\x05\0\x04\0\x15spotandjake:snow/rnix\x04\0\x0b\x0a\
-\x01\0\x04rnix\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x07\
-0.220.0\x10wit-bindgen-rust\x060.35.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2610] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb7\x13\x01A\x02\x01\
+A\x02\x01B\x87\x01\x04\0\x14attribute-path-value\x03\x01\x04\0\x07inherit\x03\x01\
+\x01i\0\x01i\x01\x01q\x02\x14attribute-path-value\x01\x02\0\x07inherit\x01\x03\0\
+\x04\0\x05entry\x03\0\x04\x01m\x02\x06invert\x06negate\x04\0\x0eunary-operator\x03\
+\0\x06\x01m\x0f\x06concat\x06update\x03add\x03sub\x03mul\x03div\x03and\x05equal\x0b\
+implication\x04less\x0aless-or-eq\x04more\x0amore-or-eq\x09not-equal\x02or\x04\0\
+\x0fbinary-operator\x03\0\x08\x04\0\x06select\x03\x01\x04\0\x06assert\x03\x01\x04\
+\0\x10binary-operation\x03\x01\x04\0\x05error\x03\x01\x04\0\x08function\x03\x01\x04\
+\0\x14function-application\x03\x01\x04\0\x0dhas-attribute\x03\x01\x04\0\x0aident\
+ifier\x03\x01\x04\0\x0cif-then-else\x03\x01\x04\0\x06let-in\x03\x01\x04\0\x09lis\
+t-node\x03\x01\x04\0\x04path\x03\x01\x04\0\x0anix-string\x03\x01\x01q\x03\x05flo\
+at\x01u\0\x07integer\x01x\0\x03uri\0\0\x04\0\x07literal\x03\0\x17\x04\0\x0funary\
+-operation\x03\x01\x04\0\x08nix-with\x03\x01\x04\0\x04root\x03\x01\x04\0\x0dattr\
+ibute-set\x03\x01\x01i\x0a\x01i\x0b\x01i\x0c\x01i\x0d\x01i\x0e\x01i\x0f\x01i\x10\
+\x01i\x11\x01i\x12\x01i\x13\x01i\x14\x01i\x15\x01i\x16\x01i\x19\x01i\x1a\x01i\x1b\
+\x01i\x1c\x01q\x12\x06select\x01\x1d\0\x06assert\x01\x1e\0\x10binary-operation\x01\
+\x1f\0\x05error\x01\x20\0\x08function\x01!\0\x14function-application\x01\"\0\x0d\
+has-attribute\x01#\0\x0aidentifier\x01$\0\x0cif-then-else\x01%\0\x06let-in\x01&\0\
+\x04list\x01'\0\x04path\x01(\0\x06string\x01)\0\x07literal\x01\x18\0\x0funary-op\
+eration\x01*\0\x04with\x01+\0\x04root\x01,\0\x0dattribute-set\x01-\0\x04\0\x0aex\
+pression\x03\0.\x01q\x03\x03str\x01s\0\x05ident\x01$\0\x07dynamic\x01/\0\x04\0\x04\
+attr\x03\00\x01q\x02\x03raw\x01s\0\x07dynamic\x01/\0\x04\0\x0bstring-part\x03\02\
+\x01h\0\x01p1\x01@\x01\x04self4\05\x04\0*[method]attribute-path-value.get-attr-l\
+ist\x016\x01@\x01\x04self4\0/\x04\0%[method]attribute-path-value.get-expr\x017\x01\
+h\x01\x01k/\x01@\x01\x04self8\09\x04\0\x1d[method]inherit.get-expr-from\x01:\x01\
+@\x01\x04self8\05\x04\0\x1d[method]inherit.get-attr-list\x01;\x01h\x0a\x01@\x01\x04\
+self<\0/\x04\0\x1c[method]select.get-base-expr\x01=\x01@\x01\x04self<\09\x04\0\x1f\
+[method]select.get-default-expr\x01>\x01h\x0b\x01@\x01\x04self?\0/\x04\0\x17[met\
+hod]assert.get-expr\x01@\x04\0\x1c[method]assert.get-condition\x01@\x01h\x0c\x01\
+@\x01\x04self\xc1\0\0/\x04\0\x20[method]binary-operation.get-lhs\x01B\x01@\x01\x04\
+self\xc1\0\0\x09\x04\0%[method]binary-operation.get-operator\x01C\x04\0\x20[meth\
+od]binary-operation.get-rhs\x01B\x01h\x0d\x01@\x01\x04self\xc4\0\0s\x04\0\x19[me\
+thod]error.get-message\x01E\x01h\x0e\x01@\x01\x04self\xc6\0\0/\x04\0\x19[method]\
+function.get-body\x01G\x01h\x0f\x01@\x01\x04self\xc8\0\0/\x04\0)[method]function\
+-application.get-function\x01I\x04\0)[method]function-application.get-argument\x01\
+I\x01h\x10\x01@\x01\x04self\xca\0\0/\x04\0\x1e[method]has-attribute.get-expr\x01\
+K\x01h\x11\x01@\x01\x04self\xcc\0\0s\x04\0\x19[method]identifier.get-id\x01M\x01\
+h\x12\x01@\x01\x04self\xce\0\0/\x04\0\"[method]if-then-else.get-condition\x01O\x04\
+\0$[method]if-then-else.get-true-branch\x01O\x04\0%[method]if-then-else.get-fals\
+e-branch\x01O\x01h\x13\x01p\x05\x01@\x01\x04self\xd0\0\0\xd1\0\x04\0\x18[method]\
+let-in.get-binds\x01R\x01@\x01\x04self\xd0\0\0/\x04\0\x17[method]let-in.get-body\
+\x01S\x01h\x14\x01p/\x01@\x01\x04self\xd4\0\0\xd5\0\x04\0\x1e[method]list-node.g\
+et-elements\x01V\x01h\x15\x01@\x01\x04self\xd7\0\0s\x04\0\x16[method]path.get-pa\
+rts\x01X\x01h\x16\x01p3\x01@\x01\x04self\xd9\0\0\xda\0\x04\0\x1c[method]nix-stri\
+ng.get-parts\x01[\x01h\x19\x01@\x01\x04self\xdc\0\0\x07\x04\0$[method]unary-oper\
+ation.get-operator\x01]\x01@\x01\x04self\xdc\0\0/\x04\0#[method]unary-operation.\
+get-operand\x01^\x01h\x1a\x01@\x01\x04self\xdf\0\0/\x04\0\x19[method]nix-with.ge\
+t-body\x01`\x04\0\x1e[method]nix-with.get-namespace\x01`\x01h\x1b\x01@\x01\x04se\
+lf\xe1\0\0/\x04\0\x15[method]root.get-expr\x01b\x01h\x1c\x01@\x01\x04self\xe3\0\0\
+\xd1\0\x04\0\x1f[method]attribute-set.get-binds\x01d\x01j\x01/\x01s\x01@\x01\x0a\
+nix-sources\0\xe5\0\x04\0\x05parse\x01f\x04\0\x14spotandjake:snow/nix\x05\0\x04\0\
+\x15spotandjake:snow/rnix\x04\0\x0b\x0a\x01\0\x04rnix\x03\0\0\0G\x09producers\x01\
+\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

@@ -78,12 +78,23 @@ impl From<ast::BinaryOperator> for nix::BinaryOperator {
   }
 }
 // Expressions
+impl nix::GuestSelect for ast::Select {
+  fn get_base_expr(&self) -> nix::Expression {
+    nix::Expression::from(self.base_expr.as_ref())
+  }
+  fn get_default_expr(&self) -> Option<nix::Expression> {
+    match &self.default_expr {
+      Some(expr) => Some(nix::Expression::from(expr.as_ref())),
+      None => None,
+    }
+  }
+}
 impl nix::GuestAssert for ast::Assert {
-  fn get_expression(&self) -> nix::Expression {
+  fn get_expr(&self) -> nix::Expression {
     nix::Expression::from(self.expression.as_ref())
   }
-  fn get_target(&self) -> nix::Expression {
-    nix::Expression::from(self.target.as_ref())
+  fn get_condition(&self) -> nix::Expression {
+    nix::Expression::from(self.condition.as_ref())
   }
 }
 impl nix::GuestBinaryOperation for ast::BinaryOperation {
@@ -117,7 +128,7 @@ impl nix::GuestFunctionApplication for ast::FunctionApplication {
   }
 }
 impl nix::GuestHasAttribute for ast::HasAttribute {
-  fn get_expression(&self) -> nix::Expression {
+  fn get_expr(&self) -> nix::Expression {
     nix::Expression::from(self.expression.as_ref())
   }
 }
@@ -165,9 +176,15 @@ impl nix::GuestPath for ast::Path {
   }
 }
 impl nix::GuestNixString for ast::String_ {
-  fn get_parts(&self) -> String {
-    // TODO: Implement this
-    "NIY".to_string()
+  fn get_parts(&self) -> Vec<nix::StringPart> {
+    self
+      .parts
+      .iter()
+      .map(|p| match p {
+        ast::StringPart::Raw(s) => nix::StringPart::Raw(s.to_string()),
+        ast::StringPart::Interpol(e) => nix::StringPart::Dynamic(nix::Expression::from(e.as_ref())),
+      })
+      .collect()
   }
 }
 impl From<ast::Literal> for nix::Literal {
@@ -188,15 +205,15 @@ impl nix::GuestUnaryOperation for ast::UnaryOperation {
   }
 }
 impl nix::GuestNixWith for ast::With {
-  fn get_expression(&self) -> nix::Expression {
-    nix::Expression::from(self.expression.as_ref())
+  fn get_body(&self) -> nix::Expression {
+    nix::Expression::from(self.body.as_ref())
   }
-  fn get_target(&self) -> nix::Expression {
-    nix::Expression::from(self.target.as_ref())
+  fn get_namespace(&self) -> nix::Expression {
+    nix::Expression::from(self.namespace.as_ref())
   }
 }
 impl nix::GuestRoot for ast::Root {
-  fn get_expression(&self) -> nix::Expression {
+  fn get_expr(&self) -> nix::Expression {
     nix::Expression::from(self.expression.as_ref())
   }
 }
@@ -230,6 +247,7 @@ impl From<&ast::Expression> for nix::Expression {
       ast::Expression::IfThenElse(n) => {
         nix::Expression::IfThenElse(nix::IfThenElse::new(n.clone()))
       }
+      ast::Expression::Select(n) => nix::Expression::Select(nix::Select::new(n.clone())),
       ast::Expression::LetIn(n) => nix::Expression::LetIn(nix::LetIn::new(n.clone())),
       ast::Expression::List(n) => nix::Expression::List(nix::ListNode::new(n.clone())),
       ast::Expression::Path(n) => nix::Expression::Path(nix::Path::new(n.clone())),

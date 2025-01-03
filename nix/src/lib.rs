@@ -13,6 +13,7 @@ impl Guest for Component {
   type AttributePathValue = common_ast::ast::AttributePathValue;
   type Inherit = common_ast::ast::Inherit;
   // Expressions
+  type Select = common_ast::ast::Select;
   type Assert = common_ast::ast::Assert;
   type BinaryOperation = common_ast::ast::BinaryOperation;
   type Error = common_ast::ast::Error;
@@ -32,7 +33,6 @@ impl Guest for Component {
   /// Parsing
   fn parse(nix_source: String) -> Result<nix::Expression, String> {
     let nix_expr = common_ast::parse(nix_source);
-    println!("{:?}", nix_expr);
     match nix_expr {
       Ok(expr) => Ok(nix::Expression::from(&expr)),
       Err(e) => Err(e),

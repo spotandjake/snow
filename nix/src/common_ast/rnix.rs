@@ -71,7 +71,7 @@ mod converters {
     fn from(node: rnix::ast::Assert) -> Self {
       Self {
         expression: box_expr(node.body()),
-        target: box_expr(node.condition()),
+        condition: box_expr(node.condition()),
       }
     }
   }
@@ -91,10 +91,33 @@ mod converters {
       }
     }
   }
-  // TODO: Expr::Select(_) => panic!("NIY Select"),
-  // TODO: Expr::Str(_) => ast::String(String_),
+  impl From<rnix::ast::Select> for ast::Select {
+    fn from(node: rnix::ast::Select) -> Self {
+      // TODO: Attr_path node.attrPath()
+      Self {
+        base_expr: box_expr(node.expr()),
+        default_expr: match node.default_expr() {
+          Some(expr) => Some(Box::new(Expression::from(expr))),
+          None => None,
+        },
+      }
+    }
+  }
+  impl From<rnix::ast::Str> for ast::String_ {
+    fn from(node: rnix::ast::Str) -> Self {
+      let parts: Vec<ast::StringPart> = node
+        .parts()
+        .map(|part| match part {
+          rnix::ast::InterpolPart::Interpolation(n) => {
+            ast::StringPart::Interpol(box_expr(n.expr()))
+          }
+          rnix::ast::InterpolPart::Literal(raw) => ast::StringPart::Raw(raw.to_string()),
+        })
+        .collect();
+      Self { parts }
+    }
+  }
   // TODO: Expr::Path(_) => ast::Path(Path),
-  // TODO: Expr::Literal(_) => panic!("NIY Literal"), ??????
   impl From<rnix::ast::Literal> for ast::Literal {
     fn from(node: rnix::ast::Literal) -> Self {
       // TODO: Handle Error
@@ -117,7 +140,6 @@ mod converters {
   // TODO: Expr::LegacyLet(_) => LetIn(LetIn),
   impl From<rnix::ast::LetIn> for ast::LetIn {
     fn from(node: rnix::ast::LetIn) -> Self {
-      // TODO: I don't think we are allowed inherits here
       let binds: Vec<ast::Entry> = node.entries().map(|bind| ast::Entry::from(bind)).collect();
       Self {
         binds,
@@ -157,7 +179,6 @@ mod converters {
       }
     }
   }
-  // TODO: Expr::Paren(_) => panic!("NIY paren"),
   impl From<rnix::Root> for ast::Root {
     fn from(node: rnix::Root) -> Self {
       Self {
@@ -187,8 +208,7 @@ mod converters {
   }
   impl From<rnix::ast::Ident> for ast::Identifier {
     fn from(node: rnix::ast::Ident) -> Self {
-      // TODO: Handle error
-      // TODO: Validate ident
+      // TODO: Handle errors
       let ident = node.ident_token().unwrap();
       let raw = rnix::SyntaxToken::text(&ident);
       Self {
@@ -199,8 +219,8 @@ mod converters {
   impl From<rnix::ast::With> for ast::With {
     fn from(node: rnix::ast::With) -> Self {
       Self {
-        expression: box_expr(node.body()),
-        target: box_expr(node.namespace()),
+        body: box_expr(node.body()),
+        namespace: box_expr(node.namespace()),
       }
     }
   }
@@ -220,8 +240,8 @@ mod converters {
         Expr::Assert(node) => Expression::Assert(ast::Assert::from(node)),
         Expr::Error(node) => Expression::Error(ast::Error::from(node)),
         Expr::IfElse(node) => Expression::IfThenElse(ast::IfThenElse::from(node)),
-        // TODO: Expr::Select(_) => panic!("NIY Select"),
-        // TODO: Expr::Str(_) => ast::String(String_),
+        Expr::Select(node) => Expression::Select(ast::Select::from(node)),
+        Expr::Str(node) => Expression::String(ast::String_::from(node)),
         // TODO: Expr::Path(_) => ast::Path(Path),
         Expr::Literal(node) => Expression::Literal(ast::Literal::from(node)),
         Expr::Lambda(node) => Expression::Function(ast::Function::from(node)),

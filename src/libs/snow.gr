@@ -63,6 +63,9 @@ provide enum BinaryOperator {
   NotEqual,
   Or,
 }
+provide record Select {
+  handle: Int32
+}
 provide record Assert {
   handle: Int32
 }
@@ -117,6 +120,7 @@ provide record AttributeSet {
   handle: Int32
 }
 provide enum Expression {
+  Select(Select),
   Assert(Assert),
   BinaryOperation(BinaryOperation),
   Error(Error),
@@ -140,6 +144,10 @@ provide enum Attr {
   Ident(Identifier),
   Dynamic(Expression),
 }
+provide enum StringPart {
+  Raw(String),
+  Dynamic(Expression),
+}
 
 
 provide module Nix {
@@ -158,54 +166,58 @@ provide module Nix {
         
         Ok(match (WasmI32.load8U(_RET_AREA, 8n)) {
           0n => {
-            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
-            Assert(handle_lift)
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Select
+            Select(handle_lift)
           },
           1n => {
-            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
-            BinaryOperation(handle_lift0)
+            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
+            Assert(handle_lift0)
           },
           2n => {
-            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
-            Error(handle_lift1)
+            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
+            BinaryOperation(handle_lift1)
           },
           3n => {
-            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
-            Function(handle_lift2)
+            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
+            Error(handle_lift2)
           },
           4n => {
-            let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
-            FunctionApplication(handle_lift3)
+            let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
+            Function(handle_lift3)
           },
           5n => {
-            let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
-            HasAttribute(handle_lift4)
+            let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
+            FunctionApplication(handle_lift4)
           },
           6n => {
-            let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
-            Identifier(handle_lift5)
+            let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
+            HasAttribute(handle_lift5)
           },
           7n => {
-            let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
-            IfThenElse(handle_lift6)
+            let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
+            Identifier(handle_lift6)
           },
           8n => {
-            let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
-            LetIn(handle_lift7)
+            let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
+            IfThenElse(handle_lift7)
           },
           9n => {
-            let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
-            List(handle_lift8)
+            let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
+            LetIn(handle_lift8)
           },
           10n => {
-            let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
-            Path(handle_lift9)
+            let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
+            List(handle_lift9)
           },
           11n => {
-            let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
-            String(handle_lift10)
+            let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
+            Path(handle_lift10)
           },
           12n => {
+            let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
+            String(handle_lift11)
+          },
+          13n => {
             Literal(match (WasmI32.load8U(_RET_AREA, 16n)) {
               0n => {
                 Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 24n))): Float64)
@@ -218,21 +230,21 @@ provide module Nix {
               },
             })
           },
-          13n => {
-            let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
-            UnaryOperation(handle_lift11)
-          },
           14n => {
-            let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
-            With(handle_lift12)
+            let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
+            UnaryOperation(handle_lift12)
           },
           15n => {
-            let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
-            Root(handle_lift13)
+            let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
+            With(handle_lift13)
+          },
+          16n => {
+            let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
+            Root(handle_lift14)
           },
           _ => {
-            let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
-            AttributeSet(handle_lift14)
+            let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
+            AttributeSet(handle_lift15)
           },
         })
       },
@@ -260,7 +272,7 @@ provide module Nix {
       let len_list_lift = WasmI32.load(_RET_AREA, 4n)
       let mut result_list_lift = []
       Memory.incRef(WasmI32.fromGrain(result_list_lift))
-      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
         let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 32n))
         result_list_lift = [match (WasmI32.load8U(base, 0n)) {
           0n => {
@@ -277,54 +289,58 @@ provide module Nix {
           _ => {
             Dynamic(match (WasmI32.load8U(base, 8n)) {
               0n => {
-                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
-                Assert(handle_lift0)
+                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Select
+                Select(handle_lift0)
               },
               1n => {
-                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
-                BinaryOperation(handle_lift1)
+                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
+                Assert(handle_lift1)
               },
               2n => {
-                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
-                Error(handle_lift2)
+                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
+                BinaryOperation(handle_lift2)
               },
               3n => {
-                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
-                Function(handle_lift3)
+                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
+                Error(handle_lift3)
               },
               4n => {
-                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
-                FunctionApplication(handle_lift4)
+                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
+                Function(handle_lift4)
               },
               5n => {
-                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
-                HasAttribute(handle_lift5)
+                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
+                FunctionApplication(handle_lift5)
               },
               6n => {
-                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
-                Identifier(handle_lift6)
+                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
+                HasAttribute(handle_lift6)
               },
               7n => {
-                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
-                IfThenElse(handle_lift7)
+                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
+                Identifier(handle_lift7)
               },
               8n => {
-                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
-                LetIn(handle_lift8)
+                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
+                IfThenElse(handle_lift8)
               },
               9n => {
-                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
-                List(handle_lift9)
+                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
+                LetIn(handle_lift9)
               },
               10n => {
-                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
-                Path(handle_lift10)
+                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
+                List(handle_lift10)
               },
               11n => {
-                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
-                String(handle_lift11)
+                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
+                Path(handle_lift11)
               },
               12n => {
+                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
+                String(handle_lift12)
+              },
+              13n => {
                 Literal(match (WasmI32.load8U(base, 16n)) {
                   0n => {
                     Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 24n))): Float64)
@@ -337,21 +353,21 @@ provide module Nix {
                   },
                 })
               },
-              13n => {
-                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
-                UnaryOperation(handle_lift12)
-              },
               14n => {
-                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
-                With(handle_lift13)
+                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
+                UnaryOperation(handle_lift13)
               },
               15n => {
-                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
-                Root(handle_lift14)
+                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
+                With(handle_lift14)
+              },
+              16n => {
+                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
+                Root(handle_lift15)
               },
               _ => {
-                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
-                AttributeSet(handle_lift15)
+                let handle_lift16 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
+                AttributeSet(handle_lift16)
               },
             })
           },
@@ -369,54 +385,58 @@ provide module Nix {
       wit_bindgen_methodAttributePathValue_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -429,21 +449,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -463,54 +483,58 @@ provide module Nix {
           
           Some(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
-              let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
-              Assert(handle_lift)
+              let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Select
+              Select(handle_lift)
             },
             1n => {
-              let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
-              BinaryOperation(handle_lift0)
+              let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
+              Assert(handle_lift0)
             },
             2n => {
-              let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
-              Error(handle_lift1)
+              let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
+              BinaryOperation(handle_lift1)
             },
             3n => {
-              let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
-              Function(handle_lift2)
+              let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
+              Error(handle_lift2)
             },
             4n => {
-              let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
-              FunctionApplication(handle_lift3)
+              let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
+              Function(handle_lift3)
             },
             5n => {
-              let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
-              HasAttribute(handle_lift4)
+              let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
+              FunctionApplication(handle_lift4)
             },
             6n => {
-              let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
-              Identifier(handle_lift5)
+              let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
+              HasAttribute(handle_lift5)
             },
             7n => {
-              let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
-              IfThenElse(handle_lift6)
+              let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
+              Identifier(handle_lift6)
             },
             8n => {
-              let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
-              LetIn(handle_lift7)
+              let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
+              IfThenElse(handle_lift7)
             },
             9n => {
-              let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
-              List(handle_lift8)
+              let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
+              LetIn(handle_lift8)
             },
             10n => {
-              let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
-              Path(handle_lift9)
+              let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
+              List(handle_lift9)
             },
             11n => {
-              let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
-              String(handle_lift10)
+              let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
+              Path(handle_lift10)
             },
             12n => {
+              let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
+              String(handle_lift11)
+            },
+            13n => {
               Literal(match (WasmI32.load8U(_RET_AREA, 16n)) {
                 0n => {
                   Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 24n))): Float64)
@@ -523,21 +547,21 @@ provide module Nix {
                 },
               })
             },
-            13n => {
-              let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
-              UnaryOperation(handle_lift11)
-            },
             14n => {
-              let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
-              With(handle_lift12)
+              let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
+              UnaryOperation(handle_lift12)
             },
             15n => {
-              let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
-              Root(handle_lift13)
+              let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
+              With(handle_lift13)
+            },
+            16n => {
+              let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
+              Root(handle_lift14)
             },
             _ => {
-              let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
-              AttributeSet(handle_lift14)
+              let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
+              AttributeSet(handle_lift15)
             },
           })
         },
@@ -556,7 +580,7 @@ provide module Nix {
       let len_list_lift = WasmI32.load(_RET_AREA, 4n)
       let mut result_list_lift = []
       Memory.incRef(WasmI32.fromGrain(result_list_lift))
-      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
         let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 32n))
         result_list_lift = [match (WasmI32.load8U(base, 0n)) {
           0n => {
@@ -573,54 +597,58 @@ provide module Nix {
           _ => {
             Dynamic(match (WasmI32.load8U(base, 8n)) {
               0n => {
-                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
-                Assert(handle_lift0)
+                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Select
+                Select(handle_lift0)
               },
               1n => {
-                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
-                BinaryOperation(handle_lift1)
+                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
+                Assert(handle_lift1)
               },
               2n => {
-                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
-                Error(handle_lift2)
+                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
+                BinaryOperation(handle_lift2)
               },
               3n => {
-                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
-                Function(handle_lift3)
+                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
+                Error(handle_lift3)
               },
               4n => {
-                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
-                FunctionApplication(handle_lift4)
+                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
+                Function(handle_lift4)
               },
               5n => {
-                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
-                HasAttribute(handle_lift5)
+                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
+                FunctionApplication(handle_lift5)
               },
               6n => {
-                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
-                Identifier(handle_lift6)
+                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
+                HasAttribute(handle_lift6)
               },
               7n => {
-                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
-                IfThenElse(handle_lift7)
+                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
+                Identifier(handle_lift7)
               },
               8n => {
-                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
-                LetIn(handle_lift8)
+                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
+                IfThenElse(handle_lift8)
               },
               9n => {
-                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
-                List(handle_lift9)
+                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
+                LetIn(handle_lift9)
               },
               10n => {
-                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
-                Path(handle_lift10)
+                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
+                List(handle_lift10)
               },
               11n => {
-                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
-                String(handle_lift11)
+                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
+                Path(handle_lift11)
               },
               12n => {
+                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
+                String(handle_lift12)
+              },
+              13n => {
                 Literal(match (WasmI32.load8U(base, 16n)) {
                   0n => {
                     Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 24n))): Float64)
@@ -633,21 +661,21 @@ provide module Nix {
                   },
                 })
               },
-              13n => {
-                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
-                UnaryOperation(handle_lift12)
-              },
               14n => {
-                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
-                With(handle_lift13)
+                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
+                UnaryOperation(handle_lift13)
               },
               15n => {
-                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
-                Root(handle_lift14)
+                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
+                With(handle_lift14)
+              },
+              16n => {
+                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
+                Root(handle_lift15)
               },
               _ => {
-                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
-                AttributeSet(handle_lift15)
+                let handle_lift16 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
+                AttributeSet(handle_lift16)
               },
             })
           },
@@ -658,63 +686,67 @@ provide module Nix {
 
   }
 
-  provide module Assert {
-    @externalName("[method]assert.get-expression")
-    foreign wasm wit_bindgen_methodAssert_getExpression: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+  provide module Select {
+    @externalName("[method]select.get-base-expr")
+    foreign wasm wit_bindgen_methodSelect_getBaseExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getExpression: (Assert) => Expression = (self) => {
-      wit_bindgen_methodAssert_getExpression(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getBaseExpr: (Select) => Expression = (self) => {
+      wit_bindgen_methodSelect_getBaseExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -727,82 +759,187 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
 
 
-    @externalName("[method]assert.get-target")
-    foreign wasm wit_bindgen_methodAssert_getTarget: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]select.get-default-expr")
+    foreign wasm wit_bindgen_methodSelect_getDefaultExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getTarget: (Assert) => Expression = (self) => {
-      wit_bindgen_methodAssert_getTarget(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getDefaultExpr: (Select) => Option<Expression> = (self) => {
+      wit_bindgen_methodSelect_getDefaultExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => None,
+        1n => {
+          
+          Some(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Select
+              Select(handle_lift)
+            },
+            1n => {
+              let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
+              Assert(handle_lift0)
+            },
+            2n => {
+              let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
+              BinaryOperation(handle_lift1)
+            },
+            3n => {
+              let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
+              Error(handle_lift2)
+            },
+            4n => {
+              let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
+              Function(handle_lift3)
+            },
+            5n => {
+              let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
+              FunctionApplication(handle_lift4)
+            },
+            6n => {
+              let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
+              HasAttribute(handle_lift5)
+            },
+            7n => {
+              let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
+              Identifier(handle_lift6)
+            },
+            8n => {
+              let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
+              IfThenElse(handle_lift7)
+            },
+            9n => {
+              let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
+              LetIn(handle_lift8)
+            },
+            10n => {
+              let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
+              List(handle_lift9)
+            },
+            11n => {
+              let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
+              Path(handle_lift10)
+            },
+            12n => {
+              let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
+              String(handle_lift11)
+            },
+            13n => {
+              Literal(match (WasmI32.load8U(_RET_AREA, 16n)) {
+                0n => {
+                  Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 24n))): Float64)
+                },
+                1n => {
+                  Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 24n))): Int64)
+                },
+                _ => {
+                  Uri
+                },
+              })
+            },
+            14n => {
+              let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
+              UnaryOperation(handle_lift12)
+            },
+            15n => {
+              let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
+              With(handle_lift13)
+            },
+            16n => {
+              let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
+              Root(handle_lift14)
+            },
+            _ => {
+              let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
+              AttributeSet(handle_lift15)
+            },
+          })
+        },
+        _ => fail "invalid enum discriminant",
+      }
+    }
+
+  }
+
+  provide module Assert {
+    @externalName("[method]assert.get-expr")
+    foreign wasm wit_bindgen_methodAssert_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getExpr: (Assert) => Expression = (self) => {
+      wit_bindgen_methodAssert_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -815,21 +952,113 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+
+    @externalName("[method]assert.get-condition")
+    foreign wasm wit_bindgen_methodAssert_getCondition: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getCondition: (Assert) => Expression = (self) => {
+      wit_bindgen_methodAssert_getCondition(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -845,54 +1074,58 @@ provide module Nix {
       wit_bindgen_methodBinaryOperation_getLhs(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -905,21 +1138,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -989,54 +1222,58 @@ provide module Nix {
       wit_bindgen_methodBinaryOperation_getRhs(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1049,21 +1286,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1096,54 +1333,58 @@ provide module Nix {
       wit_bindgen_methodFunction_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1156,21 +1397,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1186,54 +1427,58 @@ provide module Nix {
       wit_bindgen_methodFunctionApplication_getFunction(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1246,21 +1491,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1274,54 +1519,58 @@ provide module Nix {
       wit_bindgen_methodFunctionApplication_getArgument(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1334,21 +1583,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1356,62 +1605,66 @@ provide module Nix {
   }
 
   provide module HasAttribute {
-    @externalName("[method]has-attribute.get-expression")
-    foreign wasm wit_bindgen_methodHasAttribute_getExpression: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]has-attribute.get-expr")
+    foreign wasm wit_bindgen_methodHasAttribute_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getExpression: (HasAttribute) => Expression = (self) => {
-      wit_bindgen_methodHasAttribute_getExpression(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getExpr: (HasAttribute) => Expression = (self) => {
+      wit_bindgen_methodHasAttribute_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1424,21 +1677,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1470,54 +1723,58 @@ provide module Nix {
       wit_bindgen_methodIfThenElse_getCondition(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1530,21 +1787,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1558,54 +1815,58 @@ provide module Nix {
       wit_bindgen_methodIfThenElse_getTrueBranch(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1618,21 +1879,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1646,54 +1907,58 @@ provide module Nix {
       wit_bindgen_methodIfThenElse_getFalseBranch(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1706,21 +1971,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1738,7 +2003,7 @@ provide module Nix {
       let len_list_lift = WasmI32.load(_RET_AREA, 4n)
       let mut result_list_lift = []
       Memory.incRef(WasmI32.fromGrain(result_list_lift))
-      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
         let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 8n))
         result_list_lift = [match (WasmI32.load8U(base, 0n)) {
           0n => {
@@ -1763,54 +2028,58 @@ provide module Nix {
       wit_bindgen_methodLetIn_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -1823,21 +2092,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1855,58 +2124,62 @@ provide module Nix {
       let len_list_lift = WasmI32.load(_RET_AREA, 4n)
       let mut result_list_lift = []
       Memory.incRef(WasmI32.fromGrain(result_list_lift))
-      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
         let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 24n))
         result_list_lift = [match (WasmI32.load8U(base, 0n)) {
           0n => {
-            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Assert
-            Assert(handle_lift)
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Select
+            Select(handle_lift)
           },
           1n => {
-            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: BinaryOperation
-            BinaryOperation(handle_lift0)
+            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Assert
+            Assert(handle_lift0)
           },
           2n => {
-            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Error
-            Error(handle_lift1)
+            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: BinaryOperation
+            BinaryOperation(handle_lift1)
           },
           3n => {
-            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Function
-            Function(handle_lift2)
+            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Error
+            Error(handle_lift2)
           },
           4n => {
-            let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: FunctionApplication
-            FunctionApplication(handle_lift3)
+            let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Function
+            Function(handle_lift3)
           },
           5n => {
-            let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: HasAttribute
-            HasAttribute(handle_lift4)
+            let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: FunctionApplication
+            FunctionApplication(handle_lift4)
           },
           6n => {
-            let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Identifier
-            Identifier(handle_lift5)
+            let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: HasAttribute
+            HasAttribute(handle_lift5)
           },
           7n => {
-            let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: IfThenElse
-            IfThenElse(handle_lift6)
+            let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Identifier
+            Identifier(handle_lift6)
           },
           8n => {
-            let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: LetIn
-            LetIn(handle_lift7)
+            let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: IfThenElse
+            IfThenElse(handle_lift7)
           },
           9n => {
-            let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: ListNode
-            List(handle_lift8)
+            let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: LetIn
+            LetIn(handle_lift8)
           },
           10n => {
-            let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Path
-            Path(handle_lift9)
+            let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: ListNode
+            List(handle_lift9)
           },
           11n => {
-            let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: NixString
-            String(handle_lift10)
+            let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Path
+            Path(handle_lift10)
           },
           12n => {
+            let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: NixString
+            String(handle_lift11)
+          },
+          13n => {
             Literal(match (WasmI32.load8U(base, 8n)) {
               0n => {
                 Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 16n))): Float64)
@@ -1919,21 +2192,21 @@ provide module Nix {
               },
             })
           },
-          13n => {
-            let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: UnaryOperation
-            UnaryOperation(handle_lift11)
-          },
           14n => {
-            let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: NixWith
-            With(handle_lift12)
+            let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: UnaryOperation
+            UnaryOperation(handle_lift12)
           },
           15n => {
-            let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Root
-            Root(handle_lift13)
+            let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: NixWith
+            With(handle_lift13)
+          },
+          16n => {
+            let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Root
+            Root(handle_lift14)
           },
           _ => {
-            let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: AttributeSet
-            AttributeSet(handle_lift14)
+            let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: AttributeSet
+            AttributeSet(handle_lift15)
           },
         }, ...result_list_lift]
       }
@@ -1963,13 +2236,110 @@ provide module Nix {
     foreign wasm wit_bindgen_methodNixString_getParts: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getParts: (NixString) => String = (self) => {
+    provide let getParts: (NixString) => List<StringPart> = (self) => {
       wit_bindgen_methodNixString_getParts(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
-      let len_string_lift = WasmI32.load(_RET_AREA, 4n)
-      let str_string_lift = DataStructures.allocateString(len_string_lift)
-      Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 0n), len_string_lift)
-      let str_string_lift = WasmI32.toGrain(str_string_lift): String
-      str_string_lift
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 32n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let len_string_lift = WasmI32.load(base, 12n)
+            let str_string_lift = DataStructures.allocateString(len_string_lift)
+            Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(base, 8n), len_string_lift)
+            let str_string_lift = WasmI32.toGrain(str_string_lift): String
+            Raw(str_string_lift)
+          },
+          _ => {
+            Dynamic(match (WasmI32.load8U(base, 8n)) {
+              0n => {
+                let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Select
+                Select(handle_lift)
+              },
+              1n => {
+                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
+                Assert(handle_lift0)
+              },
+              2n => {
+                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
+                BinaryOperation(handle_lift1)
+              },
+              3n => {
+                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
+                Error(handle_lift2)
+              },
+              4n => {
+                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
+                Function(handle_lift3)
+              },
+              5n => {
+                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
+                FunctionApplication(handle_lift4)
+              },
+              6n => {
+                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
+                HasAttribute(handle_lift5)
+              },
+              7n => {
+                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
+                Identifier(handle_lift6)
+              },
+              8n => {
+                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
+                IfThenElse(handle_lift7)
+              },
+              9n => {
+                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
+                LetIn(handle_lift8)
+              },
+              10n => {
+                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
+                List(handle_lift9)
+              },
+              11n => {
+                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
+                Path(handle_lift10)
+              },
+              12n => {
+                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
+                String(handle_lift11)
+              },
+              13n => {
+                Literal(match (WasmI32.load8U(base, 16n)) {
+                  0n => {
+                    Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 24n))): Float64)
+                  },
+                  1n => {
+                    Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(base, 24n))): Int64)
+                  },
+                  _ => {
+                    Uri
+                  },
+                })
+              },
+              14n => {
+                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
+                UnaryOperation(handle_lift12)
+              },
+              15n => {
+                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
+                With(handle_lift13)
+              },
+              16n => {
+                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
+                Root(handle_lift14)
+              },
+              _ => {
+                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
+                AttributeSet(handle_lift15)
+              },
+            })
+          },
+        }, ...result_list_lift]
+      }
+      result_list_lift
     }
 
   }
@@ -2000,54 +2370,58 @@ provide module Nix {
       wit_bindgen_methodUnaryOperation_getOperand(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -2060,21 +2434,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -2082,62 +2456,66 @@ provide module Nix {
   }
 
   provide module NixWith {
-    @externalName("[method]nix-with.get-expression")
-    foreign wasm wit_bindgen_methodNixWith_getExpression: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]nix-with.get-body")
+    foreign wasm wit_bindgen_methodNixWith_getBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getExpression: (NixWith) => Expression = (self) => {
-      wit_bindgen_methodNixWith_getExpression(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getBody: (NixWith) => Expression = (self) => {
+      wit_bindgen_methodNixWith_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -2150,82 +2528,86 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
 
 
-    @externalName("[method]nix-with.get-target")
-    foreign wasm wit_bindgen_methodNixWith_getTarget: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]nix-with.get-namespace")
+    foreign wasm wit_bindgen_methodNixWith_getNamespace: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getTarget: (NixWith) => Expression = (self) => {
-      wit_bindgen_methodNixWith_getTarget(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getNamespace: (NixWith) => Expression = (self) => {
+      wit_bindgen_methodNixWith_getNamespace(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -2238,21 +2620,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -2260,62 +2642,66 @@ provide module Nix {
   }
 
   provide module Root {
-    @externalName("[method]root.get-expression")
-    foreign wasm wit_bindgen_methodRoot_getExpression: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]root.get-expr")
+    foreign wasm wit_bindgen_methodRoot_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getExpression: (Root) => Expression = (self) => {
-      wit_bindgen_methodRoot_getExpression(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getExpr: (Root) => Expression = (self) => {
+      wit_bindgen_methodRoot_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
-          Assert(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
-          BinaryOperation(handle_lift0)
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
         },
         2n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
-          Error(handle_lift1)
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
-          Function(handle_lift2)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
-          FunctionApplication(handle_lift3)
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
-          HasAttribute(handle_lift4)
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
-          Identifier(handle_lift5)
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
-          IfThenElse(handle_lift6)
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
-          LetIn(handle_lift7)
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
-          List(handle_lift8)
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
-          Path(handle_lift9)
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
-          String(handle_lift10)
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
           Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
             0n => {
               Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
@@ -2328,21 +2714,21 @@ provide module Nix {
             },
           })
         },
-        13n => {
-          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
-          UnaryOperation(handle_lift11)
-        },
         14n => {
-          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
-          With(handle_lift12)
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
-          Root(handle_lift13)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
-          AttributeSet(handle_lift14)
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -2360,7 +2746,7 @@ provide module Nix {
       let len_list_lift = WasmI32.load(_RET_AREA, 4n)
       let mut result_list_lift = []
       Memory.incRef(WasmI32.fromGrain(result_list_lift))
-      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
         let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 8n))
         result_list_lift = [match (WasmI32.load8U(base, 0n)) {
           0n => {

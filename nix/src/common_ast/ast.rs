@@ -47,7 +47,7 @@ pub enum BinaryOperator {
 #[derive(Debug, Clone)]
 pub struct Assert {
   pub expression: Box<Expression>,
-  pub target: Box<Expression>,
+  pub condition: Box<Expression>,
   // pub span: Box<Span>,
 }
 #[derive(Debug, Clone)]
@@ -111,15 +111,24 @@ pub struct Path {
   // pub span: Box<Span>,
 }
 #[derive(Debug, Clone)]
+pub enum StringPart {
+  Raw(String),
+  Interpol(Box<Expression>),
+}
+#[derive(Debug, Clone)]
 pub struct String_ {
-  // TODO: Part
-  // pub parts: Box<[Part]>,
+  pub parts: Vec<StringPart>,
   // pub span: Box<Span>,
+}
+#[derive(Debug, Clone)]
+pub struct Select {
+  pub base_expr: Box<Expression>,
+  // TODO: attr_path
+  pub default_expr: Option<Box<Expression>>,
 }
 #[derive(Debug, Clone)]
 pub enum Literal {
   Float(f64),
-  // TODO: What size should this be???
   Integer(i64),
   Uri,
 }
@@ -131,8 +140,8 @@ pub struct UnaryOperation {
 }
 #[derive(Debug, Clone)]
 pub struct With {
-  pub expression: Box<Expression>,
-  pub target: Box<Expression>,
+  pub body: Box<Expression>,
+  pub namespace: Box<Expression>,
   // pub span: Box<Span>,
 }
 #[derive(Debug, Clone)]
@@ -156,6 +165,7 @@ pub enum Expression {
   LetIn(LetIn),
   List(List),
   Path(Path),
+  Select(Select),
   String(String_),
   Literal(Literal),
   UnaryOperation(UnaryOperation),

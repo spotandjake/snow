@@ -39,10 +39,18 @@ interface nix {
         not-equal,
         or,
     }
+    variant string-part {
+        raw(string),
+        dynamic(expression),
+    }
     // Expressions
+    resource select {
+        get-base-expr: func() -> expression;
+        get-default-expr: func() -> option<expression>;
+    }
     resource assert {
-        get-expression: func() -> expression;
-        get-target: func() -> expression;
+        get-expr: func() -> expression;
+        get-condition: func() -> expression;
     }
     resource binary-operation {
         get-lhs: func() -> expression;
@@ -61,7 +69,7 @@ interface nix {
         get-argument: func() -> expression;
     }
     resource has-attribute {
-        get-expression: func() -> expression;
+        get-expr: func() -> expression;
         // get-attribute_path: func() -> list<part>;
     }
     resource identifier {
@@ -84,8 +92,7 @@ interface nix {
         // get-parts: func() -> list<part>;
     }
     resource nix-string {
-        get-parts: func() -> string;
-        // get-parts: func() -> list<part>;
+        get-parts: func() -> list<string-part>;
     }
     variant literal {
         float(f64),
@@ -97,16 +104,17 @@ interface nix {
         get-operand: func() -> expression;
     }
     resource nix-with {
-        get-expression: func() -> expression;
-        get-target: func() -> expression;
+        get-body: func() -> expression;
+        get-namespace: func() -> expression;
     }
     resource root {
-        get-expression: func() -> expression;
+        get-expr: func() -> expression;
     }
     resource attribute-set {
         get-binds: func() -> list<entry>;
     }
     variant expression {
+        select(select),
         assert(assert),
         binary-operation(binary-operation),
         error(error),
