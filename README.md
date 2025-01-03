@@ -1,119 +1,41 @@
 # Snow
 
-## Plan
+> [!WARNING] 
+> Snow is still in active development, use it at your own risk.
 
-- Demonstrate Parsing from grain
-- Build a frontend using Reaper
-- Build nix2Snow
-- Build snow2Nix
+Snow is a series of tools surrounding the nix ecosystem to give it a more modern feel.
 
-- How to handle cargo pkgs
-  - wasm-tools
-  - warg-cli
-- how to handle versioning rnix
-  - if the wit has changed and we run publish
-  - increment release version
-    - automate how we do this
-    - ask user
-  - update rnix cargo
-  - try rebuild cargo
-  - rebuild grain dep
+## Snow-lang
+
+> [!IMPORTANT]  
+> `Snow-lang` is currently just a plan the actual implementation has not been completed.
+
+The heart of the Snow project is the Snow programming language, it can be thought of as an abstraction on top of `Nix` and it can compile back and forth with `Nix` allowing for full compabiltiy
+
+## Snow-Ecosystem
+
+> [!IMPORTANT]  
+> The snow ecosystem will come after `Snow-lang`
+
+This is currently just a place where I am documenting my long-term goals, as Snow-lang provides a great base to write nix projects, I am thinking I can create a standard library, and a way to wrap the module systems of home-manager, nix-darwin and nixosModules, I can then create a system configurator that reads your system and produces a directory of managed snow files, I might also allow for yaml based inputs.
 
 
-# Language thoughts
-Target - https://github.com/nix-community/rnix-parser for ir
 
-Program
-  ({}) - in function or module,
--> { }
+# TODO
++ [ ] Finish Rnix Bindings
++ [ ] Build nix output using smartdoc
++ [ ] Build Snow Parser
++ [ ] Build Snow Cli
+  + [ ] Will probably use reaper
++ [ ] Begin work on rest of the snow ecosystem
 
-() - in function or module
--> _
-
-module(x, b, c):
-restOfProgram
-
--> { x, b, c }: restOfProgram
-include "file" - includes it as an input????
-
-provide let, provides to the set - Statement
--> let x = 1 in
--> restOfProgram
--> x
-
-let adds it to the scope - Statement
-let x = 1
--> let x = 1; in
--> restOfProgram
-
-Function - Expression, Statement
-(x, b, c) => { restOfProgram }
--> { x, b, c }: restOfProgram
-
-if (condition) then restOfProgram
-else elseRestOfProgram
--> if condition then
--> restOfProgram
--> else
--> elseRestOfProgram
-
-function(x, b, c)
--> function { x, b, c }
--> restOfProgram
-
-list - Expression
-[ 1, 2, 3 ]
--> [ 1, 2, 3 ]
-[ 1, 2, 3, ...list2, 4, 5, 6 ]
--> [ 1, 2, 3 ] ++ list2 ++ [ 4, 5, 6 ]
-
-set - Expression
-{ x = 1, b = 2, c = 3 } - Multiline
--> { x = 1, b = 2, c = 3 }
-
-block
-{ let x = 1; func(); } - Multiline
--> let x = 1 in func();
-
-block union
-{ x: a, ...rest } - Multiline
--> { x = a; } // rest
-
-ternary
-condition ? true : false
--> if condition then true else false
-
-Strings
-"str" - string escapes
--> "str"
-"str ${x}"
--> "str ${x}"
-
-String concat - Expression
-"str" ++ "str2"
--> "strstr2"
-"str" ++ str1
--> "str" + str1
-""" <- multiline string
-
-Boolean
-true -> true
-false -> false
-!bool -> !bool
-
-filePaths
-f"path" - needs some validation
--> path
-
-filepath concat
-f"path" ++ f"path2"
--> f"path" + f"path2"
-
-  https://nix.dev/manual/nix/2.17/language/operators#logical-implication
-- Keep track of source location
-- I think this fits a source to source translator
--  In other words look at using grain smartdoc
-- Intermediate IR
-- Output
-- with a recursive descent parser
-- This will give you some experience for writing your compiler
+## Packaging TODO
++ [ ] Build Nix Derivation
++ [ ] Automate Installation of cargo deps, `wasm-tools`, `warg-cli`
++ [ ] Streamline wit management
++ [ ] Tests
+  + [ ] Rnix Bindings
+  + [ ] Source To Source
+  + [ ] Snow
+  + [ ] Compilation
+  + [ ] Correct formatting
