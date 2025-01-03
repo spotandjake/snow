@@ -1,191 +1,140 @@
 package spotandjake:snow;
 
 interface nix {
-    record text-range {
-        start: u32,
-        end: u32,
+    variant attr {
+        str(string),
+        ident(identifier),
+        dynamic(expression),
     }
-    enum syntax-token {
-        // Internals
-        token-comment,
-        token-error,
-        token-whitespace,
-
-        // Keywords
-        token-assert,
-        token-else,
-        token-if,
-        token-in,
-        token-inherit,
-        token-let,
-        token-or,
-        token-rec,
-        token-then,
-        token-with,
-
-        // Symbols
-        token-l-brace,
-        token-r-brace,
-        token-l-brack,
-        token-r-brack,
-        token-assign,
-        token-at,
-        token-colon,
-        token-comma,
-        token-dot,
-        token-ellipsis,
-        token-question,
-        token-semicolon,
-
-        // Operators
-        token-l-paren,
-        token-r-paren,
-        token-concat,
-        token-invert,
-        token-update,
-
-        token-add,
-        token-sub,
-        token-mul,
-        token-div,
-
-        token-and-and,
-        token-equal,
-        token-implication,
-        token-less,
-        token-less-or-eq,
-        token-more,
-        token-more-or-eq,
-        token-not-equal,
-        token-or-or,
-
-        // Identifiers and values
-        token-float,
-        token-ident,
-        token-integer,
-        token-interpol-end,
-        token-interpol-start,
-        token-path,
-        token-uri,
-        token-string-content,
-        token-string-end,
-        token-string-start,
-
-        node-apply,
-        node-assert,
-        node-attrpath,
-        node-dynamic,
-        node-error,
-        node-ident,
-        node-if-else,
-        node-select,
-        node-inherit,
-        node-inherit-from,
-        node-string,
-        node-interpol,
-        node-lambda,
-        node-ident-param,
-        // An old let { x = 92; body = x; } syntax
-        node-legacy-let,
-        node-let-in,
-        node-list,
-        node-bin-op,
-        node-paren,
-        node-pattern,
-        node-pat-bind,
-        node-pat-entry,
-        node-root,
-        node-attr-set,
-        node-attrpath-value,
-        node-unary-op,
-        node-literal,
-        node-with,
-        node-path,
-        // Attrpath existence check: foo ? bar.${baz}."bux"
-        node-has-attr,
-
-        last
+    resource attribute-path-value {
+        get-attr-list: func() -> list<attr>;
+        get-expr: func() -> expression;
     }
-    variant nix-expr {
-        apply(apply),
-        assert(assert),
-        error,
-        if-else(if-else),
-        select,
-        str,
-        path,
-        literal,
-        lambda,
-        legacy-let,
-        let-in,
-        %list,
-        bin-op,
-        paren,
-        root,
-        attr-set(attr-set),
-        unary-op,
-        ident,
-        %with,
-        has-attr,
-        invalid-node,
+    resource inherit {
+        get-expr-from: func() -> option<expression>;
+        get-attr-list: func() -> list<attr>;
     }
-    resource apply {
-        constructor(arg: nix-expr, lambda: nix-expr);
-        get-argument: func() -> nix-expr;
-        get-lambda: func() -> nix-expr;
+    variant entry {
+        attribute-path-value(attribute-path-value),
+        inherit(inherit),
+    }
+    enum unary-operator {
+        invert,
+        negate,
+    }
+    enum binary-operator {
+        concat,
+        update,
+        add,
+        sub,
+        mul,
+        div,
+        and,
+        equal,
+        implication,
+        less,
+        less-or-eq,
+        more,
+        more-or-eq,
+        not-equal,
+        or,
+    }
+    variant string-part {
+        raw(string),
+        dynamic(expression),
+    }
+    // Expressions
+    resource select {
+        get-base-expr: func() -> expression;
+        get-default-expr: func() -> option<expression>;
     }
     resource assert {
-        constructor(body: nix-expr, condition: nix-expr);
-        get-body: func() -> nix-expr;
-        get-condition: func() -> nix-expr;
+        get-expr: func() -> expression;
+        get-condition: func() -> expression;
     }
-    resource if-else {
-        constructor(condition: nix-expr, body: nix-expr, else-body: nix-expr);
-        get-condition: func() -> nix-expr;
-        get-body: func() -> nix-expr;
-        get-else-body: func() -> nix-expr;
+    resource binary-operation {
+        get-lhs: func() -> expression;
+        get-operator: func() -> binary-operator;
+        get-rhs: func() -> expression;
     }
-    // TODO: select,
-    // TODO: str,
-    // TODO: path,
-    // TODO: literal,
-    // TODO: lambda,
-    // TODO: legacy-let,
-    // TODO: let-in,
-    // TODO: %list,
-    // TODO: bin-op,
-    // TODO: paren,
-    // TODO: root,
-    resource attr-set {
-        constructor();
+    resource error {
+        get-message: func() -> string;
     }
-    // TODO: unary-op,
-    // TODO: ident,
-    // TODO: %with,
-    // TODO: has-attr,
-    // TODO: invalid-node,
-    variant nix-parse-error {
-        /// Unexpected is used when the cause cannot be specified further
-        unexpected(text-range),
-        /// UnexpectedExtra is used when there are additional tokens to the root in the tree
-        unexpected-extra(text-range),
-        /// UnexpectedWanted is used when specific tokens are expected, but different one is found
-        unexpected-wanted(tuple<syntax-token, text-range, list<syntax-token>>),
-        /// UnexpectedDoubleBind is used when a pattern is bound twice
-        unexpected-double-bind(text-range),
-        /// UnexpectedEOF is used when the end of file is reached, while tokens are still expected
-        unexpected-eof,
-        /// UnexpectedEOFWanted is used when specific tokens are expected, but the end of file is reached
-        unexpected-eof-wanted(list<syntax-token>),
-        /// DuplicatedArgs is used when formal arguments are duplicated, e.g. `{ a, a }`
-        duplicated-args(tuple<text-range, string>),
-        /// RecursionLimitExceeded is used when we're unable to parse further due to likely being close to
-        /// a stack overflow.
-        recursion-limit-exceeded,
-        /// Occurs when an unknown error is encountered
-        unknown,
+    resource function {
+        // get-param: func() -> param;
+        get-body: func() -> expression;
     }
-    parse: func(nix-source: string) -> result<nix-expr, nix-parse-error>;
+    resource function-application {
+        get-function: func() -> expression;
+        get-argument: func() -> expression;
+    }
+    resource has-attribute {
+        get-expr: func() -> expression;
+        // get-attribute_path: func() -> list<part>;
+    }
+    resource identifier {
+        get-id: func() -> string;
+    }
+    resource if-then-else {
+        get-condition: func() -> expression;
+        get-true-branch: func() -> expression;
+        get-false-branch: func() -> expression;
+    }
+    resource let-in {
+        get-binds: func() -> list<entry>;
+        get-body: func() -> expression;
+    }
+    resource list-node {
+        get-elements: func() -> list<expression>;
+    }
+    resource path {
+        get-parts: func() -> string;
+        // get-parts: func() -> list<part>;
+    }
+    resource nix-string {
+        get-parts: func() -> list<string-part>;
+    }
+    variant literal {
+        float(f64),
+        integer(s64),
+        uri
+    }
+    resource unary-operation {
+        get-operator: func() -> unary-operator;
+        get-operand: func() -> expression;
+    }
+    resource nix-with {
+        get-body: func() -> expression;
+        get-namespace: func() -> expression;
+    }
+    resource root {
+        get-expr: func() -> expression;
+    }
+    resource attribute-set {
+        get-binds: func() -> list<entry>;
+    }
+    variant expression {
+        select(select),
+        assert(assert),
+        binary-operation(binary-operation),
+        error(error),
+        function(function),
+        function-application(function-application),
+        has-attribute(has-attribute),
+        identifier(identifier),
+        if-then-else(if-then-else),
+        let-in(let-in),
+        %list(list-node),
+        path(path),
+        %string(nix-string),
+        literal(literal),
+        unary-operation(unary-operation),
+        %with(nix-with),
+        root(root),
+        attribute-set(attribute-set),
+    }
+
+    parse: func(nix-source: string) -> result<expression, string>;
 }
 
 world rnix {

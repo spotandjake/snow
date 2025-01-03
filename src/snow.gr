@@ -2,13 +2,15 @@ module Main
 
 from "path" include Path
 from "./libs/fs.gr" include Fs
+from "./libs/grain_print.gr" include GrainPrint
+from "./ast/nix.gr" include Nix
 from "./libs/snow.gr" include Snow
 
 provide let cabi_realloc = Snow.cabi_realloc
 
 provide let _start: () => Void = () => {
   // Testing
-  let input = Path.fromString("./test.nix")
+  let input = Path.fromString("./flake.nix")
   let contents = match (Fs.Utf8.readFile(input)) {
     Ok(contents) => contents,
     Err(err) => fail "Failed to read file",
@@ -16,4 +18,14 @@ provide let _start: () => Void = () => {
 
   let ast = Snow.Nix.parse(contents)
   print(ast)
+  match (ast) {
+    Ok(ast) => {
+      let common_ast = Nix.convertAst(ast)
+      GrainPrint.print(
+        common_ast,
+        settings={ ...GrainPrint.defaultSettings, forceNewLine: true }
+      )
+    },
+    Err(err) => fail "Failed to parse Nix",
+  }
 }

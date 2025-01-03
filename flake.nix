@@ -8,6 +8,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     amber.url = "github:amber-lang/Amber";
+    wit-bindgen.url = "github:spotandjake/wit-bindgen?ref=spotandjake-build";
   };
 
   outputs = { self, ... }@inputs:
@@ -27,6 +28,7 @@
         rustToolchain = with inputs.fenix.packages.${system};
           combine [
             latest.rustc
+            latest.rust-src
             latest.rustfmt
             latest.cargo
             targets.${rustWasmTarget}.latest.rust-std
@@ -37,16 +39,15 @@
       devShells = forAllSystems ({ pkgs, system }: {
         default =
           let
-            helpers = with pkgs; [ direnv jq ];
+            helpers = with pkgs; [ direnv ];
           in
           pkgs.mkShell {
             packages = helpers ++ (with pkgs; [
               rustToolchain # cargo, etc.
-              wabt # WebAssembly Binary Toolkit
               wasmtime # Wasm runtime
-              tree # for visualizing results
               go-task # task runner like cmake
               treefmt # tree formatting
+              inputs.wit-bindgen.packages.${pkgs.system}.default
               inputs.amber.packages.${pkgs.system}.default
             ]);
           };

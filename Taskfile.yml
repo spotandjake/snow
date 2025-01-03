@@ -28,6 +28,7 @@ tasks:
   compile:
     sources:
       - ./src/*.gr
+      - ./src/**/*.gr
       - ./adapters/wasi_snapshot_preview1.command.wasm
       - ./wit/*.wit
     generates:
@@ -47,13 +48,15 @@ tasks:
     cmds:
       - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
   gen_libs:
+    deps:
+      - wit:source
     sources:
       - wit/*.wit
     generates:
       - src/libs/snow.gr
     cmds:
       # Generate Rnix Lib
-      - ./bin/wit-bindgen grain wit --out-dir ./src/libs --world snow
+      - wit-bindgen grain wit --out-dir ./src/libs --world snow
   clean:
     cmds:
       - rm -f ./src/libs/rnix.gr

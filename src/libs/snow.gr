@@ -12,7 +12,7 @@ from "char" include Char
 from "list" include List
 
 @unsafe
-let _RET_AREA = Memory.malloc(28n)
+let _RET_AREA = Memory.malloc(32n)
 
 @unsafe
 provide let cabi_realloc = (originalPtr: WasmI32, originalSize: WasmI32, alignment: WasmI32, newSize: WasmI32) => {
@@ -32,141 +32,121 @@ provide record Resource<a> {
   rep: a
 }
 
-provide record TextRange {
-  start: Uint32,
-  end: Uint32,
+provide record AttributePathValue {
+  handle: Int32
 }
-provide enum SyntaxToken {
-  TokenComment,
-  TokenError,
-  TokenWhitespace,
-  TokenAssert,
-  TokenElse,
-  TokenIf,
-  TokenIn,
-  TokenInherit,
-  TokenLet,
-  TokenOr,
-  TokenRec,
-  TokenThen,
-  TokenWith,
-  TokenLBrace,
-  TokenRBrace,
-  TokenLBrack,
-  TokenRBrack,
-  TokenAssign,
-  TokenAt,
-  TokenColon,
-  TokenComma,
-  TokenDot,
-  TokenEllipsis,
-  TokenQuestion,
-  TokenSemicolon,
-  TokenLParen,
-  TokenRParen,
-  TokenConcat,
-  TokenInvert,
-  TokenUpdate,
-  TokenAdd,
-  TokenSub,
-  TokenMul,
-  TokenDiv,
-  TokenAndAnd,
-  TokenEqual,
-  TokenImplication,
-  TokenLess,
-  TokenLessOrEq,
-  TokenMore,
-  TokenMoreOrEq,
-  TokenNotEqual,
-  TokenOrOr,
-  TokenFloat,
-  TokenIdent,
-  TokenInteger,
-  TokenInterpolEnd,
-  TokenInterpolStart,
-  TokenPath,
-  TokenUri,
-  TokenStringContent,
-  TokenStringEnd,
-  TokenStringStart,
-  NodeApply,
-  NodeAssert,
-  NodeAttrpath,
-  NodeDynamic,
-  NodeError,
-  NodeIdent,
-  NodeIfElse,
-  NodeSelect,
-  NodeInherit,
-  NodeInheritFrom,
-  NodeString,
-  NodeInterpol,
-  NodeLambda,
-  NodeIdentParam,
-  NodeLegacyLet,
-  NodeLetIn,
-  NodeList,
-  NodeBinOp,
-  NodeParen,
-  NodePattern,
-  NodePatBind,
-  NodePatEntry,
-  NodeRoot,
-  NodeAttrSet,
-  NodeAttrpathValue,
-  NodeUnaryOp,
-  NodeLiteral,
-  NodeWith,
-  NodePath,
-  NodeHasAttr,
-  Last,
+provide record Inherit {
+  handle: Int32
 }
-provide record Apply {
+provide enum Entry {
+  AttributePathValue(AttributePathValue),
+  Inherit(Inherit),
+}
+provide enum UnaryOperator {
+  Invert,
+  Negate,
+}
+provide enum BinaryOperator {
+  Concat,
+  Update,
+  Add,
+  Sub,
+  Mul,
+  Div,
+  And,
+  Equal,
+  Implication,
+  Less,
+  LessOrEq,
+  More,
+  MoreOrEq,
+  NotEqual,
+  Or,
+}
+provide record Select {
   handle: Int32
 }
 provide record Assert {
   handle: Int32
 }
-provide record IfElse {
+provide record BinaryOperation {
   handle: Int32
 }
-provide record AttrSet {
+provide record Error {
   handle: Int32
 }
-provide enum NixExpr {
-  Apply(Apply),
+provide record Function {
+  handle: Int32
+}
+provide record FunctionApplication {
+  handle: Int32
+}
+provide record HasAttribute {
+  handle: Int32
+}
+provide record Identifier {
+  handle: Int32
+}
+provide record IfThenElse {
+  handle: Int32
+}
+provide record LetIn {
+  handle: Int32
+}
+provide record ListNode {
+  handle: Int32
+}
+provide record Path {
+  handle: Int32
+}
+provide record NixString {
+  handle: Int32
+}
+provide enum Literal {
+  Float(Float64),
+  Integer(Int64),
+  Uri,
+}
+provide record UnaryOperation {
+  handle: Int32
+}
+provide record NixWith {
+  handle: Int32
+}
+provide record Root {
+  handle: Int32
+}
+provide record AttributeSet {
+  handle: Int32
+}
+provide enum Expression {
+  Select(Select),
   Assert(Assert),
-  Error,
-  IfElse(IfElse),
-  Select,
-  Str,
-  Path,
-  Literal,
-  Lambda,
-  LegacyLet,
-  LetIn,
-  List,
-  BinOp,
-  Paren,
-  Root,
-  AttrSet(AttrSet),
-  UnaryOp,
-  Ident,
-  With,
-  HasAttr,
-  InvalidNode,
+  BinaryOperation(BinaryOperation),
+  Error(Error),
+  Function(Function),
+  FunctionApplication(FunctionApplication),
+  HasAttribute(HasAttribute),
+  Identifier(Identifier),
+  IfThenElse(IfThenElse),
+  LetIn(LetIn),
+  List(ListNode),
+  Path(Path),
+  String(NixString),
+  Literal(Literal),
+  UnaryOperation(UnaryOperation),
+  With(NixWith),
+  Root(Root),
+  AttributeSet(AttributeSet),
 }
-provide enum NixParseError {
-  Unexpected(TextRange),
-  UnexpectedExtra(TextRange),
-  UnexpectedWanted((SyntaxToken, TextRange, List<SyntaxToken>)),
-  UnexpectedDoubleBind(TextRange),
-  UnexpectedEof,
-  UnexpectedEofWanted(List<SyntaxToken>),
-  DuplicatedArgs((TextRange, String)),
-  RecursionLimitExceeded,
-  Unknown,
+provide enum Attr {
+  Str(String),
+  Ident(Identifier),
+  Dynamic(Expression),
+}
+provide enum StringPart {
+  Raw(String),
+  Dynamic(Expression),
 }
 
 
@@ -176,7 +156,7 @@ provide module Nix {
   foreign wasm wit_bindgen_parse: (WasmI32, WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
   @unsafe
-  provide let parse: (String) => Result<NixExpr, NixParseError> = (nixSource) => {
+  provide let parse: (String) => Result<Expression, String> = (nixSource) => {
     let vec_list_canon_lower = nixSource
     let ptr_list_canon_lower = WasmI32.(+)(WasmI32.fromGrain(vec_list_canon_lower), 8n)
     let len_list_canon_lower = WasmI32.load(WasmI32.fromGrain(vec_list_canon_lower), 4n)
@@ -184,1498 +164,809 @@ provide module Nix {
     match (WasmI32.load8U(_RET_AREA, 0n)) {
       0n => {
         
-        Ok(match (WasmI32.load8U(_RET_AREA, 4n)) {
+        Ok(match (WasmI32.load8U(_RET_AREA, 8n)) {
           0n => {
-            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Apply
-            Apply(handle_lift)
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Select
+            Select(handle_lift)
           },
           1n => {
-            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
             Assert(handle_lift0)
           },
           2n => {
-            Error
+            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
+            BinaryOperation(handle_lift1)
           },
           3n => {
-            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfElse
-            IfElse(handle_lift1)
+            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
+            Error(handle_lift2)
           },
           4n => {
-            Select
+            let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
+            Function(handle_lift3)
           },
           5n => {
-            Str
+            let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
+            FunctionApplication(handle_lift4)
           },
           6n => {
-            Path
+            let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
+            HasAttribute(handle_lift5)
           },
           7n => {
-            Literal
+            let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
+            Identifier(handle_lift6)
           },
           8n => {
-            Lambda
+            let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
+            IfThenElse(handle_lift7)
           },
           9n => {
-            LegacyLet
+            let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
+            LetIn(handle_lift8)
           },
           10n => {
-            LetIn
+            let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
+            List(handle_lift9)
           },
           11n => {
-            List
+            let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
+            Path(handle_lift10)
           },
           12n => {
-            BinOp
+            let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
+            String(handle_lift11)
           },
           13n => {
-            Paren
+            Literal(match (WasmI32.load8U(_RET_AREA, 16n)) {
+              0n => {
+                Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 24n))): Float64)
+              },
+              1n => {
+                Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 24n))): Int64)
+              },
+              _ => {
+                Uri
+              },
+            })
           },
           14n => {
-            Root
+            let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
+            UnaryOperation(handle_lift12)
           },
           15n => {
-            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttrSet
-            AttrSet(handle_lift2)
+            let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
+            With(handle_lift13)
           },
           16n => {
-            UnaryOp
-          },
-          17n => {
-            Ident
-          },
-          18n => {
-            With
-          },
-          19n => {
-            HasAttr
+            let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
+            Root(handle_lift14)
           },
           _ => {
-            InvalidNode
+            let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
+            AttributeSet(handle_lift15)
           },
         })
       },
       1n => {
-        
-        Err(match (WasmI32.load8U(_RET_AREA, 4n)) {
-          0n => {
-            Unexpected({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 })
-          },
-          1n => {
-            UnexpectedExtra({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 })
-          },
-          2n => {
-            let base_list_lift = WasmI32.load(_RET_AREA, 20n)
-            let len_list_lift = WasmI32.load(_RET_AREA, 24n)
-            let mut result_list_lift = []
-            Memory.incRef(WasmI32.fromGrain(result_list_lift))
-            for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
-              let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 1n))
-              result_list_lift = [match (WasmI32.load8U(base, 0n)) {
-                0n => {
-                  TokenComment
-                },
-                1n => {
-                  TokenError
-                },
-                2n => {
-                  TokenWhitespace
-                },
-                3n => {
-                  TokenAssert
-                },
-                4n => {
-                  TokenElse
-                },
-                5n => {
-                  TokenIf
-                },
-                6n => {
-                  TokenIn
-                },
-                7n => {
-                  TokenInherit
-                },
-                8n => {
-                  TokenLet
-                },
-                9n => {
-                  TokenOr
-                },
-                10n => {
-                  TokenRec
-                },
-                11n => {
-                  TokenThen
-                },
-                12n => {
-                  TokenWith
-                },
-                13n => {
-                  TokenLBrace
-                },
-                14n => {
-                  TokenRBrace
-                },
-                15n => {
-                  TokenLBrack
-                },
-                16n => {
-                  TokenRBrack
-                },
-                17n => {
-                  TokenAssign
-                },
-                18n => {
-                  TokenAt
-                },
-                19n => {
-                  TokenColon
-                },
-                20n => {
-                  TokenComma
-                },
-                21n => {
-                  TokenDot
-                },
-                22n => {
-                  TokenEllipsis
-                },
-                23n => {
-                  TokenQuestion
-                },
-                24n => {
-                  TokenSemicolon
-                },
-                25n => {
-                  TokenLParen
-                },
-                26n => {
-                  TokenRParen
-                },
-                27n => {
-                  TokenConcat
-                },
-                28n => {
-                  TokenInvert
-                },
-                29n => {
-                  TokenUpdate
-                },
-                30n => {
-                  TokenAdd
-                },
-                31n => {
-                  TokenSub
-                },
-                32n => {
-                  TokenMul
-                },
-                33n => {
-                  TokenDiv
-                },
-                34n => {
-                  TokenAndAnd
-                },
-                35n => {
-                  TokenEqual
-                },
-                36n => {
-                  TokenImplication
-                },
-                37n => {
-                  TokenLess
-                },
-                38n => {
-                  TokenLessOrEq
-                },
-                39n => {
-                  TokenMore
-                },
-                40n => {
-                  TokenMoreOrEq
-                },
-                41n => {
-                  TokenNotEqual
-                },
-                42n => {
-                  TokenOrOr
-                },
-                43n => {
-                  TokenFloat
-                },
-                44n => {
-                  TokenIdent
-                },
-                45n => {
-                  TokenInteger
-                },
-                46n => {
-                  TokenInterpolEnd
-                },
-                47n => {
-                  TokenInterpolStart
-                },
-                48n => {
-                  TokenPath
-                },
-                49n => {
-                  TokenUri
-                },
-                50n => {
-                  TokenStringContent
-                },
-                51n => {
-                  TokenStringEnd
-                },
-                52n => {
-                  TokenStringStart
-                },
-                53n => {
-                  NodeApply
-                },
-                54n => {
-                  NodeAssert
-                },
-                55n => {
-                  NodeAttrpath
-                },
-                56n => {
-                  NodeDynamic
-                },
-                57n => {
-                  NodeError
-                },
-                58n => {
-                  NodeIdent
-                },
-                59n => {
-                  NodeIfElse
-                },
-                60n => {
-                  NodeSelect
-                },
-                61n => {
-                  NodeInherit
-                },
-                62n => {
-                  NodeInheritFrom
-                },
-                63n => {
-                  NodeString
-                },
-                64n => {
-                  NodeInterpol
-                },
-                65n => {
-                  NodeLambda
-                },
-                66n => {
-                  NodeIdentParam
-                },
-                67n => {
-                  NodeLegacyLet
-                },
-                68n => {
-                  NodeLetIn
-                },
-                69n => {
-                  NodeList
-                },
-                70n => {
-                  NodeBinOp
-                },
-                71n => {
-                  NodeParen
-                },
-                72n => {
-                  NodePattern
-                },
-                73n => {
-                  NodePatBind
-                },
-                74n => {
-                  NodePatEntry
-                },
-                75n => {
-                  NodeRoot
-                },
-                76n => {
-                  NodeAttrSet
-                },
-                77n => {
-                  NodeAttrpathValue
-                },
-                78n => {
-                  NodeUnaryOp
-                },
-                79n => {
-                  NodeLiteral
-                },
-                80n => {
-                  NodeWith
-                },
-                81n => {
-                  NodePath
-                },
-                82n => {
-                  NodeHasAttr
-                },
-                _ => {
-                  Last
-                },
-              }, ...result_list_lift]
-            }
-            UnexpectedWanted((match (WasmI32.load8U(_RET_AREA, 8n)) {
-              0n => {
-                TokenComment
-              },
-              1n => {
-                TokenError
-              },
-              2n => {
-                TokenWhitespace
-              },
-              3n => {
-                TokenAssert
-              },
-              4n => {
-                TokenElse
-              },
-              5n => {
-                TokenIf
-              },
-              6n => {
-                TokenIn
-              },
-              7n => {
-                TokenInherit
-              },
-              8n => {
-                TokenLet
-              },
-              9n => {
-                TokenOr
-              },
-              10n => {
-                TokenRec
-              },
-              11n => {
-                TokenThen
-              },
-              12n => {
-                TokenWith
-              },
-              13n => {
-                TokenLBrace
-              },
-              14n => {
-                TokenRBrace
-              },
-              15n => {
-                TokenLBrack
-              },
-              16n => {
-                TokenRBrack
-              },
-              17n => {
-                TokenAssign
-              },
-              18n => {
-                TokenAt
-              },
-              19n => {
-                TokenColon
-              },
-              20n => {
-                TokenComma
-              },
-              21n => {
-                TokenDot
-              },
-              22n => {
-                TokenEllipsis
-              },
-              23n => {
-                TokenQuestion
-              },
-              24n => {
-                TokenSemicolon
-              },
-              25n => {
-                TokenLParen
-              },
-              26n => {
-                TokenRParen
-              },
-              27n => {
-                TokenConcat
-              },
-              28n => {
-                TokenInvert
-              },
-              29n => {
-                TokenUpdate
-              },
-              30n => {
-                TokenAdd
-              },
-              31n => {
-                TokenSub
-              },
-              32n => {
-                TokenMul
-              },
-              33n => {
-                TokenDiv
-              },
-              34n => {
-                TokenAndAnd
-              },
-              35n => {
-                TokenEqual
-              },
-              36n => {
-                TokenImplication
-              },
-              37n => {
-                TokenLess
-              },
-              38n => {
-                TokenLessOrEq
-              },
-              39n => {
-                TokenMore
-              },
-              40n => {
-                TokenMoreOrEq
-              },
-              41n => {
-                TokenNotEqual
-              },
-              42n => {
-                TokenOrOr
-              },
-              43n => {
-                TokenFloat
-              },
-              44n => {
-                TokenIdent
-              },
-              45n => {
-                TokenInteger
-              },
-              46n => {
-                TokenInterpolEnd
-              },
-              47n => {
-                TokenInterpolStart
-              },
-              48n => {
-                TokenPath
-              },
-              49n => {
-                TokenUri
-              },
-              50n => {
-                TokenStringContent
-              },
-              51n => {
-                TokenStringEnd
-              },
-              52n => {
-                TokenStringStart
-              },
-              53n => {
-                NodeApply
-              },
-              54n => {
-                NodeAssert
-              },
-              55n => {
-                NodeAttrpath
-              },
-              56n => {
-                NodeDynamic
-              },
-              57n => {
-                NodeError
-              },
-              58n => {
-                NodeIdent
-              },
-              59n => {
-                NodeIfElse
-              },
-              60n => {
-                NodeSelect
-              },
-              61n => {
-                NodeInherit
-              },
-              62n => {
-                NodeInheritFrom
-              },
-              63n => {
-                NodeString
-              },
-              64n => {
-                NodeInterpol
-              },
-              65n => {
-                NodeLambda
-              },
-              66n => {
-                NodeIdentParam
-              },
-              67n => {
-                NodeLegacyLet
-              },
-              68n => {
-                NodeLetIn
-              },
-              69n => {
-                NodeList
-              },
-              70n => {
-                NodeBinOp
-              },
-              71n => {
-                NodeParen
-              },
-              72n => {
-                NodePattern
-              },
-              73n => {
-                NodePatBind
-              },
-              74n => {
-                NodePatEntry
-              },
-              75n => {
-                NodeRoot
-              },
-              76n => {
-                NodeAttrSet
-              },
-              77n => {
-                NodeAttrpathValue
-              },
-              78n => {
-                NodeUnaryOp
-              },
-              79n => {
-                NodeLiteral
-              },
-              80n => {
-                NodeWith
-              },
-              81n => {
-                NodePath
-              },
-              82n => {
-                NodeHasAttr
-              },
-              _ => {
-                Last
-              },
-            }, { start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 16n))): Uint32 }, result_list_lift))
-          },
-          3n => {
-            UnexpectedDoubleBind({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 })
-          },
-          4n => {
-            UnexpectedEof
-          },
-          5n => {
-            let base_list_lift3 = WasmI32.load(_RET_AREA, 8n)
-            let len_list_lift3 = WasmI32.load(_RET_AREA, 12n)
-            let mut result_list_lift3 = []
-            Memory.incRef(WasmI32.fromGrain(result_list_lift3))
-            for (let mut i = WasmI32.(-)(len_list_lift3, 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {
-              let base = WasmI32.(+)(base_list_lift3, WasmI32.(*)(i, 1n))
-              result_list_lift3 = [match (WasmI32.load8U(base, 0n)) {
-                0n => {
-                  TokenComment
-                },
-                1n => {
-                  TokenError
-                },
-                2n => {
-                  TokenWhitespace
-                },
-                3n => {
-                  TokenAssert
-                },
-                4n => {
-                  TokenElse
-                },
-                5n => {
-                  TokenIf
-                },
-                6n => {
-                  TokenIn
-                },
-                7n => {
-                  TokenInherit
-                },
-                8n => {
-                  TokenLet
-                },
-                9n => {
-                  TokenOr
-                },
-                10n => {
-                  TokenRec
-                },
-                11n => {
-                  TokenThen
-                },
-                12n => {
-                  TokenWith
-                },
-                13n => {
-                  TokenLBrace
-                },
-                14n => {
-                  TokenRBrace
-                },
-                15n => {
-                  TokenLBrack
-                },
-                16n => {
-                  TokenRBrack
-                },
-                17n => {
-                  TokenAssign
-                },
-                18n => {
-                  TokenAt
-                },
-                19n => {
-                  TokenColon
-                },
-                20n => {
-                  TokenComma
-                },
-                21n => {
-                  TokenDot
-                },
-                22n => {
-                  TokenEllipsis
-                },
-                23n => {
-                  TokenQuestion
-                },
-                24n => {
-                  TokenSemicolon
-                },
-                25n => {
-                  TokenLParen
-                },
-                26n => {
-                  TokenRParen
-                },
-                27n => {
-                  TokenConcat
-                },
-                28n => {
-                  TokenInvert
-                },
-                29n => {
-                  TokenUpdate
-                },
-                30n => {
-                  TokenAdd
-                },
-                31n => {
-                  TokenSub
-                },
-                32n => {
-                  TokenMul
-                },
-                33n => {
-                  TokenDiv
-                },
-                34n => {
-                  TokenAndAnd
-                },
-                35n => {
-                  TokenEqual
-                },
-                36n => {
-                  TokenImplication
-                },
-                37n => {
-                  TokenLess
-                },
-                38n => {
-                  TokenLessOrEq
-                },
-                39n => {
-                  TokenMore
-                },
-                40n => {
-                  TokenMoreOrEq
-                },
-                41n => {
-                  TokenNotEqual
-                },
-                42n => {
-                  TokenOrOr
-                },
-                43n => {
-                  TokenFloat
-                },
-                44n => {
-                  TokenIdent
-                },
-                45n => {
-                  TokenInteger
-                },
-                46n => {
-                  TokenInterpolEnd
-                },
-                47n => {
-                  TokenInterpolStart
-                },
-                48n => {
-                  TokenPath
-                },
-                49n => {
-                  TokenUri
-                },
-                50n => {
-                  TokenStringContent
-                },
-                51n => {
-                  TokenStringEnd
-                },
-                52n => {
-                  TokenStringStart
-                },
-                53n => {
-                  NodeApply
-                },
-                54n => {
-                  NodeAssert
-                },
-                55n => {
-                  NodeAttrpath
-                },
-                56n => {
-                  NodeDynamic
-                },
-                57n => {
-                  NodeError
-                },
-                58n => {
-                  NodeIdent
-                },
-                59n => {
-                  NodeIfElse
-                },
-                60n => {
-                  NodeSelect
-                },
-                61n => {
-                  NodeInherit
-                },
-                62n => {
-                  NodeInheritFrom
-                },
-                63n => {
-                  NodeString
-                },
-                64n => {
-                  NodeInterpol
-                },
-                65n => {
-                  NodeLambda
-                },
-                66n => {
-                  NodeIdentParam
-                },
-                67n => {
-                  NodeLegacyLet
-                },
-                68n => {
-                  NodeLetIn
-                },
-                69n => {
-                  NodeList
-                },
-                70n => {
-                  NodeBinOp
-                },
-                71n => {
-                  NodeParen
-                },
-                72n => {
-                  NodePattern
-                },
-                73n => {
-                  NodePatBind
-                },
-                74n => {
-                  NodePatEntry
-                },
-                75n => {
-                  NodeRoot
-                },
-                76n => {
-                  NodeAttrSet
-                },
-                77n => {
-                  NodeAttrpathValue
-                },
-                78n => {
-                  NodeUnaryOp
-                },
-                79n => {
-                  NodeLiteral
-                },
-                80n => {
-                  NodeWith
-                },
-                81n => {
-                  NodePath
-                },
-                82n => {
-                  NodeHasAttr
-                },
-                _ => {
-                  Last
-                },
-              }, ...result_list_lift3]
-            }
-            UnexpectedEofWanted(result_list_lift3)
-          },
-          6n => {
-            let len_string_lift = WasmI32.load(_RET_AREA, 20n)
-            let str_string_lift = DataStructures.allocateString(len_string_lift)
-            Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 16n), len_string_lift)
-            let str_string_lift = WasmI32.toGrain(str_string_lift): String
-            DuplicatedArgs(({ start: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 8n))): Uint32, end: WasmI32.toGrain(DataStructures.newUint32(WasmI32.load(_RET_AREA, 12n))): Uint32 }, str_string_lift))
-          },
-          7n => {
-            RecursionLimitExceeded
-          },
-          _ => {
-            Unknown
-          },
-        })
+        let len_string_lift = WasmI32.load(_RET_AREA, 12n)
+        let str_string_lift = DataStructures.allocateString(len_string_lift)
+        Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 8n), len_string_lift)
+        let str_string_lift = WasmI32.toGrain(str_string_lift): String
+
+        Err(str_string_lift)
       },
       _ => fail "invalid enum discriminant",
     }
   }
 
 
-  provide module Apply {
-    @externalName("[constructor]apply")
-    foreign wasm wit_bindgen_constructorApply: (WasmI32, WasmI32, WasmI32, WasmI32) => WasmI32 from "spotandjake:snow/nix"
+  provide module AttributePathValue {
+    @externalName("[method]attribute-path-value.get-attr-list")
+    foreign wasm wit_bindgen_methodAttributePathValue_getAttrList: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let constructor: (NixExpr, NixExpr) => Apply = (arg, lambda) => {
-      let mut resultvariant_lower_0 = 0n
-      let mut resultvariant_lower_1 = 0n
-      match (arg) {
-        Apply(e) => {
-          resultvariant_lower_0 = 0n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Assert(e) => {
-          resultvariant_lower_0 = 1n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower_0 = 2n
-          resultvariant_lower_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower_0 = 3n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower_0 = 4n
-          resultvariant_lower_1 = 0n
-        },
-        Str => {
-          resultvariant_lower_0 = 5n
-          resultvariant_lower_1 = 0n
-        },
-        Path => {
-          resultvariant_lower_0 = 6n
-          resultvariant_lower_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower_0 = 7n
-          resultvariant_lower_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower_0 = 8n
-          resultvariant_lower_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower_0 = 9n
-          resultvariant_lower_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower_0 = 10n
-          resultvariant_lower_1 = 0n
-        },
-        List => {
-          resultvariant_lower_0 = 11n
-          resultvariant_lower_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower_0 = 12n
-          resultvariant_lower_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower_0 = 13n
-          resultvariant_lower_1 = 0n
-        },
-        Root => {
-          resultvariant_lower_0 = 14n
-          resultvariant_lower_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower_0 = 15n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower_0 = 16n
-          resultvariant_lower_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower_0 = 17n
-          resultvariant_lower_1 = 0n
-        },
-        With => {
-          resultvariant_lower_0 = 18n
-          resultvariant_lower_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower_0 = 19n
-          resultvariant_lower_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower_0 = 20n
-          resultvariant_lower_1 = 0n
-        },
+    provide let getAttrList: (AttributePathValue) => List<Attr> = (self) => {
+      wit_bindgen_methodAttributePathValue_getAttrList(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 32n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let len_string_lift = WasmI32.load(base, 12n)
+            let str_string_lift = DataStructures.allocateString(len_string_lift)
+            Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(base, 8n), len_string_lift)
+            let str_string_lift = WasmI32.toGrain(str_string_lift): String
+            Str(str_string_lift)
+          },
+          1n => {
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Identifier
+            Ident(handle_lift)
+          },
+          _ => {
+            Dynamic(match (WasmI32.load8U(base, 8n)) {
+              0n => {
+                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Select
+                Select(handle_lift0)
+              },
+              1n => {
+                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
+                Assert(handle_lift1)
+              },
+              2n => {
+                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
+                BinaryOperation(handle_lift2)
+              },
+              3n => {
+                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
+                Error(handle_lift3)
+              },
+              4n => {
+                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
+                Function(handle_lift4)
+              },
+              5n => {
+                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
+                FunctionApplication(handle_lift5)
+              },
+              6n => {
+                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
+                HasAttribute(handle_lift6)
+              },
+              7n => {
+                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
+                Identifier(handle_lift7)
+              },
+              8n => {
+                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
+                IfThenElse(handle_lift8)
+              },
+              9n => {
+                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
+                LetIn(handle_lift9)
+              },
+              10n => {
+                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
+                List(handle_lift10)
+              },
+              11n => {
+                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
+                Path(handle_lift11)
+              },
+              12n => {
+                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
+                String(handle_lift12)
+              },
+              13n => {
+                Literal(match (WasmI32.load8U(base, 16n)) {
+                  0n => {
+                    Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 24n))): Float64)
+                  },
+                  1n => {
+                    Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(base, 24n))): Int64)
+                  },
+                  _ => {
+                    Uri
+                  },
+                })
+              },
+              14n => {
+                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
+                UnaryOperation(handle_lift13)
+              },
+              15n => {
+                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
+                With(handle_lift14)
+              },
+              16n => {
+                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
+                Root(handle_lift15)
+              },
+              _ => {
+                let handle_lift16 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
+                AttributeSet(handle_lift16)
+              },
+            })
+          },
+        }, ...result_list_lift]
       }
-      let mut resultvariant_lower0_0 = 0n
-      let mut resultvariant_lower0_1 = 0n
-      match (lambda) {
-        Apply(e) => {
-          resultvariant_lower0_0 = 0n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Assert(e) => {
-          resultvariant_lower0_0 = 1n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower0_0 = 2n
-          resultvariant_lower0_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower0_0 = 3n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower0_0 = 4n
-          resultvariant_lower0_1 = 0n
-        },
-        Str => {
-          resultvariant_lower0_0 = 5n
-          resultvariant_lower0_1 = 0n
-        },
-        Path => {
-          resultvariant_lower0_0 = 6n
-          resultvariant_lower0_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower0_0 = 7n
-          resultvariant_lower0_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower0_0 = 8n
-          resultvariant_lower0_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower0_0 = 9n
-          resultvariant_lower0_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower0_0 = 10n
-          resultvariant_lower0_1 = 0n
-        },
-        List => {
-          resultvariant_lower0_0 = 11n
-          resultvariant_lower0_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower0_0 = 12n
-          resultvariant_lower0_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower0_0 = 13n
-          resultvariant_lower0_1 = 0n
-        },
-        Root => {
-          resultvariant_lower0_0 = 14n
-          resultvariant_lower0_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower0_0 = 15n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower0_0 = 16n
-          resultvariant_lower0_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower0_0 = 17n
-          resultvariant_lower0_1 = 0n
-        },
-        With => {
-          resultvariant_lower0_0 = 18n
-          resultvariant_lower0_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower0_0 = 19n
-          resultvariant_lower0_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower0_0 = 20n
-          resultvariant_lower0_1 = 0n
-        },
-      }
-      let ret = wit_bindgen_constructorApply(resultvariant_lower_0, resultvariant_lower_1, resultvariant_lower0_0, resultvariant_lower0_1)
-      let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(ret)),}: Apply
-      handle_lift
+      result_list_lift
     }
 
 
-    @externalName("[method]apply.get-argument")
-    foreign wasm wit_bindgen_methodApply_getArgument: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]attribute-path-value.get-expr")
+    foreign wasm wit_bindgen_methodAttributePathValue_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getArgument: (Apply) => NixExpr = (self) => {
-      wit_bindgen_methodApply_getArgument(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getExpr: (AttributePathValue) => Expression = (self) => {
+      wit_bindgen_methodAttributePathValue_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
           Assert(handle_lift0)
         },
         2n => {
-          Error
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          Select
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          Str
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          Path
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          Literal
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          Lambda
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          LegacyLet
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          LetIn
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          List
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
-          BinOp
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
         },
         13n => {
-          Paren
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
         },
         14n => {
-          Root
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
         },
         16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          InvalidNode
-        },
-      }
-    }
-
-
-    @externalName("[method]apply.get-lambda")
-    foreign wasm wit_bindgen_methodApply_getLambda: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
-
-    @unsafe
-    provide let getLambda: (Apply) => NixExpr = (self) => {
-      wit_bindgen_methodApply_getLambda(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
-      match (WasmI32.load8U(_RET_AREA, 0n)) {
-        0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
-        },
-        1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
-          Assert(handle_lift0)
-        },
-        2n => {
-          Error
-        },
-        3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
-        },
-        4n => {
-          Select
-        },
-        5n => {
-          Str
-        },
-        6n => {
-          Path
-        },
-        7n => {
-          Literal
-        },
-        8n => {
-          Lambda
-        },
-        9n => {
-          LegacyLet
-        },
-        10n => {
-          LetIn
-        },
-        11n => {
-          List
-        },
-        12n => {
-          BinOp
-        },
-        13n => {
-          Paren
-        },
-        14n => {
-          Root
-        },
-        15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
-        },
-        16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
-        },
-        _ => {
-          InvalidNode
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
 
   }
 
-  provide module Assert {
-    @externalName("[constructor]assert")
-    foreign wasm wit_bindgen_constructorAssert: (WasmI32, WasmI32, WasmI32, WasmI32) => WasmI32 from "spotandjake:snow/nix"
+  provide module Inherit {
+    @externalName("[method]inherit.get-expr-from")
+    foreign wasm wit_bindgen_methodInherit_getExprFrom: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let constructor: (NixExpr, NixExpr) => Assert = (body, condition) => {
-      let mut resultvariant_lower_0 = 0n
-      let mut resultvariant_lower_1 = 0n
-      match (body) {
-        Apply(e) => {
-          resultvariant_lower_0 = 0n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
+    provide let getExprFrom: (Inherit) => Option<Expression> = (self) => {
+      wit_bindgen_methodInherit_getExprFrom(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => None,
+        1n => {
+          
+          Some(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Select
+              Select(handle_lift)
+            },
+            1n => {
+              let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
+              Assert(handle_lift0)
+            },
+            2n => {
+              let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
+              BinaryOperation(handle_lift1)
+            },
+            3n => {
+              let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
+              Error(handle_lift2)
+            },
+            4n => {
+              let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
+              Function(handle_lift3)
+            },
+            5n => {
+              let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
+              FunctionApplication(handle_lift4)
+            },
+            6n => {
+              let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
+              HasAttribute(handle_lift5)
+            },
+            7n => {
+              let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
+              Identifier(handle_lift6)
+            },
+            8n => {
+              let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
+              IfThenElse(handle_lift7)
+            },
+            9n => {
+              let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
+              LetIn(handle_lift8)
+            },
+            10n => {
+              let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
+              List(handle_lift9)
+            },
+            11n => {
+              let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
+              Path(handle_lift10)
+            },
+            12n => {
+              let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
+              String(handle_lift11)
+            },
+            13n => {
+              Literal(match (WasmI32.load8U(_RET_AREA, 16n)) {
+                0n => {
+                  Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 24n))): Float64)
+                },
+                1n => {
+                  Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 24n))): Int64)
+                },
+                _ => {
+                  Uri
+                },
+              })
+            },
+            14n => {
+              let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
+              UnaryOperation(handle_lift12)
+            },
+            15n => {
+              let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
+              With(handle_lift13)
+            },
+            16n => {
+              let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
+              Root(handle_lift14)
+            },
+            _ => {
+              let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
+              AttributeSet(handle_lift15)
+            },
+          })
         },
-        Assert(e) => {
-          resultvariant_lower_0 = 1n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower_0 = 2n
-          resultvariant_lower_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower_0 = 3n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower_0 = 4n
-          resultvariant_lower_1 = 0n
-        },
-        Str => {
-          resultvariant_lower_0 = 5n
-          resultvariant_lower_1 = 0n
-        },
-        Path => {
-          resultvariant_lower_0 = 6n
-          resultvariant_lower_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower_0 = 7n
-          resultvariant_lower_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower_0 = 8n
-          resultvariant_lower_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower_0 = 9n
-          resultvariant_lower_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower_0 = 10n
-          resultvariant_lower_1 = 0n
-        },
-        List => {
-          resultvariant_lower_0 = 11n
-          resultvariant_lower_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower_0 = 12n
-          resultvariant_lower_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower_0 = 13n
-          resultvariant_lower_1 = 0n
-        },
-        Root => {
-          resultvariant_lower_0 = 14n
-          resultvariant_lower_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower_0 = 15n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower_0 = 16n
-          resultvariant_lower_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower_0 = 17n
-          resultvariant_lower_1 = 0n
-        },
-        With => {
-          resultvariant_lower_0 = 18n
-          resultvariant_lower_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower_0 = 19n
-          resultvariant_lower_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower_0 = 20n
-          resultvariant_lower_1 = 0n
-        },
+        _ => fail "invalid enum discriminant",
       }
-      let mut resultvariant_lower0_0 = 0n
-      let mut resultvariant_lower0_1 = 0n
-      match (condition) {
-        Apply(e) => {
-          resultvariant_lower0_0 = 0n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Assert(e) => {
-          resultvariant_lower0_0 = 1n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower0_0 = 2n
-          resultvariant_lower0_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower0_0 = 3n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower0_0 = 4n
-          resultvariant_lower0_1 = 0n
-        },
-        Str => {
-          resultvariant_lower0_0 = 5n
-          resultvariant_lower0_1 = 0n
-        },
-        Path => {
-          resultvariant_lower0_0 = 6n
-          resultvariant_lower0_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower0_0 = 7n
-          resultvariant_lower0_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower0_0 = 8n
-          resultvariant_lower0_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower0_0 = 9n
-          resultvariant_lower0_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower0_0 = 10n
-          resultvariant_lower0_1 = 0n
-        },
-        List => {
-          resultvariant_lower0_0 = 11n
-          resultvariant_lower0_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower0_0 = 12n
-          resultvariant_lower0_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower0_0 = 13n
-          resultvariant_lower0_1 = 0n
-        },
-        Root => {
-          resultvariant_lower0_0 = 14n
-          resultvariant_lower0_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower0_0 = 15n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower0_0 = 16n
-          resultvariant_lower0_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower0_0 = 17n
-          resultvariant_lower0_1 = 0n
-        },
-        With => {
-          resultvariant_lower0_0 = 18n
-          resultvariant_lower0_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower0_0 = 19n
-          resultvariant_lower0_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower0_0 = 20n
-          resultvariant_lower0_1 = 0n
-        },
-      }
-      let ret = wit_bindgen_constructorAssert(resultvariant_lower_0, resultvariant_lower_1, resultvariant_lower0_0, resultvariant_lower0_1)
-      let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(ret)),}: Assert
-      handle_lift
     }
 
 
-    @externalName("[method]assert.get-body")
-    foreign wasm wit_bindgen_methodAssert_getBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]inherit.get-attr-list")
+    foreign wasm wit_bindgen_methodInherit_getAttrList: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getBody: (Assert) => NixExpr = (self) => {
-      wit_bindgen_methodAssert_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getAttrList: (Inherit) => List<Attr> = (self) => {
+      wit_bindgen_methodInherit_getAttrList(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 32n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let len_string_lift = WasmI32.load(base, 12n)
+            let str_string_lift = DataStructures.allocateString(len_string_lift)
+            Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(base, 8n), len_string_lift)
+            let str_string_lift = WasmI32.toGrain(str_string_lift): String
+            Str(str_string_lift)
+          },
+          1n => {
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Identifier
+            Ident(handle_lift)
+          },
+          _ => {
+            Dynamic(match (WasmI32.load8U(base, 8n)) {
+              0n => {
+                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Select
+                Select(handle_lift0)
+              },
+              1n => {
+                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
+                Assert(handle_lift1)
+              },
+              2n => {
+                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
+                BinaryOperation(handle_lift2)
+              },
+              3n => {
+                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
+                Error(handle_lift3)
+              },
+              4n => {
+                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
+                Function(handle_lift4)
+              },
+              5n => {
+                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
+                FunctionApplication(handle_lift5)
+              },
+              6n => {
+                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
+                HasAttribute(handle_lift6)
+              },
+              7n => {
+                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
+                Identifier(handle_lift7)
+              },
+              8n => {
+                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
+                IfThenElse(handle_lift8)
+              },
+              9n => {
+                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
+                LetIn(handle_lift9)
+              },
+              10n => {
+                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
+                List(handle_lift10)
+              },
+              11n => {
+                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
+                Path(handle_lift11)
+              },
+              12n => {
+                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
+                String(handle_lift12)
+              },
+              13n => {
+                Literal(match (WasmI32.load8U(base, 16n)) {
+                  0n => {
+                    Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 24n))): Float64)
+                  },
+                  1n => {
+                    Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(base, 24n))): Int64)
+                  },
+                  _ => {
+                    Uri
+                  },
+                })
+              },
+              14n => {
+                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
+                UnaryOperation(handle_lift13)
+              },
+              15n => {
+                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
+                With(handle_lift14)
+              },
+              16n => {
+                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
+                Root(handle_lift15)
+              },
+              _ => {
+                let handle_lift16 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
+                AttributeSet(handle_lift16)
+              },
+            })
+          },
+        }, ...result_list_lift]
+      }
+      result_list_lift
+    }
+
+  }
+
+  provide module Select {
+    @externalName("[method]select.get-base-expr")
+    foreign wasm wit_bindgen_methodSelect_getBaseExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getBaseExpr: (Select) => Expression = (self) => {
+      wit_bindgen_methodSelect_getBaseExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
           Assert(handle_lift0)
         },
         2n => {
-          Error
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          Select
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          Str
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          Path
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          Literal
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          Lambda
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          LegacyLet
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          LetIn
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          List
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
-          BinOp
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
         },
         13n => {
-          Paren
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
         },
         14n => {
-          Root
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
         },
         16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          InvalidNode
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+
+    @externalName("[method]select.get-default-expr")
+    foreign wasm wit_bindgen_methodSelect_getDefaultExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getDefaultExpr: (Select) => Option<Expression> = (self) => {
+      wit_bindgen_methodSelect_getDefaultExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => None,
+        1n => {
+          
+          Some(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Select
+              Select(handle_lift)
+            },
+            1n => {
+              let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Assert
+              Assert(handle_lift0)
+            },
+            2n => {
+              let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: BinaryOperation
+              BinaryOperation(handle_lift1)
+            },
+            3n => {
+              let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Error
+              Error(handle_lift2)
+            },
+            4n => {
+              let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Function
+              Function(handle_lift3)
+            },
+            5n => {
+              let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: FunctionApplication
+              FunctionApplication(handle_lift4)
+            },
+            6n => {
+              let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: HasAttribute
+              HasAttribute(handle_lift5)
+            },
+            7n => {
+              let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Identifier
+              Identifier(handle_lift6)
+            },
+            8n => {
+              let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: IfThenElse
+              IfThenElse(handle_lift7)
+            },
+            9n => {
+              let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: LetIn
+              LetIn(handle_lift8)
+            },
+            10n => {
+              let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: ListNode
+              List(handle_lift9)
+            },
+            11n => {
+              let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Path
+              Path(handle_lift10)
+            },
+            12n => {
+              let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixString
+              String(handle_lift11)
+            },
+            13n => {
+              Literal(match (WasmI32.load8U(_RET_AREA, 16n)) {
+                0n => {
+                  Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 24n))): Float64)
+                },
+                1n => {
+                  Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 24n))): Int64)
+                },
+                _ => {
+                  Uri
+                },
+              })
+            },
+            14n => {
+              let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: UnaryOperation
+              UnaryOperation(handle_lift12)
+            },
+            15n => {
+              let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: NixWith
+              With(handle_lift13)
+            },
+            16n => {
+              let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: Root
+              Root(handle_lift14)
+            },
+            _ => {
+              let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 16n))),}: AttributeSet
+              AttributeSet(handle_lift15)
+            },
+          })
+        },
+        _ => fail "invalid enum discriminant",
+      }
+    }
+
+  }
+
+  provide module Assert {
+    @externalName("[method]assert.get-expr")
+    foreign wasm wit_bindgen_methodAssert_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getExpr: (Assert) => Expression = (self) => {
+      wit_bindgen_methodAssert_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
@@ -1685,601 +976,1790 @@ provide module Nix {
     foreign wasm wit_bindgen_methodAssert_getCondition: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getCondition: (Assert) => NixExpr = (self) => {
+    provide let getCondition: (Assert) => Expression = (self) => {
       wit_bindgen_methodAssert_getCondition(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
           Assert(handle_lift0)
         },
         2n => {
-          Error
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          Select
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          Str
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          Path
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          Literal
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          Lambda
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          LegacyLet
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          LetIn
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          List
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
-          BinOp
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
         },
         13n => {
-          Paren
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
         },
         14n => {
-          Root
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
         },
         16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          InvalidNode
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
 
   }
 
-  provide module IfElse {
-    @externalName("[constructor]if-else")
-    foreign wasm wit_bindgen_constructorIfElse: (WasmI32, WasmI32, WasmI32, WasmI32, WasmI32, WasmI32) => WasmI32 from "spotandjake:snow/nix"
+  provide module BinaryOperation {
+    @externalName("[method]binary-operation.get-lhs")
+    foreign wasm wit_bindgen_methodBinaryOperation_getLhs: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let constructor: (NixExpr, NixExpr, NixExpr) => IfElse = (condition, body, elseBody) => {
-      let mut resultvariant_lower_0 = 0n
-      let mut resultvariant_lower_1 = 0n
-      match (condition) {
-        Apply(e) => {
-          resultvariant_lower_0 = 0n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Assert(e) => {
-          resultvariant_lower_0 = 1n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower_0 = 2n
-          resultvariant_lower_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower_0 = 3n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower_0 = 4n
-          resultvariant_lower_1 = 0n
-        },
-        Str => {
-          resultvariant_lower_0 = 5n
-          resultvariant_lower_1 = 0n
-        },
-        Path => {
-          resultvariant_lower_0 = 6n
-          resultvariant_lower_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower_0 = 7n
-          resultvariant_lower_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower_0 = 8n
-          resultvariant_lower_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower_0 = 9n
-          resultvariant_lower_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower_0 = 10n
-          resultvariant_lower_1 = 0n
-        },
-        List => {
-          resultvariant_lower_0 = 11n
-          resultvariant_lower_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower_0 = 12n
-          resultvariant_lower_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower_0 = 13n
-          resultvariant_lower_1 = 0n
-        },
-        Root => {
-          resultvariant_lower_0 = 14n
-          resultvariant_lower_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower_0 = 15n
-          resultvariant_lower_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower_0 = 16n
-          resultvariant_lower_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower_0 = 17n
-          resultvariant_lower_1 = 0n
-        },
-        With => {
-          resultvariant_lower_0 = 18n
-          resultvariant_lower_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower_0 = 19n
-          resultvariant_lower_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower_0 = 20n
-          resultvariant_lower_1 = 0n
-        },
-      }
-      let mut resultvariant_lower0_0 = 0n
-      let mut resultvariant_lower0_1 = 0n
-      match (body) {
-        Apply(e) => {
-          resultvariant_lower0_0 = 0n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Assert(e) => {
-          resultvariant_lower0_0 = 1n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower0_0 = 2n
-          resultvariant_lower0_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower0_0 = 3n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower0_0 = 4n
-          resultvariant_lower0_1 = 0n
-        },
-        Str => {
-          resultvariant_lower0_0 = 5n
-          resultvariant_lower0_1 = 0n
-        },
-        Path => {
-          resultvariant_lower0_0 = 6n
-          resultvariant_lower0_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower0_0 = 7n
-          resultvariant_lower0_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower0_0 = 8n
-          resultvariant_lower0_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower0_0 = 9n
-          resultvariant_lower0_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower0_0 = 10n
-          resultvariant_lower0_1 = 0n
-        },
-        List => {
-          resultvariant_lower0_0 = 11n
-          resultvariant_lower0_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower0_0 = 12n
-          resultvariant_lower0_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower0_0 = 13n
-          resultvariant_lower0_1 = 0n
-        },
-        Root => {
-          resultvariant_lower0_0 = 14n
-          resultvariant_lower0_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower0_0 = 15n
-          resultvariant_lower0_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower0_0 = 16n
-          resultvariant_lower0_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower0_0 = 17n
-          resultvariant_lower0_1 = 0n
-        },
-        With => {
-          resultvariant_lower0_0 = 18n
-          resultvariant_lower0_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower0_0 = 19n
-          resultvariant_lower0_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower0_0 = 20n
-          resultvariant_lower0_1 = 0n
-        },
-      }
-      let mut resultvariant_lower1_0 = 0n
-      let mut resultvariant_lower1_1 = 0n
-      match (elseBody) {
-        Apply(e) => {
-          resultvariant_lower1_0 = 0n
-          resultvariant_lower1_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Assert(e) => {
-          resultvariant_lower1_0 = 1n
-          resultvariant_lower1_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Error => {
-          resultvariant_lower1_0 = 2n
-          resultvariant_lower1_1 = 0n
-        },
-        IfElse(e) => {
-          resultvariant_lower1_0 = 3n
-          resultvariant_lower1_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        Select => {
-          resultvariant_lower1_0 = 4n
-          resultvariant_lower1_1 = 0n
-        },
-        Str => {
-          resultvariant_lower1_0 = 5n
-          resultvariant_lower1_1 = 0n
-        },
-        Path => {
-          resultvariant_lower1_0 = 6n
-          resultvariant_lower1_1 = 0n
-        },
-        Literal => {
-          resultvariant_lower1_0 = 7n
-          resultvariant_lower1_1 = 0n
-        },
-        Lambda => {
-          resultvariant_lower1_0 = 8n
-          resultvariant_lower1_1 = 0n
-        },
-        LegacyLet => {
-          resultvariant_lower1_0 = 9n
-          resultvariant_lower1_1 = 0n
-        },
-        LetIn => {
-          resultvariant_lower1_0 = 10n
-          resultvariant_lower1_1 = 0n
-        },
-        List => {
-          resultvariant_lower1_0 = 11n
-          resultvariant_lower1_1 = 0n
-        },
-        BinOp => {
-          resultvariant_lower1_0 = 12n
-          resultvariant_lower1_1 = 0n
-        },
-        Paren => {
-          resultvariant_lower1_0 = 13n
-          resultvariant_lower1_1 = 0n
-        },
-        Root => {
-          resultvariant_lower1_0 = 14n
-          resultvariant_lower1_1 = 0n
-        },
-        AttrSet(e) => {
-          resultvariant_lower1_0 = 15n
-          resultvariant_lower1_1 = WasmI32.load(WasmI32.fromGrain(e.handle), 4n)
-        },
-        UnaryOp => {
-          resultvariant_lower1_0 = 16n
-          resultvariant_lower1_1 = 0n
-        },
-        Ident => {
-          resultvariant_lower1_0 = 17n
-          resultvariant_lower1_1 = 0n
-        },
-        With => {
-          resultvariant_lower1_0 = 18n
-          resultvariant_lower1_1 = 0n
-        },
-        HasAttr => {
-          resultvariant_lower1_0 = 19n
-          resultvariant_lower1_1 = 0n
-        },
-        InvalidNode => {
-          resultvariant_lower1_0 = 20n
-          resultvariant_lower1_1 = 0n
-        },
-      }
-      let ret = wit_bindgen_constructorIfElse(resultvariant_lower_0, resultvariant_lower_1, resultvariant_lower0_0, resultvariant_lower0_1, resultvariant_lower1_0, resultvariant_lower1_1)
-      let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(ret)),}: IfElse
-      handle_lift
-    }
-
-
-    @externalName("[method]if-else.get-condition")
-    foreign wasm wit_bindgen_methodIfElse_getCondition: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
-
-    @unsafe
-    provide let getCondition: (IfElse) => NixExpr = (self) => {
-      wit_bindgen_methodIfElse_getCondition(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getLhs: (BinaryOperation) => Expression = (self) => {
+      wit_bindgen_methodBinaryOperation_getLhs(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
           Assert(handle_lift0)
         },
         2n => {
-          Error
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          Select
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          Str
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          Path
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          Literal
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          Lambda
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          LegacyLet
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          LetIn
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          List
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
-          BinOp
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
         },
         13n => {
-          Paren
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
         },
         14n => {
-          Root
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
         },
         16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          InvalidNode
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
 
 
-    @externalName("[method]if-else.get-body")
-    foreign wasm wit_bindgen_methodIfElse_getBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]binary-operation.get-operator")
+    foreign wasm wit_bindgen_methodBinaryOperation_getOperator: (WasmI32) => WasmI32 from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getBody: (IfElse) => NixExpr = (self) => {
-      wit_bindgen_methodIfElse_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
-      match (WasmI32.load8U(_RET_AREA, 0n)) {
+    provide let getOperator: (BinaryOperation) => BinaryOperator = (self) => {
+      let ret = wit_bindgen_methodBinaryOperation_getOperator(WasmI32.load(WasmI32.fromGrain(self.handle), 4n))
+      match (ret) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
+          Concat
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
-          Assert(handle_lift0)
+          Update
         },
         2n => {
-          Error
+          Add
         },
         3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
+          Sub
         },
         4n => {
-          Select
+          Mul
         },
         5n => {
-          Str
+          Div
         },
         6n => {
-          Path
+          And
         },
         7n => {
-          Literal
+          Equal
         },
         8n => {
-          Lambda
+          Implication
         },
         9n => {
-          LegacyLet
+          Less
         },
         10n => {
-          LetIn
+          LessOrEq
         },
         11n => {
-          List
+          More
         },
         12n => {
-          BinOp
+          MoreOrEq
         },
         13n => {
-          Paren
-        },
-        14n => {
-          Root
-        },
-        15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
-        },
-        16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
+          NotEqual
         },
         _ => {
-          InvalidNode
+          Or
         },
       }
     }
 
 
-    @externalName("[method]if-else.get-else-body")
-    foreign wasm wit_bindgen_methodIfElse_getElseBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+    @externalName("[method]binary-operation.get-rhs")
+    foreign wasm wit_bindgen_methodBinaryOperation_getRhs: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let getElseBody: (IfElse) => NixExpr = (self) => {
-      wit_bindgen_methodIfElse_getElseBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+    provide let getRhs: (BinaryOperation) => Expression = (self) => {
+      wit_bindgen_methodBinaryOperation_getRhs(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
       match (WasmI32.load8U(_RET_AREA, 0n)) {
         0n => {
-          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Apply
-          Apply(handle_lift)
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
         },
         1n => {
-          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: Assert
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
           Assert(handle_lift0)
         },
         2n => {
-          Error
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
         },
         3n => {
-          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: IfElse
-          IfElse(handle_lift1)
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
         },
         4n => {
-          Select
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
         },
         5n => {
-          Str
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
         },
         6n => {
-          Path
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
         },
         7n => {
-          Literal
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
         },
         8n => {
-          Lambda
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
         },
         9n => {
-          LegacyLet
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
         },
         10n => {
-          LetIn
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
         },
         11n => {
-          List
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
         },
         12n => {
-          BinOp
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
         },
         13n => {
-          Paren
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
         },
         14n => {
-          Root
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
         },
         15n => {
-          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 4n))),}: AttrSet
-          AttrSet(handle_lift2)
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
         },
         16n => {
-          UnaryOp
-        },
-        17n => {
-          Ident
-        },
-        18n => {
-          With
-        },
-        19n => {
-          HasAttr
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
         },
         _ => {
-          InvalidNode
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
         },
       }
     }
 
   }
 
-  provide module AttrSet {
-    @externalName("[constructor]attr-set")
-    foreign wasm wit_bindgen_constructorAttrSet: () => WasmI32 from "spotandjake:snow/nix"
+  provide module Error {
+    @externalName("[method]error.get-message")
+    foreign wasm wit_bindgen_methodError_getMessage: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
 
     @unsafe
-    provide let constructor: () => AttrSet = () => {
-      let ret = wit_bindgen_constructorAttrSet()
-      let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(ret)),}: AttrSet
-      handle_lift
+    provide let getMessage: (Error) => String = (self) => {
+      wit_bindgen_methodError_getMessage(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let len_string_lift = WasmI32.load(_RET_AREA, 4n)
+      let str_string_lift = DataStructures.allocateString(len_string_lift)
+      Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 0n), len_string_lift)
+      let str_string_lift = WasmI32.toGrain(str_string_lift): String
+      str_string_lift
+    }
+
+  }
+
+  provide module Function {
+    @externalName("[method]function.get-body")
+    foreign wasm wit_bindgen_methodFunction_getBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    /// get-param: func() -> param;
+    @unsafe
+    provide let getBody: (Function) => Expression = (self) => {
+      wit_bindgen_methodFunction_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module FunctionApplication {
+    @externalName("[method]function-application.get-function")
+    foreign wasm wit_bindgen_methodFunctionApplication_getFunction: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getFunction: (FunctionApplication) => Expression = (self) => {
+      wit_bindgen_methodFunctionApplication_getFunction(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+
+    @externalName("[method]function-application.get-argument")
+    foreign wasm wit_bindgen_methodFunctionApplication_getArgument: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getArgument: (FunctionApplication) => Expression = (self) => {
+      wit_bindgen_methodFunctionApplication_getArgument(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module HasAttribute {
+    @externalName("[method]has-attribute.get-expr")
+    foreign wasm wit_bindgen_methodHasAttribute_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getExpr: (HasAttribute) => Expression = (self) => {
+      wit_bindgen_methodHasAttribute_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module Identifier {
+    @externalName("[method]identifier.get-id")
+    foreign wasm wit_bindgen_methodIdentifier_getId: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getId: (Identifier) => String = (self) => {
+      wit_bindgen_methodIdentifier_getId(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let len_string_lift = WasmI32.load(_RET_AREA, 4n)
+      let str_string_lift = DataStructures.allocateString(len_string_lift)
+      Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 0n), len_string_lift)
+      let str_string_lift = WasmI32.toGrain(str_string_lift): String
+      str_string_lift
+    }
+
+  }
+
+  provide module IfThenElse {
+    @externalName("[method]if-then-else.get-condition")
+    foreign wasm wit_bindgen_methodIfThenElse_getCondition: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getCondition: (IfThenElse) => Expression = (self) => {
+      wit_bindgen_methodIfThenElse_getCondition(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+
+    @externalName("[method]if-then-else.get-true-branch")
+    foreign wasm wit_bindgen_methodIfThenElse_getTrueBranch: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getTrueBranch: (IfThenElse) => Expression = (self) => {
+      wit_bindgen_methodIfThenElse_getTrueBranch(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+
+    @externalName("[method]if-then-else.get-false-branch")
+    foreign wasm wit_bindgen_methodIfThenElse_getFalseBranch: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getFalseBranch: (IfThenElse) => Expression = (self) => {
+      wit_bindgen_methodIfThenElse_getFalseBranch(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module LetIn {
+    @externalName("[method]let-in.get-binds")
+    foreign wasm wit_bindgen_methodLetIn_getBinds: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getBinds: (LetIn) => List<Entry> = (self) => {
+      wit_bindgen_methodLetIn_getBinds(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 8n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 4n))),}: AttributePathValue
+            AttributePathValue(handle_lift)
+          },
+          _ => {
+            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 4n))),}: Inherit
+            Inherit(handle_lift0)
+          },
+        }, ...result_list_lift]
+      }
+      result_list_lift
+    }
+
+
+    @externalName("[method]let-in.get-body")
+    foreign wasm wit_bindgen_methodLetIn_getBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getBody: (LetIn) => Expression = (self) => {
+      wit_bindgen_methodLetIn_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module ListNode {
+    @externalName("[method]list-node.get-elements")
+    foreign wasm wit_bindgen_methodListNode_getElements: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getElements: (ListNode) => List<Expression> = (self) => {
+      wit_bindgen_methodListNode_getElements(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 24n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Select
+            Select(handle_lift)
+          },
+          1n => {
+            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Assert
+            Assert(handle_lift0)
+          },
+          2n => {
+            let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: BinaryOperation
+            BinaryOperation(handle_lift1)
+          },
+          3n => {
+            let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Error
+            Error(handle_lift2)
+          },
+          4n => {
+            let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Function
+            Function(handle_lift3)
+          },
+          5n => {
+            let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: FunctionApplication
+            FunctionApplication(handle_lift4)
+          },
+          6n => {
+            let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: HasAttribute
+            HasAttribute(handle_lift5)
+          },
+          7n => {
+            let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Identifier
+            Identifier(handle_lift6)
+          },
+          8n => {
+            let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: IfThenElse
+            IfThenElse(handle_lift7)
+          },
+          9n => {
+            let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: LetIn
+            LetIn(handle_lift8)
+          },
+          10n => {
+            let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: ListNode
+            List(handle_lift9)
+          },
+          11n => {
+            let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Path
+            Path(handle_lift10)
+          },
+          12n => {
+            let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: NixString
+            String(handle_lift11)
+          },
+          13n => {
+            Literal(match (WasmI32.load8U(base, 8n)) {
+              0n => {
+                Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 16n))): Float64)
+              },
+              1n => {
+                Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(base, 16n))): Int64)
+              },
+              _ => {
+                Uri
+              },
+            })
+          },
+          14n => {
+            let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: UnaryOperation
+            UnaryOperation(handle_lift12)
+          },
+          15n => {
+            let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: NixWith
+            With(handle_lift13)
+          },
+          16n => {
+            let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: Root
+            Root(handle_lift14)
+          },
+          _ => {
+            let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 8n))),}: AttributeSet
+            AttributeSet(handle_lift15)
+          },
+        }, ...result_list_lift]
+      }
+      result_list_lift
+    }
+
+  }
+
+  provide module Path {
+    @externalName("[method]path.get-parts")
+    foreign wasm wit_bindgen_methodPath_getParts: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getParts: (Path) => String = (self) => {
+      wit_bindgen_methodPath_getParts(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let len_string_lift = WasmI32.load(_RET_AREA, 4n)
+      let str_string_lift = DataStructures.allocateString(len_string_lift)
+      Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(_RET_AREA, 0n), len_string_lift)
+      let str_string_lift = WasmI32.toGrain(str_string_lift): String
+      str_string_lift
+    }
+
+  }
+
+  provide module NixString {
+    @externalName("[method]nix-string.get-parts")
+    foreign wasm wit_bindgen_methodNixString_getParts: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getParts: (NixString) => List<StringPart> = (self) => {
+      wit_bindgen_methodNixString_getParts(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 32n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let len_string_lift = WasmI32.load(base, 12n)
+            let str_string_lift = DataStructures.allocateString(len_string_lift)
+            Memory.copy(WasmI32.(+)(str_string_lift, 8n), WasmI32.load(base, 8n), len_string_lift)
+            let str_string_lift = WasmI32.toGrain(str_string_lift): String
+            Raw(str_string_lift)
+          },
+          _ => {
+            Dynamic(match (WasmI32.load8U(base, 8n)) {
+              0n => {
+                let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Select
+                Select(handle_lift)
+              },
+              1n => {
+                let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Assert
+                Assert(handle_lift0)
+              },
+              2n => {
+                let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: BinaryOperation
+                BinaryOperation(handle_lift1)
+              },
+              3n => {
+                let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Error
+                Error(handle_lift2)
+              },
+              4n => {
+                let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Function
+                Function(handle_lift3)
+              },
+              5n => {
+                let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: FunctionApplication
+                FunctionApplication(handle_lift4)
+              },
+              6n => {
+                let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: HasAttribute
+                HasAttribute(handle_lift5)
+              },
+              7n => {
+                let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Identifier
+                Identifier(handle_lift6)
+              },
+              8n => {
+                let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: IfThenElse
+                IfThenElse(handle_lift7)
+              },
+              9n => {
+                let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: LetIn
+                LetIn(handle_lift8)
+              },
+              10n => {
+                let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: ListNode
+                List(handle_lift9)
+              },
+              11n => {
+                let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Path
+                Path(handle_lift10)
+              },
+              12n => {
+                let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixString
+                String(handle_lift11)
+              },
+              13n => {
+                Literal(match (WasmI32.load8U(base, 16n)) {
+                  0n => {
+                    Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(base, 24n))): Float64)
+                  },
+                  1n => {
+                    Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(base, 24n))): Int64)
+                  },
+                  _ => {
+                    Uri
+                  },
+                })
+              },
+              14n => {
+                let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: UnaryOperation
+                UnaryOperation(handle_lift12)
+              },
+              15n => {
+                let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: NixWith
+                With(handle_lift13)
+              },
+              16n => {
+                let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: Root
+                Root(handle_lift14)
+              },
+              _ => {
+                let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 16n))),}: AttributeSet
+                AttributeSet(handle_lift15)
+              },
+            })
+          },
+        }, ...result_list_lift]
+      }
+      result_list_lift
+    }
+
+  }
+
+  provide module UnaryOperation {
+    @externalName("[method]unary-operation.get-operator")
+    foreign wasm wit_bindgen_methodUnaryOperation_getOperator: (WasmI32) => WasmI32 from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getOperator: (UnaryOperation) => UnaryOperator = (self) => {
+      let ret = wit_bindgen_methodUnaryOperation_getOperator(WasmI32.load(WasmI32.fromGrain(self.handle), 4n))
+      match (ret) {
+        0n => {
+          Invert
+        },
+        _ => {
+          Negate
+        },
+      }
+    }
+
+
+    @externalName("[method]unary-operation.get-operand")
+    foreign wasm wit_bindgen_methodUnaryOperation_getOperand: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getOperand: (UnaryOperation) => Expression = (self) => {
+      wit_bindgen_methodUnaryOperation_getOperand(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module NixWith {
+    @externalName("[method]nix-with.get-body")
+    foreign wasm wit_bindgen_methodNixWith_getBody: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getBody: (NixWith) => Expression = (self) => {
+      wit_bindgen_methodNixWith_getBody(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+
+    @externalName("[method]nix-with.get-namespace")
+    foreign wasm wit_bindgen_methodNixWith_getNamespace: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getNamespace: (NixWith) => Expression = (self) => {
+      wit_bindgen_methodNixWith_getNamespace(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module Root {
+    @externalName("[method]root.get-expr")
+    foreign wasm wit_bindgen_methodRoot_getExpr: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getExpr: (Root) => Expression = (self) => {
+      wit_bindgen_methodRoot_getExpr(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      match (WasmI32.load8U(_RET_AREA, 0n)) {
+        0n => {
+          let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Select
+          Select(handle_lift)
+        },
+        1n => {
+          let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Assert
+          Assert(handle_lift0)
+        },
+        2n => {
+          let handle_lift1 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: BinaryOperation
+          BinaryOperation(handle_lift1)
+        },
+        3n => {
+          let handle_lift2 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Error
+          Error(handle_lift2)
+        },
+        4n => {
+          let handle_lift3 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Function
+          Function(handle_lift3)
+        },
+        5n => {
+          let handle_lift4 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: FunctionApplication
+          FunctionApplication(handle_lift4)
+        },
+        6n => {
+          let handle_lift5 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: HasAttribute
+          HasAttribute(handle_lift5)
+        },
+        7n => {
+          let handle_lift6 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Identifier
+          Identifier(handle_lift6)
+        },
+        8n => {
+          let handle_lift7 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: IfThenElse
+          IfThenElse(handle_lift7)
+        },
+        9n => {
+          let handle_lift8 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: LetIn
+          LetIn(handle_lift8)
+        },
+        10n => {
+          let handle_lift9 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: ListNode
+          List(handle_lift9)
+        },
+        11n => {
+          let handle_lift10 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Path
+          Path(handle_lift10)
+        },
+        12n => {
+          let handle_lift11 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixString
+          String(handle_lift11)
+        },
+        13n => {
+          Literal(match (WasmI32.load8U(_RET_AREA, 8n)) {
+            0n => {
+              Float(WasmI32.toGrain(DataStructures.newFloat64(WasmF64.load(_RET_AREA, 16n))): Float64)
+            },
+            1n => {
+              Integer(WasmI32.toGrain(DataStructures.newInt64(WasmI64.load(_RET_AREA, 16n))): Int64)
+            },
+            _ => {
+              Uri
+            },
+          })
+        },
+        14n => {
+          let handle_lift12 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: UnaryOperation
+          UnaryOperation(handle_lift12)
+        },
+        15n => {
+          let handle_lift13 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: NixWith
+          With(handle_lift13)
+        },
+        16n => {
+          let handle_lift14 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: Root
+          Root(handle_lift14)
+        },
+        _ => {
+          let handle_lift15 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(_RET_AREA, 8n))),}: AttributeSet
+          AttributeSet(handle_lift15)
+        },
+      }
+    }
+
+  }
+
+  provide module AttributeSet {
+    @externalName("[method]attribute-set.get-binds")
+    foreign wasm wit_bindgen_methodAttributeSet_getBinds: (WasmI32, WasmI32) => Void from "spotandjake:snow/nix"
+
+    @unsafe
+    provide let getBinds: (AttributeSet) => List<Entry> = (self) => {
+      wit_bindgen_methodAttributeSet_getBinds(WasmI32.load(WasmI32.fromGrain(self.handle), 4n), _RET_AREA)
+      let base_list_lift = WasmI32.load(_RET_AREA, 0n)
+      let len_list_lift = WasmI32.load(_RET_AREA, 4n)
+      let mut result_list_lift = []
+      Memory.incRef(WasmI32.fromGrain(result_list_lift))
+      for (let mut i = WasmI32.(-)(len_list_lift, 1n); WasmI32.(!=)(i, -1n); i = WasmI32.(-)(i, 1n)) {
+        let base = WasmI32.(+)(base_list_lift, WasmI32.(*)(i, 8n))
+        result_list_lift = [match (WasmI32.load8U(base, 0n)) {
+          0n => {
+            let handle_lift = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 4n))),}: AttributePathValue
+            AttributePathValue(handle_lift)
+          },
+          _ => {
+            let handle_lift0 = {handle: WasmI32.toGrain(DataStructures.newInt32(WasmI32.load(base, 4n))),}: Inherit
+            Inherit(handle_lift0)
+          },
+        }, ...result_list_lift]
+      }
+      result_list_lift
     }
 
   }

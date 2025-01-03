@@ -1,0 +1,142 @@
+package spotandjake:snow;
+
+interface nix {
+    variant attr {
+        str(string),
+        ident(identifier),
+        dynamic(expression),
+    }
+    resource attribute-path-value {
+        get-attr-list: func() -> list<attr>;
+        get-expr: func() -> expression;
+    }
+    resource inherit {
+        get-expr-from: func() -> option<expression>;
+        get-attr-list: func() -> list<attr>;
+    }
+    variant entry {
+        attribute-path-value(attribute-path-value),
+        inherit(inherit),
+    }
+    enum unary-operator {
+        invert,
+        negate,
+    }
+    enum binary-operator {
+        concat,
+        update,
+        add,
+        sub,
+        mul,
+        div,
+        and,
+        equal,
+        implication,
+        less,
+        less-or-eq,
+        more,
+        more-or-eq,
+        not-equal,
+        or,
+    }
+    variant string-part {
+        raw(string),
+        dynamic(expression),
+    }
+    // Expressions
+    resource select {
+        get-base-expr: func() -> expression;
+        get-default-expr: func() -> option<expression>;
+    }
+    resource assert {
+        get-expr: func() -> expression;
+        get-condition: func() -> expression;
+    }
+    resource binary-operation {
+        get-lhs: func() -> expression;
+        get-operator: func() -> binary-operator;
+        get-rhs: func() -> expression;
+    }
+    resource error {
+        get-message: func() -> string;
+    }
+    resource function {
+        // get-param: func() -> param;
+        get-body: func() -> expression;
+    }
+    resource function-application {
+        get-function: func() -> expression;
+        get-argument: func() -> expression;
+    }
+    resource has-attribute {
+        get-expr: func() -> expression;
+        // get-attribute_path: func() -> list<part>;
+    }
+    resource identifier {
+        get-id: func() -> string;
+    }
+    resource if-then-else {
+        get-condition: func() -> expression;
+        get-true-branch: func() -> expression;
+        get-false-branch: func() -> expression;
+    }
+    resource let-in {
+        get-binds: func() -> list<entry>;
+        get-body: func() -> expression;
+    }
+    resource list-node {
+        get-elements: func() -> list<expression>;
+    }
+    resource path {
+        get-parts: func() -> string;
+        // get-parts: func() -> list<part>;
+    }
+    resource nix-string {
+        get-parts: func() -> list<string-part>;
+    }
+    variant literal {
+        float(f64),
+        integer(s64),
+        uri
+    }
+    resource unary-operation {
+        get-operator: func() -> unary-operator;
+        get-operand: func() -> expression;
+    }
+    resource nix-with {
+        get-body: func() -> expression;
+        get-namespace: func() -> expression;
+    }
+    resource root {
+        get-expr: func() -> expression;
+    }
+    resource attribute-set {
+        get-binds: func() -> list<entry>;
+    }
+    variant expression {
+        select(select),
+        assert(assert),
+        binary-operation(binary-operation),
+        error(error),
+        function(function),
+        function-application(function-application),
+        has-attribute(has-attribute),
+        identifier(identifier),
+        if-then-else(if-then-else),
+        let-in(let-in),
+        %list(list-node),
+        path(path),
+        %string(nix-string),
+        literal(literal),
+        unary-operation(unary-operation),
+        %with(nix-with),
+        root(root),
+        attribute-set(attribute-set),
+    }
+
+    parse: func(nix-source: string) -> result<expression, string>;
+}
+
+world rnix {
+    export nix;
+}

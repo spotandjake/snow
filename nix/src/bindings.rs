@@ -10,507 +10,39 @@ pub mod exports {
                 #[doc(hidden)]
                 static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_custom_section_describing_imports;
                 use super::super::super::super::_rt;
-                #[repr(C)]
-                #[derive(Clone, Copy)]
-                pub struct TextRange {
-                    pub start: u32,
-                    pub end: u32,
-                }
-                impl ::core::fmt::Debug for TextRange {
-                    fn fmt(
-                        &self,
-                        f: &mut ::core::fmt::Formatter<'_>,
-                    ) -> ::core::fmt::Result {
-                        f.debug_struct("TextRange")
-                            .field("start", &self.start)
-                            .field("end", &self.end)
-                            .finish()
-                    }
-                }
-                #[repr(u8)]
-                #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
-                pub enum SyntaxToken {
-                    /// Internals
-                    TokenComment,
-                    TokenError,
-                    TokenWhitespace,
-                    /// Keywords
-                    TokenAssert,
-                    TokenElse,
-                    TokenIf,
-                    TokenIn,
-                    TokenInherit,
-                    TokenLet,
-                    TokenOr,
-                    TokenRec,
-                    TokenThen,
-                    TokenWith,
-                    /// Symbols
-                    TokenLBrace,
-                    TokenRBrace,
-                    TokenLBrack,
-                    TokenRBrack,
-                    TokenAssign,
-                    TokenAt,
-                    TokenColon,
-                    TokenComma,
-                    TokenDot,
-                    TokenEllipsis,
-                    TokenQuestion,
-                    TokenSemicolon,
-                    /// Operators
-                    TokenLParen,
-                    TokenRParen,
-                    TokenConcat,
-                    TokenInvert,
-                    TokenUpdate,
-                    TokenAdd,
-                    TokenSub,
-                    TokenMul,
-                    TokenDiv,
-                    TokenAndAnd,
-                    TokenEqual,
-                    TokenImplication,
-                    TokenLess,
-                    TokenLessOrEq,
-                    TokenMore,
-                    TokenMoreOrEq,
-                    TokenNotEqual,
-                    TokenOrOr,
-                    /// Identifiers and values
-                    TokenFloat,
-                    TokenIdent,
-                    TokenInteger,
-                    TokenInterpolEnd,
-                    TokenInterpolStart,
-                    TokenPath,
-                    TokenUri,
-                    TokenStringContent,
-                    TokenStringEnd,
-                    TokenStringStart,
-                    NodeApply,
-                    NodeAssert,
-                    NodeAttrpath,
-                    NodeDynamic,
-                    NodeError,
-                    NodeIdent,
-                    NodeIfElse,
-                    NodeSelect,
-                    NodeInherit,
-                    NodeInheritFrom,
-                    NodeString,
-                    NodeInterpol,
-                    NodeLambda,
-                    NodeIdentParam,
-                    /// An old let { x = 92; body = x; } syntax
-                    NodeLegacyLet,
-                    NodeLetIn,
-                    NodeList,
-                    NodeBinOp,
-                    NodeParen,
-                    NodePattern,
-                    NodePatBind,
-                    NodePatEntry,
-                    NodeRoot,
-                    NodeAttrSet,
-                    NodeAttrpathValue,
-                    NodeUnaryOp,
-                    NodeLiteral,
-                    NodeWith,
-                    NodePath,
-                    /// Attrpath existence check: foo ? bar.${baz}."bux"
-                    NodeHasAttr,
-                    Last,
-                }
-                impl ::core::fmt::Debug for SyntaxToken {
-                    fn fmt(
-                        &self,
-                        f: &mut ::core::fmt::Formatter<'_>,
-                    ) -> ::core::fmt::Result {
-                        match self {
-                            SyntaxToken::TokenComment => {
-                                f.debug_tuple("SyntaxToken::TokenComment").finish()
-                            }
-                            SyntaxToken::TokenError => {
-                                f.debug_tuple("SyntaxToken::TokenError").finish()
-                            }
-                            SyntaxToken::TokenWhitespace => {
-                                f.debug_tuple("SyntaxToken::TokenWhitespace").finish()
-                            }
-                            SyntaxToken::TokenAssert => {
-                                f.debug_tuple("SyntaxToken::TokenAssert").finish()
-                            }
-                            SyntaxToken::TokenElse => {
-                                f.debug_tuple("SyntaxToken::TokenElse").finish()
-                            }
-                            SyntaxToken::TokenIf => {
-                                f.debug_tuple("SyntaxToken::TokenIf").finish()
-                            }
-                            SyntaxToken::TokenIn => {
-                                f.debug_tuple("SyntaxToken::TokenIn").finish()
-                            }
-                            SyntaxToken::TokenInherit => {
-                                f.debug_tuple("SyntaxToken::TokenInherit").finish()
-                            }
-                            SyntaxToken::TokenLet => {
-                                f.debug_tuple("SyntaxToken::TokenLet").finish()
-                            }
-                            SyntaxToken::TokenOr => {
-                                f.debug_tuple("SyntaxToken::TokenOr").finish()
-                            }
-                            SyntaxToken::TokenRec => {
-                                f.debug_tuple("SyntaxToken::TokenRec").finish()
-                            }
-                            SyntaxToken::TokenThen => {
-                                f.debug_tuple("SyntaxToken::TokenThen").finish()
-                            }
-                            SyntaxToken::TokenWith => {
-                                f.debug_tuple("SyntaxToken::TokenWith").finish()
-                            }
-                            SyntaxToken::TokenLBrace => {
-                                f.debug_tuple("SyntaxToken::TokenLBrace").finish()
-                            }
-                            SyntaxToken::TokenRBrace => {
-                                f.debug_tuple("SyntaxToken::TokenRBrace").finish()
-                            }
-                            SyntaxToken::TokenLBrack => {
-                                f.debug_tuple("SyntaxToken::TokenLBrack").finish()
-                            }
-                            SyntaxToken::TokenRBrack => {
-                                f.debug_tuple("SyntaxToken::TokenRBrack").finish()
-                            }
-                            SyntaxToken::TokenAssign => {
-                                f.debug_tuple("SyntaxToken::TokenAssign").finish()
-                            }
-                            SyntaxToken::TokenAt => {
-                                f.debug_tuple("SyntaxToken::TokenAt").finish()
-                            }
-                            SyntaxToken::TokenColon => {
-                                f.debug_tuple("SyntaxToken::TokenColon").finish()
-                            }
-                            SyntaxToken::TokenComma => {
-                                f.debug_tuple("SyntaxToken::TokenComma").finish()
-                            }
-                            SyntaxToken::TokenDot => {
-                                f.debug_tuple("SyntaxToken::TokenDot").finish()
-                            }
-                            SyntaxToken::TokenEllipsis => {
-                                f.debug_tuple("SyntaxToken::TokenEllipsis").finish()
-                            }
-                            SyntaxToken::TokenQuestion => {
-                                f.debug_tuple("SyntaxToken::TokenQuestion").finish()
-                            }
-                            SyntaxToken::TokenSemicolon => {
-                                f.debug_tuple("SyntaxToken::TokenSemicolon").finish()
-                            }
-                            SyntaxToken::TokenLParen => {
-                                f.debug_tuple("SyntaxToken::TokenLParen").finish()
-                            }
-                            SyntaxToken::TokenRParen => {
-                                f.debug_tuple("SyntaxToken::TokenRParen").finish()
-                            }
-                            SyntaxToken::TokenConcat => {
-                                f.debug_tuple("SyntaxToken::TokenConcat").finish()
-                            }
-                            SyntaxToken::TokenInvert => {
-                                f.debug_tuple("SyntaxToken::TokenInvert").finish()
-                            }
-                            SyntaxToken::TokenUpdate => {
-                                f.debug_tuple("SyntaxToken::TokenUpdate").finish()
-                            }
-                            SyntaxToken::TokenAdd => {
-                                f.debug_tuple("SyntaxToken::TokenAdd").finish()
-                            }
-                            SyntaxToken::TokenSub => {
-                                f.debug_tuple("SyntaxToken::TokenSub").finish()
-                            }
-                            SyntaxToken::TokenMul => {
-                                f.debug_tuple("SyntaxToken::TokenMul").finish()
-                            }
-                            SyntaxToken::TokenDiv => {
-                                f.debug_tuple("SyntaxToken::TokenDiv").finish()
-                            }
-                            SyntaxToken::TokenAndAnd => {
-                                f.debug_tuple("SyntaxToken::TokenAndAnd").finish()
-                            }
-                            SyntaxToken::TokenEqual => {
-                                f.debug_tuple("SyntaxToken::TokenEqual").finish()
-                            }
-                            SyntaxToken::TokenImplication => {
-                                f.debug_tuple("SyntaxToken::TokenImplication").finish()
-                            }
-                            SyntaxToken::TokenLess => {
-                                f.debug_tuple("SyntaxToken::TokenLess").finish()
-                            }
-                            SyntaxToken::TokenLessOrEq => {
-                                f.debug_tuple("SyntaxToken::TokenLessOrEq").finish()
-                            }
-                            SyntaxToken::TokenMore => {
-                                f.debug_tuple("SyntaxToken::TokenMore").finish()
-                            }
-                            SyntaxToken::TokenMoreOrEq => {
-                                f.debug_tuple("SyntaxToken::TokenMoreOrEq").finish()
-                            }
-                            SyntaxToken::TokenNotEqual => {
-                                f.debug_tuple("SyntaxToken::TokenNotEqual").finish()
-                            }
-                            SyntaxToken::TokenOrOr => {
-                                f.debug_tuple("SyntaxToken::TokenOrOr").finish()
-                            }
-                            SyntaxToken::TokenFloat => {
-                                f.debug_tuple("SyntaxToken::TokenFloat").finish()
-                            }
-                            SyntaxToken::TokenIdent => {
-                                f.debug_tuple("SyntaxToken::TokenIdent").finish()
-                            }
-                            SyntaxToken::TokenInteger => {
-                                f.debug_tuple("SyntaxToken::TokenInteger").finish()
-                            }
-                            SyntaxToken::TokenInterpolEnd => {
-                                f.debug_tuple("SyntaxToken::TokenInterpolEnd").finish()
-                            }
-                            SyntaxToken::TokenInterpolStart => {
-                                f.debug_tuple("SyntaxToken::TokenInterpolStart").finish()
-                            }
-                            SyntaxToken::TokenPath => {
-                                f.debug_tuple("SyntaxToken::TokenPath").finish()
-                            }
-                            SyntaxToken::TokenUri => {
-                                f.debug_tuple("SyntaxToken::TokenUri").finish()
-                            }
-                            SyntaxToken::TokenStringContent => {
-                                f.debug_tuple("SyntaxToken::TokenStringContent").finish()
-                            }
-                            SyntaxToken::TokenStringEnd => {
-                                f.debug_tuple("SyntaxToken::TokenStringEnd").finish()
-                            }
-                            SyntaxToken::TokenStringStart => {
-                                f.debug_tuple("SyntaxToken::TokenStringStart").finish()
-                            }
-                            SyntaxToken::NodeApply => {
-                                f.debug_tuple("SyntaxToken::NodeApply").finish()
-                            }
-                            SyntaxToken::NodeAssert => {
-                                f.debug_tuple("SyntaxToken::NodeAssert").finish()
-                            }
-                            SyntaxToken::NodeAttrpath => {
-                                f.debug_tuple("SyntaxToken::NodeAttrpath").finish()
-                            }
-                            SyntaxToken::NodeDynamic => {
-                                f.debug_tuple("SyntaxToken::NodeDynamic").finish()
-                            }
-                            SyntaxToken::NodeError => {
-                                f.debug_tuple("SyntaxToken::NodeError").finish()
-                            }
-                            SyntaxToken::NodeIdent => {
-                                f.debug_tuple("SyntaxToken::NodeIdent").finish()
-                            }
-                            SyntaxToken::NodeIfElse => {
-                                f.debug_tuple("SyntaxToken::NodeIfElse").finish()
-                            }
-                            SyntaxToken::NodeSelect => {
-                                f.debug_tuple("SyntaxToken::NodeSelect").finish()
-                            }
-                            SyntaxToken::NodeInherit => {
-                                f.debug_tuple("SyntaxToken::NodeInherit").finish()
-                            }
-                            SyntaxToken::NodeInheritFrom => {
-                                f.debug_tuple("SyntaxToken::NodeInheritFrom").finish()
-                            }
-                            SyntaxToken::NodeString => {
-                                f.debug_tuple("SyntaxToken::NodeString").finish()
-                            }
-                            SyntaxToken::NodeInterpol => {
-                                f.debug_tuple("SyntaxToken::NodeInterpol").finish()
-                            }
-                            SyntaxToken::NodeLambda => {
-                                f.debug_tuple("SyntaxToken::NodeLambda").finish()
-                            }
-                            SyntaxToken::NodeIdentParam => {
-                                f.debug_tuple("SyntaxToken::NodeIdentParam").finish()
-                            }
-                            SyntaxToken::NodeLegacyLet => {
-                                f.debug_tuple("SyntaxToken::NodeLegacyLet").finish()
-                            }
-                            SyntaxToken::NodeLetIn => {
-                                f.debug_tuple("SyntaxToken::NodeLetIn").finish()
-                            }
-                            SyntaxToken::NodeList => {
-                                f.debug_tuple("SyntaxToken::NodeList").finish()
-                            }
-                            SyntaxToken::NodeBinOp => {
-                                f.debug_tuple("SyntaxToken::NodeBinOp").finish()
-                            }
-                            SyntaxToken::NodeParen => {
-                                f.debug_tuple("SyntaxToken::NodeParen").finish()
-                            }
-                            SyntaxToken::NodePattern => {
-                                f.debug_tuple("SyntaxToken::NodePattern").finish()
-                            }
-                            SyntaxToken::NodePatBind => {
-                                f.debug_tuple("SyntaxToken::NodePatBind").finish()
-                            }
-                            SyntaxToken::NodePatEntry => {
-                                f.debug_tuple("SyntaxToken::NodePatEntry").finish()
-                            }
-                            SyntaxToken::NodeRoot => {
-                                f.debug_tuple("SyntaxToken::NodeRoot").finish()
-                            }
-                            SyntaxToken::NodeAttrSet => {
-                                f.debug_tuple("SyntaxToken::NodeAttrSet").finish()
-                            }
-                            SyntaxToken::NodeAttrpathValue => {
-                                f.debug_tuple("SyntaxToken::NodeAttrpathValue").finish()
-                            }
-                            SyntaxToken::NodeUnaryOp => {
-                                f.debug_tuple("SyntaxToken::NodeUnaryOp").finish()
-                            }
-                            SyntaxToken::NodeLiteral => {
-                                f.debug_tuple("SyntaxToken::NodeLiteral").finish()
-                            }
-                            SyntaxToken::NodeWith => {
-                                f.debug_tuple("SyntaxToken::NodeWith").finish()
-                            }
-                            SyntaxToken::NodePath => {
-                                f.debug_tuple("SyntaxToken::NodePath").finish()
-                            }
-                            SyntaxToken::NodeHasAttr => {
-                                f.debug_tuple("SyntaxToken::NodeHasAttr").finish()
-                            }
-                            SyntaxToken::Last => {
-                                f.debug_tuple("SyntaxToken::Last").finish()
-                            }
-                        }
-                    }
-                }
-                impl SyntaxToken {
-                    #[doc(hidden)]
-                    pub unsafe fn _lift(val: u8) -> SyntaxToken {
-                        if !cfg!(debug_assertions) {
-                            return ::core::mem::transmute(val);
-                        }
-                        match val {
-                            0 => SyntaxToken::TokenComment,
-                            1 => SyntaxToken::TokenError,
-                            2 => SyntaxToken::TokenWhitespace,
-                            3 => SyntaxToken::TokenAssert,
-                            4 => SyntaxToken::TokenElse,
-                            5 => SyntaxToken::TokenIf,
-                            6 => SyntaxToken::TokenIn,
-                            7 => SyntaxToken::TokenInherit,
-                            8 => SyntaxToken::TokenLet,
-                            9 => SyntaxToken::TokenOr,
-                            10 => SyntaxToken::TokenRec,
-                            11 => SyntaxToken::TokenThen,
-                            12 => SyntaxToken::TokenWith,
-                            13 => SyntaxToken::TokenLBrace,
-                            14 => SyntaxToken::TokenRBrace,
-                            15 => SyntaxToken::TokenLBrack,
-                            16 => SyntaxToken::TokenRBrack,
-                            17 => SyntaxToken::TokenAssign,
-                            18 => SyntaxToken::TokenAt,
-                            19 => SyntaxToken::TokenColon,
-                            20 => SyntaxToken::TokenComma,
-                            21 => SyntaxToken::TokenDot,
-                            22 => SyntaxToken::TokenEllipsis,
-                            23 => SyntaxToken::TokenQuestion,
-                            24 => SyntaxToken::TokenSemicolon,
-                            25 => SyntaxToken::TokenLParen,
-                            26 => SyntaxToken::TokenRParen,
-                            27 => SyntaxToken::TokenConcat,
-                            28 => SyntaxToken::TokenInvert,
-                            29 => SyntaxToken::TokenUpdate,
-                            30 => SyntaxToken::TokenAdd,
-                            31 => SyntaxToken::TokenSub,
-                            32 => SyntaxToken::TokenMul,
-                            33 => SyntaxToken::TokenDiv,
-                            34 => SyntaxToken::TokenAndAnd,
-                            35 => SyntaxToken::TokenEqual,
-                            36 => SyntaxToken::TokenImplication,
-                            37 => SyntaxToken::TokenLess,
-                            38 => SyntaxToken::TokenLessOrEq,
-                            39 => SyntaxToken::TokenMore,
-                            40 => SyntaxToken::TokenMoreOrEq,
-                            41 => SyntaxToken::TokenNotEqual,
-                            42 => SyntaxToken::TokenOrOr,
-                            43 => SyntaxToken::TokenFloat,
-                            44 => SyntaxToken::TokenIdent,
-                            45 => SyntaxToken::TokenInteger,
-                            46 => SyntaxToken::TokenInterpolEnd,
-                            47 => SyntaxToken::TokenInterpolStart,
-                            48 => SyntaxToken::TokenPath,
-                            49 => SyntaxToken::TokenUri,
-                            50 => SyntaxToken::TokenStringContent,
-                            51 => SyntaxToken::TokenStringEnd,
-                            52 => SyntaxToken::TokenStringStart,
-                            53 => SyntaxToken::NodeApply,
-                            54 => SyntaxToken::NodeAssert,
-                            55 => SyntaxToken::NodeAttrpath,
-                            56 => SyntaxToken::NodeDynamic,
-                            57 => SyntaxToken::NodeError,
-                            58 => SyntaxToken::NodeIdent,
-                            59 => SyntaxToken::NodeIfElse,
-                            60 => SyntaxToken::NodeSelect,
-                            61 => SyntaxToken::NodeInherit,
-                            62 => SyntaxToken::NodeInheritFrom,
-                            63 => SyntaxToken::NodeString,
-                            64 => SyntaxToken::NodeInterpol,
-                            65 => SyntaxToken::NodeLambda,
-                            66 => SyntaxToken::NodeIdentParam,
-                            67 => SyntaxToken::NodeLegacyLet,
-                            68 => SyntaxToken::NodeLetIn,
-                            69 => SyntaxToken::NodeList,
-                            70 => SyntaxToken::NodeBinOp,
-                            71 => SyntaxToken::NodeParen,
-                            72 => SyntaxToken::NodePattern,
-                            73 => SyntaxToken::NodePatBind,
-                            74 => SyntaxToken::NodePatEntry,
-                            75 => SyntaxToken::NodeRoot,
-                            76 => SyntaxToken::NodeAttrSet,
-                            77 => SyntaxToken::NodeAttrpathValue,
-                            78 => SyntaxToken::NodeUnaryOp,
-                            79 => SyntaxToken::NodeLiteral,
-                            80 => SyntaxToken::NodeWith,
-                            81 => SyntaxToken::NodePath,
-                            82 => SyntaxToken::NodeHasAttr,
-                            83 => SyntaxToken::Last,
-                            _ => panic!("invalid enum discriminant"),
-                        }
-                    }
-                }
                 #[derive(Debug)]
                 #[repr(transparent)]
-                pub struct Apply {
-                    handle: _rt::Resource<Apply>,
+                pub struct AttributePathValue {
+                    handle: _rt::Resource<AttributePathValue>,
                 }
-                type _ApplyRep<T> = Option<T>;
-                impl Apply {
+                type _AttributePathValueRep<T> = Option<T>;
+                impl AttributePathValue {
                     /// Creates a new resource from the specified representation.
                     ///
                     /// This function will create a new resource handle by moving `val` onto
                     /// the heap and then passing that heap pointer to the component model to
-                    /// create a handle. The owned handle is then returned as `Apply`.
-                    pub fn new<T: GuestApply>(val: T) -> Self {
+                    /// create a handle. The owned handle is then returned as `AttributePathValue`.
+                    pub fn new<T: GuestAttributePathValue>(val: T) -> Self {
                         Self::type_guard::<T>();
-                        let val: _ApplyRep<T> = Some(val);
-                        let ptr: *mut _ApplyRep<T> = _rt::Box::into_raw(
+                        let val: _AttributePathValueRep<T> = Some(val);
+                        let ptr: *mut _AttributePathValueRep<T> = _rt::Box::into_raw(
                             _rt::Box::new(val),
                         );
                         unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
                     }
                     /// Gets access to the underlying `T` which represents this resource.
-                    pub fn get<T: GuestApply>(&self) -> &T {
+                    pub fn get<T: GuestAttributePathValue>(&self) -> &T {
                         let ptr = unsafe { &*self.as_ptr::<T>() };
                         ptr.as_ref().unwrap()
                     }
                     /// Gets mutable access to the underlying `T` which represents this
                     /// resource.
-                    pub fn get_mut<T: GuestApply>(&mut self) -> &mut T {
+                    pub fn get_mut<T: GuestAttributePathValue>(&mut self) -> &mut T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.as_mut().unwrap()
                     }
                     /// Consumes this resource and returns the underlying `T`.
-                    pub fn into_inner<T: GuestApply>(self) -> T {
+                    pub fn into_inner<T: GuestAttributePathValue>(self) -> T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.take().unwrap()
                     }
@@ -548,22 +80,26 @@ pub mod exports {
                     #[doc(hidden)]
                     pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
                         Self::type_guard::<T>();
-                        let _ = _rt::Box::from_raw(handle as *mut _ApplyRep<T>);
+                        let _ = _rt::Box::from_raw(
+                            handle as *mut _AttributePathValueRep<T>,
+                        );
                     }
-                    fn as_ptr<T: GuestApply>(&self) -> *mut _ApplyRep<T> {
-                        Apply::type_guard::<T>();
+                    fn as_ptr<T: GuestAttributePathValue>(
+                        &self,
+                    ) -> *mut _AttributePathValueRep<T> {
+                        AttributePathValue::type_guard::<T>();
                         T::_resource_rep(self.handle()).cast()
                     }
                 }
-                /// A borrowed version of [`Apply`] which represents a borrowed value
+                /// A borrowed version of [`AttributePathValue`] which represents a borrowed value
                 /// with the lifetime `'a`.
                 #[derive(Debug)]
                 #[repr(transparent)]
-                pub struct ApplyBorrow<'a> {
+                pub struct AttributePathValueBorrow<'a> {
                     rep: *mut u8,
-                    _marker: core::marker::PhantomData<&'a Apply>,
+                    _marker: core::marker::PhantomData<&'a AttributePathValue>,
                 }
-                impl<'a> ApplyBorrow<'a> {
+                impl<'a> AttributePathValueBorrow<'a> {
                     #[doc(hidden)]
                     pub unsafe fn lift(rep: usize) -> Self {
                         Self {
@@ -572,16 +108,16 @@ pub mod exports {
                         }
                     }
                     /// Gets access to the underlying `T` in this resource.
-                    pub fn get<T: GuestApply>(&self) -> &T {
+                    pub fn get<T: GuestAttributePathValue>(&self) -> &T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.as_ref().unwrap()
                     }
-                    fn as_ptr<T: 'static>(&self) -> *mut _ApplyRep<T> {
-                        Apply::type_guard::<T>();
+                    fn as_ptr<T: 'static>(&self) -> *mut _AttributePathValueRep<T> {
+                        AttributePathValue::type_guard::<T>();
                         self.rep.cast()
                     }
                 }
-                unsafe impl _rt::WasmResource for Apply {
+                unsafe impl _rt::WasmResource for AttributePathValue {
                     #[inline]
                     unsafe fn drop(_handle: u32) {
                         #[cfg(not(target_arch = "wasm32"))]
@@ -590,7 +126,398 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-drop]apply"]
+                                #[link_name = "[resource-drop]attribute-path-value"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Inherit {
+                    handle: _rt::Resource<Inherit>,
+                }
+                type _InheritRep<T> = Option<T>;
+                impl Inherit {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Inherit`.
+                    pub fn new<T: GuestInherit>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _InheritRep<T> = Some(val);
+                        let ptr: *mut _InheritRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestInherit>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestInherit>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestInherit>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _InheritRep<T>);
+                    }
+                    fn as_ptr<T: GuestInherit>(&self) -> *mut _InheritRep<T> {
+                        Inherit::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Inherit`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct InheritBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Inherit>,
+                }
+                impl<'a> InheritBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestInherit>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _InheritRep<T> {
+                        Inherit::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Inherit {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]inherit"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                pub enum Entry {
+                    AttributePathValue(AttributePathValue),
+                    Inherit(Inherit),
+                }
+                impl ::core::fmt::Debug for Entry {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            Entry::AttributePathValue(e) => {
+                                f.debug_tuple("Entry::AttributePathValue").field(e).finish()
+                            }
+                            Entry::Inherit(e) => {
+                                f.debug_tuple("Entry::Inherit").field(e).finish()
+                            }
+                        }
+                    }
+                }
+                #[repr(u8)]
+                #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
+                pub enum UnaryOperator {
+                    Invert,
+                    Negate,
+                }
+                impl ::core::fmt::Debug for UnaryOperator {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            UnaryOperator::Invert => {
+                                f.debug_tuple("UnaryOperator::Invert").finish()
+                            }
+                            UnaryOperator::Negate => {
+                                f.debug_tuple("UnaryOperator::Negate").finish()
+                            }
+                        }
+                    }
+                }
+                impl UnaryOperator {
+                    #[doc(hidden)]
+                    pub unsafe fn _lift(val: u8) -> UnaryOperator {
+                        if !cfg!(debug_assertions) {
+                            return ::core::mem::transmute(val);
+                        }
+                        match val {
+                            0 => UnaryOperator::Invert,
+                            1 => UnaryOperator::Negate,
+                            _ => panic!("invalid enum discriminant"),
+                        }
+                    }
+                }
+                #[repr(u8)]
+                #[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
+                pub enum BinaryOperator {
+                    Concat,
+                    Update,
+                    Add,
+                    Sub,
+                    Mul,
+                    Div,
+                    And,
+                    Equal,
+                    Implication,
+                    Less,
+                    LessOrEq,
+                    More,
+                    MoreOrEq,
+                    NotEqual,
+                    Or,
+                }
+                impl ::core::fmt::Debug for BinaryOperator {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            BinaryOperator::Concat => {
+                                f.debug_tuple("BinaryOperator::Concat").finish()
+                            }
+                            BinaryOperator::Update => {
+                                f.debug_tuple("BinaryOperator::Update").finish()
+                            }
+                            BinaryOperator::Add => {
+                                f.debug_tuple("BinaryOperator::Add").finish()
+                            }
+                            BinaryOperator::Sub => {
+                                f.debug_tuple("BinaryOperator::Sub").finish()
+                            }
+                            BinaryOperator::Mul => {
+                                f.debug_tuple("BinaryOperator::Mul").finish()
+                            }
+                            BinaryOperator::Div => {
+                                f.debug_tuple("BinaryOperator::Div").finish()
+                            }
+                            BinaryOperator::And => {
+                                f.debug_tuple("BinaryOperator::And").finish()
+                            }
+                            BinaryOperator::Equal => {
+                                f.debug_tuple("BinaryOperator::Equal").finish()
+                            }
+                            BinaryOperator::Implication => {
+                                f.debug_tuple("BinaryOperator::Implication").finish()
+                            }
+                            BinaryOperator::Less => {
+                                f.debug_tuple("BinaryOperator::Less").finish()
+                            }
+                            BinaryOperator::LessOrEq => {
+                                f.debug_tuple("BinaryOperator::LessOrEq").finish()
+                            }
+                            BinaryOperator::More => {
+                                f.debug_tuple("BinaryOperator::More").finish()
+                            }
+                            BinaryOperator::MoreOrEq => {
+                                f.debug_tuple("BinaryOperator::MoreOrEq").finish()
+                            }
+                            BinaryOperator::NotEqual => {
+                                f.debug_tuple("BinaryOperator::NotEqual").finish()
+                            }
+                            BinaryOperator::Or => {
+                                f.debug_tuple("BinaryOperator::Or").finish()
+                            }
+                        }
+                    }
+                }
+                impl BinaryOperator {
+                    #[doc(hidden)]
+                    pub unsafe fn _lift(val: u8) -> BinaryOperator {
+                        if !cfg!(debug_assertions) {
+                            return ::core::mem::transmute(val);
+                        }
+                        match val {
+                            0 => BinaryOperator::Concat,
+                            1 => BinaryOperator::Update,
+                            2 => BinaryOperator::Add,
+                            3 => BinaryOperator::Sub,
+                            4 => BinaryOperator::Mul,
+                            5 => BinaryOperator::Div,
+                            6 => BinaryOperator::And,
+                            7 => BinaryOperator::Equal,
+                            8 => BinaryOperator::Implication,
+                            9 => BinaryOperator::Less,
+                            10 => BinaryOperator::LessOrEq,
+                            11 => BinaryOperator::More,
+                            12 => BinaryOperator::MoreOrEq,
+                            13 => BinaryOperator::NotEqual,
+                            14 => BinaryOperator::Or,
+                            _ => panic!("invalid enum discriminant"),
+                        }
+                    }
+                }
+                /// Expressions
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Select {
+                    handle: _rt::Resource<Select>,
+                }
+                type _SelectRep<T> = Option<T>;
+                impl Select {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Select`.
+                    pub fn new<T: GuestSelect>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _SelectRep<T> = Some(val);
+                        let ptr: *mut _SelectRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestSelect>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestSelect>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestSelect>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _SelectRep<T>);
+                    }
+                    fn as_ptr<T: GuestSelect>(&self) -> *mut _SelectRep<T> {
+                        Select::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Select`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct SelectBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Select>,
+                }
+                impl<'a> SelectBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestSelect>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _SelectRep<T> {
+                        Select::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Select {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]select"]
                                 fn drop(_: u32);
                             }
                             drop(_handle);
@@ -718,37 +645,37 @@ pub mod exports {
                 }
                 #[derive(Debug)]
                 #[repr(transparent)]
-                pub struct IfElse {
-                    handle: _rt::Resource<IfElse>,
+                pub struct BinaryOperation {
+                    handle: _rt::Resource<BinaryOperation>,
                 }
-                type _IfElseRep<T> = Option<T>;
-                impl IfElse {
+                type _BinaryOperationRep<T> = Option<T>;
+                impl BinaryOperation {
                     /// Creates a new resource from the specified representation.
                     ///
                     /// This function will create a new resource handle by moving `val` onto
                     /// the heap and then passing that heap pointer to the component model to
-                    /// create a handle. The owned handle is then returned as `IfElse`.
-                    pub fn new<T: GuestIfElse>(val: T) -> Self {
+                    /// create a handle. The owned handle is then returned as `BinaryOperation`.
+                    pub fn new<T: GuestBinaryOperation>(val: T) -> Self {
                         Self::type_guard::<T>();
-                        let val: _IfElseRep<T> = Some(val);
-                        let ptr: *mut _IfElseRep<T> = _rt::Box::into_raw(
+                        let val: _BinaryOperationRep<T> = Some(val);
+                        let ptr: *mut _BinaryOperationRep<T> = _rt::Box::into_raw(
                             _rt::Box::new(val),
                         );
                         unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
                     }
                     /// Gets access to the underlying `T` which represents this resource.
-                    pub fn get<T: GuestIfElse>(&self) -> &T {
+                    pub fn get<T: GuestBinaryOperation>(&self) -> &T {
                         let ptr = unsafe { &*self.as_ptr::<T>() };
                         ptr.as_ref().unwrap()
                     }
                     /// Gets mutable access to the underlying `T` which represents this
                     /// resource.
-                    pub fn get_mut<T: GuestIfElse>(&mut self) -> &mut T {
+                    pub fn get_mut<T: GuestBinaryOperation>(&mut self) -> &mut T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.as_mut().unwrap()
                     }
                     /// Consumes this resource and returns the underlying `T`.
-                    pub fn into_inner<T: GuestIfElse>(self) -> T {
+                    pub fn into_inner<T: GuestBinaryOperation>(self) -> T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.take().unwrap()
                     }
@@ -786,22 +713,26 @@ pub mod exports {
                     #[doc(hidden)]
                     pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
                         Self::type_guard::<T>();
-                        let _ = _rt::Box::from_raw(handle as *mut _IfElseRep<T>);
+                        let _ = _rt::Box::from_raw(
+                            handle as *mut _BinaryOperationRep<T>,
+                        );
                     }
-                    fn as_ptr<T: GuestIfElse>(&self) -> *mut _IfElseRep<T> {
-                        IfElse::type_guard::<T>();
+                    fn as_ptr<T: GuestBinaryOperation>(
+                        &self,
+                    ) -> *mut _BinaryOperationRep<T> {
+                        BinaryOperation::type_guard::<T>();
                         T::_resource_rep(self.handle()).cast()
                     }
                 }
-                /// A borrowed version of [`IfElse`] which represents a borrowed value
+                /// A borrowed version of [`BinaryOperation`] which represents a borrowed value
                 /// with the lifetime `'a`.
                 #[derive(Debug)]
                 #[repr(transparent)]
-                pub struct IfElseBorrow<'a> {
+                pub struct BinaryOperationBorrow<'a> {
                     rep: *mut u8,
-                    _marker: core::marker::PhantomData<&'a IfElse>,
+                    _marker: core::marker::PhantomData<&'a BinaryOperation>,
                 }
-                impl<'a> IfElseBorrow<'a> {
+                impl<'a> BinaryOperationBorrow<'a> {
                     #[doc(hidden)]
                     pub unsafe fn lift(rep: usize) -> Self {
                         Self {
@@ -810,16 +741,16 @@ pub mod exports {
                         }
                     }
                     /// Gets access to the underlying `T` in this resource.
-                    pub fn get<T: GuestIfElse>(&self) -> &T {
+                    pub fn get<T: GuestBinaryOperation>(&self) -> &T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.as_ref().unwrap()
                     }
-                    fn as_ptr<T: 'static>(&self) -> *mut _IfElseRep<T> {
-                        IfElse::type_guard::<T>();
+                    fn as_ptr<T: 'static>(&self) -> *mut _BinaryOperationRep<T> {
+                        BinaryOperation::type_guard::<T>();
                         self.rep.cast()
                     }
                 }
-                unsafe impl _rt::WasmResource for IfElse {
+                unsafe impl _rt::WasmResource for BinaryOperation {
                     #[inline]
                     unsafe fn drop(_handle: u32) {
                         #[cfg(not(target_arch = "wasm32"))]
@@ -828,57 +759,46 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-drop]if-else"]
+                                #[link_name = "[resource-drop]binary-operation"]
                                 fn drop(_: u32);
                             }
                             drop(_handle);
                         }
                     }
                 }
-                /// TODO: select,
-                /// TODO: str,
-                /// TODO: path,
-                /// TODO: literal,
-                /// TODO: lambda,
-                /// TODO: legacy-let,
-                /// TODO: let-in,
-                /// TODO: %list,
-                /// TODO: bin-op,
-                /// TODO: paren,
-                /// TODO: root,
                 #[derive(Debug)]
                 #[repr(transparent)]
-                pub struct AttrSet {
-                    handle: _rt::Resource<AttrSet>,
+                pub struct Error {
+                    handle: _rt::Resource<Error>,
                 }
-                type _AttrSetRep<T> = Option<T>;
-                impl AttrSet {
+                type _ErrorRep<T> = Option<T>;
+                impl Error {
                     /// Creates a new resource from the specified representation.
                     ///
                     /// This function will create a new resource handle by moving `val` onto
                     /// the heap and then passing that heap pointer to the component model to
-                    /// create a handle. The owned handle is then returned as `AttrSet`.
-                    pub fn new<T: GuestAttrSet>(val: T) -> Self {
+                    /// create a handle. The owned handle is then returned as `Error`.
+                    pub fn new<T: GuestError>(val: T) -> Self {
                         Self::type_guard::<T>();
-                        let val: _AttrSetRep<T> = Some(val);
-                        let ptr: *mut _AttrSetRep<T> = _rt::Box::into_raw(
+                        let val: _ErrorRep<T> = Some(val);
+                        let ptr: *mut _ErrorRep<T> = _rt::Box::into_raw(
                             _rt::Box::new(val),
                         );
                         unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
                     }
                     /// Gets access to the underlying `T` which represents this resource.
-                    pub fn get<T: GuestAttrSet>(&self) -> &T {
+                    pub fn get<T: GuestError>(&self) -> &T {
                         let ptr = unsafe { &*self.as_ptr::<T>() };
                         ptr.as_ref().unwrap()
                     }
                     /// Gets mutable access to the underlying `T` which represents this
                     /// resource.
-                    pub fn get_mut<T: GuestAttrSet>(&mut self) -> &mut T {
+                    pub fn get_mut<T: GuestError>(&mut self) -> &mut T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.as_mut().unwrap()
                     }
                     /// Consumes this resource and returns the underlying `T`.
-                    pub fn into_inner<T: GuestAttrSet>(self) -> T {
+                    pub fn into_inner<T: GuestError>(self) -> T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.take().unwrap()
                     }
@@ -916,22 +836,22 @@ pub mod exports {
                     #[doc(hidden)]
                     pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
                         Self::type_guard::<T>();
-                        let _ = _rt::Box::from_raw(handle as *mut _AttrSetRep<T>);
+                        let _ = _rt::Box::from_raw(handle as *mut _ErrorRep<T>);
                     }
-                    fn as_ptr<T: GuestAttrSet>(&self) -> *mut _AttrSetRep<T> {
-                        AttrSet::type_guard::<T>();
+                    fn as_ptr<T: GuestError>(&self) -> *mut _ErrorRep<T> {
+                        Error::type_guard::<T>();
                         T::_resource_rep(self.handle()).cast()
                     }
                 }
-                /// A borrowed version of [`AttrSet`] which represents a borrowed value
+                /// A borrowed version of [`Error`] which represents a borrowed value
                 /// with the lifetime `'a`.
                 #[derive(Debug)]
                 #[repr(transparent)]
-                pub struct AttrSetBorrow<'a> {
+                pub struct ErrorBorrow<'a> {
                     rep: *mut u8,
-                    _marker: core::marker::PhantomData<&'a AttrSet>,
+                    _marker: core::marker::PhantomData<&'a Error>,
                 }
-                impl<'a> AttrSetBorrow<'a> {
+                impl<'a> ErrorBorrow<'a> {
                     #[doc(hidden)]
                     pub unsafe fn lift(rep: usize) -> Self {
                         Self {
@@ -940,16 +860,16 @@ pub mod exports {
                         }
                     }
                     /// Gets access to the underlying `T` in this resource.
-                    pub fn get<T: GuestAttrSet>(&self) -> &T {
+                    pub fn get<T: GuestError>(&self) -> &T {
                         let ptr = unsafe { &mut *self.as_ptr::<T>() };
                         ptr.as_ref().unwrap()
                     }
-                    fn as_ptr<T: 'static>(&self) -> *mut _AttrSetRep<T> {
-                        AttrSet::type_guard::<T>();
+                    fn as_ptr<T: 'static>(&self) -> *mut _ErrorRep<T> {
+                        Error::type_guard::<T>();
                         self.rep.cast()
                     }
                 }
-                unsafe impl _rt::WasmResource for AttrSet {
+                unsafe impl _rt::WasmResource for Error {
                     #[inline]
                     unsafe fn drop(_handle: u32) {
                         #[cfg(not(target_arch = "wasm32"))]
@@ -958,582 +878,2547 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-drop]attr-set"]
+                                #[link_name = "[resource-drop]error"]
                                 fn drop(_: u32);
                             }
                             drop(_handle);
                         }
                     }
                 }
-                pub enum NixExpr {
-                    Apply(Apply),
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Function {
+                    handle: _rt::Resource<Function>,
+                }
+                type _FunctionRep<T> = Option<T>;
+                impl Function {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Function`.
+                    pub fn new<T: GuestFunction>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _FunctionRep<T> = Some(val);
+                        let ptr: *mut _FunctionRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestFunction>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestFunction>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestFunction>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _FunctionRep<T>);
+                    }
+                    fn as_ptr<T: GuestFunction>(&self) -> *mut _FunctionRep<T> {
+                        Function::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Function`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct FunctionBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Function>,
+                }
+                impl<'a> FunctionBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestFunction>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _FunctionRep<T> {
+                        Function::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Function {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]function"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct FunctionApplication {
+                    handle: _rt::Resource<FunctionApplication>,
+                }
+                type _FunctionApplicationRep<T> = Option<T>;
+                impl FunctionApplication {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `FunctionApplication`.
+                    pub fn new<T: GuestFunctionApplication>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _FunctionApplicationRep<T> = Some(val);
+                        let ptr: *mut _FunctionApplicationRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestFunctionApplication>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestFunctionApplication>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestFunctionApplication>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(
+                            handle as *mut _FunctionApplicationRep<T>,
+                        );
+                    }
+                    fn as_ptr<T: GuestFunctionApplication>(
+                        &self,
+                    ) -> *mut _FunctionApplicationRep<T> {
+                        FunctionApplication::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`FunctionApplication`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct FunctionApplicationBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a FunctionApplication>,
+                }
+                impl<'a> FunctionApplicationBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestFunctionApplication>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _FunctionApplicationRep<T> {
+                        FunctionApplication::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for FunctionApplication {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]function-application"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct HasAttribute {
+                    handle: _rt::Resource<HasAttribute>,
+                }
+                type _HasAttributeRep<T> = Option<T>;
+                impl HasAttribute {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `HasAttribute`.
+                    pub fn new<T: GuestHasAttribute>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _HasAttributeRep<T> = Some(val);
+                        let ptr: *mut _HasAttributeRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestHasAttribute>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestHasAttribute>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestHasAttribute>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _HasAttributeRep<T>);
+                    }
+                    fn as_ptr<T: GuestHasAttribute>(&self) -> *mut _HasAttributeRep<T> {
+                        HasAttribute::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`HasAttribute`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct HasAttributeBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a HasAttribute>,
+                }
+                impl<'a> HasAttributeBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestHasAttribute>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _HasAttributeRep<T> {
+                        HasAttribute::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for HasAttribute {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]has-attribute"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Identifier {
+                    handle: _rt::Resource<Identifier>,
+                }
+                type _IdentifierRep<T> = Option<T>;
+                impl Identifier {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Identifier`.
+                    pub fn new<T: GuestIdentifier>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _IdentifierRep<T> = Some(val);
+                        let ptr: *mut _IdentifierRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestIdentifier>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestIdentifier>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestIdentifier>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _IdentifierRep<T>);
+                    }
+                    fn as_ptr<T: GuestIdentifier>(&self) -> *mut _IdentifierRep<T> {
+                        Identifier::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Identifier`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct IdentifierBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Identifier>,
+                }
+                impl<'a> IdentifierBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestIdentifier>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _IdentifierRep<T> {
+                        Identifier::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Identifier {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]identifier"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct IfThenElse {
+                    handle: _rt::Resource<IfThenElse>,
+                }
+                type _IfThenElseRep<T> = Option<T>;
+                impl IfThenElse {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `IfThenElse`.
+                    pub fn new<T: GuestIfThenElse>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _IfThenElseRep<T> = Some(val);
+                        let ptr: *mut _IfThenElseRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestIfThenElse>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestIfThenElse>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestIfThenElse>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _IfThenElseRep<T>);
+                    }
+                    fn as_ptr<T: GuestIfThenElse>(&self) -> *mut _IfThenElseRep<T> {
+                        IfThenElse::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`IfThenElse`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct IfThenElseBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a IfThenElse>,
+                }
+                impl<'a> IfThenElseBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestIfThenElse>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _IfThenElseRep<T> {
+                        IfThenElse::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for IfThenElse {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]if-then-else"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct LetIn {
+                    handle: _rt::Resource<LetIn>,
+                }
+                type _LetInRep<T> = Option<T>;
+                impl LetIn {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `LetIn`.
+                    pub fn new<T: GuestLetIn>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _LetInRep<T> = Some(val);
+                        let ptr: *mut _LetInRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestLetIn>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestLetIn>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestLetIn>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _LetInRep<T>);
+                    }
+                    fn as_ptr<T: GuestLetIn>(&self) -> *mut _LetInRep<T> {
+                        LetIn::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`LetIn`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct LetInBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a LetIn>,
+                }
+                impl<'a> LetInBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestLetIn>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _LetInRep<T> {
+                        LetIn::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for LetIn {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]let-in"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct ListNode {
+                    handle: _rt::Resource<ListNode>,
+                }
+                type _ListNodeRep<T> = Option<T>;
+                impl ListNode {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `ListNode`.
+                    pub fn new<T: GuestListNode>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _ListNodeRep<T> = Some(val);
+                        let ptr: *mut _ListNodeRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestListNode>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestListNode>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestListNode>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _ListNodeRep<T>);
+                    }
+                    fn as_ptr<T: GuestListNode>(&self) -> *mut _ListNodeRep<T> {
+                        ListNode::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`ListNode`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct ListNodeBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a ListNode>,
+                }
+                impl<'a> ListNodeBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestListNode>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _ListNodeRep<T> {
+                        ListNode::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for ListNode {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]list-node"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Path {
+                    handle: _rt::Resource<Path>,
+                }
+                type _PathRep<T> = Option<T>;
+                impl Path {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Path`.
+                    pub fn new<T: GuestPath>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _PathRep<T> = Some(val);
+                        let ptr: *mut _PathRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestPath>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestPath>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestPath>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _PathRep<T>);
+                    }
+                    fn as_ptr<T: GuestPath>(&self) -> *mut _PathRep<T> {
+                        Path::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Path`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct PathBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Path>,
+                }
+                impl<'a> PathBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestPath>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _PathRep<T> {
+                        Path::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Path {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]path"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct NixString {
+                    handle: _rt::Resource<NixString>,
+                }
+                type _NixStringRep<T> = Option<T>;
+                impl NixString {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `NixString`.
+                    pub fn new<T: GuestNixString>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _NixStringRep<T> = Some(val);
+                        let ptr: *mut _NixStringRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestNixString>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestNixString>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestNixString>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _NixStringRep<T>);
+                    }
+                    fn as_ptr<T: GuestNixString>(&self) -> *mut _NixStringRep<T> {
+                        NixString::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`NixString`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct NixStringBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a NixString>,
+                }
+                impl<'a> NixStringBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestNixString>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _NixStringRep<T> {
+                        NixString::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for NixString {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]nix-string"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Clone, Copy)]
+                pub enum Literal {
+                    Float(f64),
+                    Integer(i64),
+                    Uri,
+                }
+                impl ::core::fmt::Debug for Literal {
+                    fn fmt(
+                        &self,
+                        f: &mut ::core::fmt::Formatter<'_>,
+                    ) -> ::core::fmt::Result {
+                        match self {
+                            Literal::Float(e) => {
+                                f.debug_tuple("Literal::Float").field(e).finish()
+                            }
+                            Literal::Integer(e) => {
+                                f.debug_tuple("Literal::Integer").field(e).finish()
+                            }
+                            Literal::Uri => f.debug_tuple("Literal::Uri").finish(),
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct UnaryOperation {
+                    handle: _rt::Resource<UnaryOperation>,
+                }
+                type _UnaryOperationRep<T> = Option<T>;
+                impl UnaryOperation {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `UnaryOperation`.
+                    pub fn new<T: GuestUnaryOperation>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _UnaryOperationRep<T> = Some(val);
+                        let ptr: *mut _UnaryOperationRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestUnaryOperation>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestUnaryOperation>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestUnaryOperation>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _UnaryOperationRep<T>);
+                    }
+                    fn as_ptr<T: GuestUnaryOperation>(
+                        &self,
+                    ) -> *mut _UnaryOperationRep<T> {
+                        UnaryOperation::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`UnaryOperation`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct UnaryOperationBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a UnaryOperation>,
+                }
+                impl<'a> UnaryOperationBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestUnaryOperation>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _UnaryOperationRep<T> {
+                        UnaryOperation::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for UnaryOperation {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]unary-operation"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct NixWith {
+                    handle: _rt::Resource<NixWith>,
+                }
+                type _NixWithRep<T> = Option<T>;
+                impl NixWith {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `NixWith`.
+                    pub fn new<T: GuestNixWith>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _NixWithRep<T> = Some(val);
+                        let ptr: *mut _NixWithRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestNixWith>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestNixWith>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestNixWith>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _NixWithRep<T>);
+                    }
+                    fn as_ptr<T: GuestNixWith>(&self) -> *mut _NixWithRep<T> {
+                        NixWith::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`NixWith`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct NixWithBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a NixWith>,
+                }
+                impl<'a> NixWithBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestNixWith>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _NixWithRep<T> {
+                        NixWith::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for NixWith {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]nix-with"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct Root {
+                    handle: _rt::Resource<Root>,
+                }
+                type _RootRep<T> = Option<T>;
+                impl Root {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `Root`.
+                    pub fn new<T: GuestRoot>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _RootRep<T> = Some(val);
+                        let ptr: *mut _RootRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestRoot>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestRoot>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestRoot>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _RootRep<T>);
+                    }
+                    fn as_ptr<T: GuestRoot>(&self) -> *mut _RootRep<T> {
+                        Root::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`Root`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct RootBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a Root>,
+                }
+                impl<'a> RootBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestRoot>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _RootRep<T> {
+                        Root::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for Root {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]root"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct AttributeSet {
+                    handle: _rt::Resource<AttributeSet>,
+                }
+                type _AttributeSetRep<T> = Option<T>;
+                impl AttributeSet {
+                    /// Creates a new resource from the specified representation.
+                    ///
+                    /// This function will create a new resource handle by moving `val` onto
+                    /// the heap and then passing that heap pointer to the component model to
+                    /// create a handle. The owned handle is then returned as `AttributeSet`.
+                    pub fn new<T: GuestAttributeSet>(val: T) -> Self {
+                        Self::type_guard::<T>();
+                        let val: _AttributeSetRep<T> = Some(val);
+                        let ptr: *mut _AttributeSetRep<T> = _rt::Box::into_raw(
+                            _rt::Box::new(val),
+                        );
+                        unsafe { Self::from_handle(T::_resource_new(ptr.cast())) }
+                    }
+                    /// Gets access to the underlying `T` which represents this resource.
+                    pub fn get<T: GuestAttributeSet>(&self) -> &T {
+                        let ptr = unsafe { &*self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    /// Gets mutable access to the underlying `T` which represents this
+                    /// resource.
+                    pub fn get_mut<T: GuestAttributeSet>(&mut self) -> &mut T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_mut().unwrap()
+                    }
+                    /// Consumes this resource and returns the underlying `T`.
+                    pub fn into_inner<T: GuestAttributeSet>(self) -> T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.take().unwrap()
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn from_handle(handle: u32) -> Self {
+                        Self {
+                            handle: _rt::Resource::from_handle(handle),
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub fn take_handle(&self) -> u32 {
+                        _rt::Resource::take_handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    pub fn handle(&self) -> u32 {
+                        _rt::Resource::handle(&self.handle)
+                    }
+                    #[doc(hidden)]
+                    fn type_guard<T: 'static>() {
+                        use core::any::TypeId;
+                        static mut LAST_TYPE: Option<TypeId> = None;
+                        unsafe {
+                            assert!(! cfg!(target_feature = "atomics"));
+                            let id = TypeId::of::<T>();
+                            match LAST_TYPE {
+                                Some(ty) => {
+                                    assert!(
+                                        ty == id, "cannot use two types with this resource type"
+                                    )
+                                }
+                                None => LAST_TYPE = Some(id),
+                            }
+                        }
+                    }
+                    #[doc(hidden)]
+                    pub unsafe fn dtor<T: 'static>(handle: *mut u8) {
+                        Self::type_guard::<T>();
+                        let _ = _rt::Box::from_raw(handle as *mut _AttributeSetRep<T>);
+                    }
+                    fn as_ptr<T: GuestAttributeSet>(&self) -> *mut _AttributeSetRep<T> {
+                        AttributeSet::type_guard::<T>();
+                        T::_resource_rep(self.handle()).cast()
+                    }
+                }
+                /// A borrowed version of [`AttributeSet`] which represents a borrowed value
+                /// with the lifetime `'a`.
+                #[derive(Debug)]
+                #[repr(transparent)]
+                pub struct AttributeSetBorrow<'a> {
+                    rep: *mut u8,
+                    _marker: core::marker::PhantomData<&'a AttributeSet>,
+                }
+                impl<'a> AttributeSetBorrow<'a> {
+                    #[doc(hidden)]
+                    pub unsafe fn lift(rep: usize) -> Self {
+                        Self {
+                            rep: rep as *mut u8,
+                            _marker: core::marker::PhantomData,
+                        }
+                    }
+                    /// Gets access to the underlying `T` in this resource.
+                    pub fn get<T: GuestAttributeSet>(&self) -> &T {
+                        let ptr = unsafe { &mut *self.as_ptr::<T>() };
+                        ptr.as_ref().unwrap()
+                    }
+                    fn as_ptr<T: 'static>(&self) -> *mut _AttributeSetRep<T> {
+                        AttributeSet::type_guard::<T>();
+                        self.rep.cast()
+                    }
+                }
+                unsafe impl _rt::WasmResource for AttributeSet {
+                    #[inline]
+                    unsafe fn drop(_handle: u32) {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unreachable!();
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-drop]attribute-set"]
+                                fn drop(_: u32);
+                            }
+                            drop(_handle);
+                        }
+                    }
+                }
+                pub enum Expression {
+                    Select(Select),
                     Assert(Assert),
-                    Error,
-                    IfElse(IfElse),
-                    Select,
-                    Str,
-                    Path,
-                    Literal,
-                    Lambda,
-                    LegacyLet,
-                    LetIn,
-                    List,
-                    BinOp,
-                    Paren,
-                    Root,
-                    AttrSet(AttrSet),
-                    UnaryOp,
-                    Ident,
-                    With,
-                    HasAttr,
-                    InvalidNode,
+                    BinaryOperation(BinaryOperation),
+                    Error(Error),
+                    Function(Function),
+                    FunctionApplication(FunctionApplication),
+                    HasAttribute(HasAttribute),
+                    Identifier(Identifier),
+                    IfThenElse(IfThenElse),
+                    LetIn(LetIn),
+                    List(ListNode),
+                    Path(Path),
+                    String(NixString),
+                    Literal(Literal),
+                    UnaryOperation(UnaryOperation),
+                    With(NixWith),
+                    Root(Root),
+                    AttributeSet(AttributeSet),
                 }
-                impl ::core::fmt::Debug for NixExpr {
+                impl ::core::fmt::Debug for Expression {
                     fn fmt(
                         &self,
                         f: &mut ::core::fmt::Formatter<'_>,
                     ) -> ::core::fmt::Result {
                         match self {
-                            NixExpr::Apply(e) => {
-                                f.debug_tuple("NixExpr::Apply").field(e).finish()
+                            Expression::Select(e) => {
+                                f.debug_tuple("Expression::Select").field(e).finish()
                             }
-                            NixExpr::Assert(e) => {
-                                f.debug_tuple("NixExpr::Assert").field(e).finish()
+                            Expression::Assert(e) => {
+                                f.debug_tuple("Expression::Assert").field(e).finish()
                             }
-                            NixExpr::Error => f.debug_tuple("NixExpr::Error").finish(),
-                            NixExpr::IfElse(e) => {
-                                f.debug_tuple("NixExpr::IfElse").field(e).finish()
+                            Expression::BinaryOperation(e) => {
+                                f.debug_tuple("Expression::BinaryOperation")
+                                    .field(e)
+                                    .finish()
                             }
-                            NixExpr::Select => f.debug_tuple("NixExpr::Select").finish(),
-                            NixExpr::Str => f.debug_tuple("NixExpr::Str").finish(),
-                            NixExpr::Path => f.debug_tuple("NixExpr::Path").finish(),
-                            NixExpr::Literal => {
-                                f.debug_tuple("NixExpr::Literal").finish()
+                            Expression::Error(e) => {
+                                f.debug_tuple("Expression::Error").field(e).finish()
                             }
-                            NixExpr::Lambda => f.debug_tuple("NixExpr::Lambda").finish(),
-                            NixExpr::LegacyLet => {
-                                f.debug_tuple("NixExpr::LegacyLet").finish()
+                            Expression::Function(e) => {
+                                f.debug_tuple("Expression::Function").field(e).finish()
                             }
-                            NixExpr::LetIn => f.debug_tuple("NixExpr::LetIn").finish(),
-                            NixExpr::List => f.debug_tuple("NixExpr::List").finish(),
-                            NixExpr::BinOp => f.debug_tuple("NixExpr::BinOp").finish(),
-                            NixExpr::Paren => f.debug_tuple("NixExpr::Paren").finish(),
-                            NixExpr::Root => f.debug_tuple("NixExpr::Root").finish(),
-                            NixExpr::AttrSet(e) => {
-                                f.debug_tuple("NixExpr::AttrSet").field(e).finish()
+                            Expression::FunctionApplication(e) => {
+                                f.debug_tuple("Expression::FunctionApplication")
+                                    .field(e)
+                                    .finish()
                             }
-                            NixExpr::UnaryOp => {
-                                f.debug_tuple("NixExpr::UnaryOp").finish()
+                            Expression::HasAttribute(e) => {
+                                f.debug_tuple("Expression::HasAttribute").field(e).finish()
                             }
-                            NixExpr::Ident => f.debug_tuple("NixExpr::Ident").finish(),
-                            NixExpr::With => f.debug_tuple("NixExpr::With").finish(),
-                            NixExpr::HasAttr => {
-                                f.debug_tuple("NixExpr::HasAttr").finish()
+                            Expression::Identifier(e) => {
+                                f.debug_tuple("Expression::Identifier").field(e).finish()
                             }
-                            NixExpr::InvalidNode => {
-                                f.debug_tuple("NixExpr::InvalidNode").finish()
+                            Expression::IfThenElse(e) => {
+                                f.debug_tuple("Expression::IfThenElse").field(e).finish()
+                            }
+                            Expression::LetIn(e) => {
+                                f.debug_tuple("Expression::LetIn").field(e).finish()
+                            }
+                            Expression::List(e) => {
+                                f.debug_tuple("Expression::List").field(e).finish()
+                            }
+                            Expression::Path(e) => {
+                                f.debug_tuple("Expression::Path").field(e).finish()
+                            }
+                            Expression::String(e) => {
+                                f.debug_tuple("Expression::String").field(e).finish()
+                            }
+                            Expression::Literal(e) => {
+                                f.debug_tuple("Expression::Literal").field(e).finish()
+                            }
+                            Expression::UnaryOperation(e) => {
+                                f.debug_tuple("Expression::UnaryOperation")
+                                    .field(e)
+                                    .finish()
+                            }
+                            Expression::With(e) => {
+                                f.debug_tuple("Expression::With").field(e).finish()
+                            }
+                            Expression::Root(e) => {
+                                f.debug_tuple("Expression::Root").field(e).finish()
+                            }
+                            Expression::AttributeSet(e) => {
+                                f.debug_tuple("Expression::AttributeSet").field(e).finish()
                             }
                         }
                     }
                 }
-                /// TODO: unary-op,
-                /// TODO: ident,
-                /// TODO: %with,
-                /// TODO: has-attr,
-                /// TODO: invalid-node,
-                #[derive(Clone)]
-                pub enum NixParseError {
-                    /// Unexpected is used when the cause cannot be specified further
-                    Unexpected(TextRange),
-                    /// UnexpectedExtra is used when there are additional tokens to the root in the tree
-                    UnexpectedExtra(TextRange),
-                    /// UnexpectedWanted is used when specific tokens are expected, but different one is found
-                    UnexpectedWanted((SyntaxToken, TextRange, _rt::Vec<SyntaxToken>)),
-                    /// UnexpectedDoubleBind is used when a pattern is bound twice
-                    UnexpectedDoubleBind(TextRange),
-                    /// UnexpectedEOF is used when the end of file is reached, while tokens are still expected
-                    UnexpectedEof,
-                    /// UnexpectedEOFWanted is used when specific tokens are expected, but the end of file is reached
-                    UnexpectedEofWanted(_rt::Vec<SyntaxToken>),
-                    /// DuplicatedArgs is used when formal arguments are duplicated, e.g. `{ a, a }`
-                    DuplicatedArgs((TextRange, _rt::String)),
-                    /// RecursionLimitExceeded is used when we're unable to parse further due to likely being close to
-                    /// a stack overflow.
-                    RecursionLimitExceeded,
-                    /// Occurs when an unknown error is encountered
-                    Unknown,
+                pub enum Attr {
+                    Str(_rt::String),
+                    Ident(Identifier),
+                    Dynamic(Expression),
                 }
-                impl ::core::fmt::Debug for NixParseError {
+                impl ::core::fmt::Debug for Attr {
                     fn fmt(
                         &self,
                         f: &mut ::core::fmt::Formatter<'_>,
                     ) -> ::core::fmt::Result {
                         match self {
-                            NixParseError::Unexpected(e) => {
-                                f.debug_tuple("NixParseError::Unexpected").field(e).finish()
+                            Attr::Str(e) => f.debug_tuple("Attr::Str").field(e).finish(),
+                            Attr::Ident(e) => {
+                                f.debug_tuple("Attr::Ident").field(e).finish()
                             }
-                            NixParseError::UnexpectedExtra(e) => {
-                                f.debug_tuple("NixParseError::UnexpectedExtra")
-                                    .field(e)
-                                    .finish()
-                            }
-                            NixParseError::UnexpectedWanted(e) => {
-                                f.debug_tuple("NixParseError::UnexpectedWanted")
-                                    .field(e)
-                                    .finish()
-                            }
-                            NixParseError::UnexpectedDoubleBind(e) => {
-                                f.debug_tuple("NixParseError::UnexpectedDoubleBind")
-                                    .field(e)
-                                    .finish()
-                            }
-                            NixParseError::UnexpectedEof => {
-                                f.debug_tuple("NixParseError::UnexpectedEof").finish()
-                            }
-                            NixParseError::UnexpectedEofWanted(e) => {
-                                f.debug_tuple("NixParseError::UnexpectedEofWanted")
-                                    .field(e)
-                                    .finish()
-                            }
-                            NixParseError::DuplicatedArgs(e) => {
-                                f.debug_tuple("NixParseError::DuplicatedArgs")
-                                    .field(e)
-                                    .finish()
-                            }
-                            NixParseError::RecursionLimitExceeded => {
-                                f.debug_tuple("NixParseError::RecursionLimitExceeded")
-                                    .finish()
-                            }
-                            NixParseError::Unknown => {
-                                f.debug_tuple("NixParseError::Unknown").finish()
+                            Attr::Dynamic(e) => {
+                                f.debug_tuple("Attr::Dynamic").field(e).finish()
                             }
                         }
                     }
                 }
-                impl ::core::fmt::Display for NixParseError {
+                pub enum StringPart {
+                    Raw(_rt::String),
+                    Dynamic(Expression),
+                }
+                impl ::core::fmt::Debug for StringPart {
                     fn fmt(
                         &self,
                         f: &mut ::core::fmt::Formatter<'_>,
                     ) -> ::core::fmt::Result {
-                        write!(f, "{:?}", self)
+                        match self {
+                            StringPart::Raw(e) => {
+                                f.debug_tuple("StringPart::Raw").field(e).finish()
+                            }
+                            StringPart::Dynamic(e) => {
+                                f.debug_tuple("StringPart::Dynamic").field(e).finish()
+                            }
+                        }
                     }
                 }
-                impl std::error::Error for NixParseError {}
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_constructor_apply_cabi<T: GuestApply>(
-                    arg0: i32,
-                    arg1: i32,
-                    arg2: i32,
-                    arg3: i32,
-                ) -> i32 {
+                pub unsafe fn _export_method_attribute_path_value_get_attr_list_cabi<
+                    T: GuestAttributePathValue,
+                >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let v0 = match arg0 {
-                        0 => {
-                            let e0 = Apply::from_handle(arg1 as u32);
-                            NixExpr::Apply(e0)
+                    let result0 = T::get_attr_list(
+                        AttributePathValueBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec3 = result0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 32,
+                        8,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
                         }
-                        1 => {
-                            let e0 = Assert::from_handle(arg1 as u32);
-                            NixExpr::Assert(e0)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e0 = IfElse::from_handle(arg1 as u32);
-                            NixExpr::IfElse(e0)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e0 = AttrSet::from_handle(arg1 as u32);
-                            NixExpr::AttrSet(e0)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
-                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
                     };
-                    let v1 = match arg2 {
-                        0 => {
-                            let e1 = Apply::from_handle(arg3 as u32);
-                            NixExpr::Apply(e1)
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 32);
+                        {
+                            match e {
+                                Attr::Str(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    let vec2 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                                    let len2 = vec2.len();
+                                    ::core::mem::forget(vec2);
+                                    *base.add(12).cast::<usize>() = len2;
+                                    *base.add(8).cast::<*mut u8>() = ptr2.cast_mut();
+                                }
+                                Attr::Ident(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Attr::Dynamic(e) => {
+                                    *base.add(0).cast::<u8>() = (2i32) as u8;
+                                    match e {
+                                        Expression::Select(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Assert(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::BinaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Error(e) => {
+                                            *base.add(8).cast::<u8>() = (3i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Function(e) => {
+                                            *base.add(8).cast::<u8>() = (4i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::FunctionApplication(e) => {
+                                            *base.add(8).cast::<u8>() = (5i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::HasAttribute(e) => {
+                                            *base.add(8).cast::<u8>() = (6i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Identifier(e) => {
+                                            *base.add(8).cast::<u8>() = (7i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::IfThenElse(e) => {
+                                            *base.add(8).cast::<u8>() = (8i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::LetIn(e) => {
+                                            *base.add(8).cast::<u8>() = (9i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::List(e) => {
+                                            *base.add(8).cast::<u8>() = (10i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Path(e) => {
+                                            *base.add(8).cast::<u8>() = (11i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::String(e) => {
+                                            *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
+                                            match e {
+                                                Literal::Float(e) => {
+                                                    *base.add(16).cast::<u8>() = (0i32) as u8;
+                                                    *base.add(24).cast::<f64>() = _rt::as_f64(e);
+                                                }
+                                                Literal::Integer(e) => {
+                                                    *base.add(16).cast::<u8>() = (1i32) as u8;
+                                                    *base.add(24).cast::<i64>() = _rt::as_i64(e);
+                                                }
+                                                Literal::Uri => {
+                                                    *base.add(16).cast::<u8>() = (2i32) as u8;
+                                                }
+                                            }
+                                        }
+                                        Expression::UnaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (14i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::With(e) => {
+                                            *base.add(8).cast::<u8>() = (15i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Root(e) => {
+                                            *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        1 => {
-                            let e1 = Assert::from_handle(arg3 as u32);
-                            NixExpr::Assert(e1)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e1 = IfElse::from_handle(arg3 as u32);
-                            NixExpr::IfElse(e1)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e1 = AttrSet::from_handle(arg3 as u32);
-                            NixExpr::AttrSet(e1)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
-                        }
-                    };
-                    let result2 = Apply::new(T::new(v0, v1));
-                    (result2).take_handle() as i32
+                    }
+                    *ptr1.add(4).cast::<usize>() = len3;
+                    *ptr1.add(0).cast::<*mut u8>() = result3;
+                    ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_apply_get_argument_cabi<T: GuestApply>(
-                    arg0: *mut u8,
-                ) -> *mut u8 {
+                pub unsafe fn __post_return_method_attribute_path_value_get_attr_list<
+                    T: GuestAttributePathValue,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base5 = l0;
+                    let len5 = l1;
+                    for i in 0..len5 {
+                        let base = base5.add(i * 32);
+                        {
+                            let l2 = i32::from(*base.add(0).cast::<u8>());
+                            match l2 {
+                                0 => {
+                                    let l3 = *base.add(8).cast::<*mut u8>();
+                                    let l4 = *base.add(12).cast::<usize>();
+                                    _rt::cabi_dealloc(l3, l4, 1);
+                                }
+                                1 => {}
+                                _ => {}
+                            }
+                        }
+                    }
+                    _rt::cabi_dealloc(base5, len5 * 32, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_attribute_path_value_get_expr_cabi<
+                    T: GuestAttributePathValue,
+                >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_argument(
-                        ApplyBorrow::lift(arg0 as u32 as usize).get(),
+                    let result0 = T::get_expr(
+                        AttributePathValueBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Assert(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Error => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_apply_get_lambda_cabi<T: GuestApply>(
+                pub unsafe fn _export_method_inherit_get_expr_from_cabi<T: GuestInherit>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_lambda(
-                        ApplyBorrow::lift(arg0 as u32 as usize).get(),
+                    let result0 = T::get_expr_from(
+                        InheritBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
-                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
-                        }
-                        NixExpr::Assert(e) => {
+                        Some(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            match e {
+                                Expression::Select(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Assert(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::BinaryOperation(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Error(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (3i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Function(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (4i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::FunctionApplication(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (5i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::HasAttribute(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (6i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Identifier(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (7i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::IfThenElse(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (8i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::LetIn(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (9i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::List(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (10i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Path(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (11i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::String(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (12i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (13i32) as u8;
+                                    match e {
+                                        Literal::Float(e) => {
+                                            *ptr1.add(16).cast::<u8>() = (0i32) as u8;
+                                            *ptr1.add(24).cast::<f64>() = _rt::as_f64(e);
+                                        }
+                                        Literal::Integer(e) => {
+                                            *ptr1.add(16).cast::<u8>() = (1i32) as u8;
+                                            *ptr1.add(24).cast::<i64>() = _rt::as_i64(e);
+                                        }
+                                        Literal::Uri => {
+                                            *ptr1.add(16).cast::<u8>() = (2i32) as u8;
+                                        }
+                                    }
+                                }
+                                Expression::UnaryOperation(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (14i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::With(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (15i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Root(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (16i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (17i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                            }
                         }
-                        NixExpr::Error => {
+                        None => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                        }
+                    };
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_inherit_get_attr_list_cabi<T: GuestInherit>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_attr_list(
+                        InheritBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec3 = result0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 32,
+                        8,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 32);
+                        {
+                            match e {
+                                Attr::Str(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    let vec2 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                                    let len2 = vec2.len();
+                                    ::core::mem::forget(vec2);
+                                    *base.add(12).cast::<usize>() = len2;
+                                    *base.add(8).cast::<*mut u8>() = ptr2.cast_mut();
+                                }
+                                Attr::Ident(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Attr::Dynamic(e) => {
+                                    *base.add(0).cast::<u8>() = (2i32) as u8;
+                                    match e {
+                                        Expression::Select(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Assert(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::BinaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Error(e) => {
+                                            *base.add(8).cast::<u8>() = (3i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Function(e) => {
+                                            *base.add(8).cast::<u8>() = (4i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::FunctionApplication(e) => {
+                                            *base.add(8).cast::<u8>() = (5i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::HasAttribute(e) => {
+                                            *base.add(8).cast::<u8>() = (6i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Identifier(e) => {
+                                            *base.add(8).cast::<u8>() = (7i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::IfThenElse(e) => {
+                                            *base.add(8).cast::<u8>() = (8i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::LetIn(e) => {
+                                            *base.add(8).cast::<u8>() = (9i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::List(e) => {
+                                            *base.add(8).cast::<u8>() = (10i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Path(e) => {
+                                            *base.add(8).cast::<u8>() = (11i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::String(e) => {
+                                            *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
+                                            match e {
+                                                Literal::Float(e) => {
+                                                    *base.add(16).cast::<u8>() = (0i32) as u8;
+                                                    *base.add(24).cast::<f64>() = _rt::as_f64(e);
+                                                }
+                                                Literal::Integer(e) => {
+                                                    *base.add(16).cast::<u8>() = (1i32) as u8;
+                                                    *base.add(24).cast::<i64>() = _rt::as_i64(e);
+                                                }
+                                                Literal::Uri => {
+                                                    *base.add(16).cast::<u8>() = (2i32) as u8;
+                                                }
+                                            }
+                                        }
+                                        Expression::UnaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (14i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::With(e) => {
+                                            *base.add(8).cast::<u8>() = (15i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Root(e) => {
+                                            *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len3;
+                    *ptr1.add(0).cast::<*mut u8>() = result3;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_inherit_get_attr_list<
+                    T: GuestInherit,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base5 = l0;
+                    let len5 = l1;
+                    for i in 0..len5 {
+                        let base = base5.add(i * 32);
+                        {
+                            let l2 = i32::from(*base.add(0).cast::<u8>());
+                            match l2 {
+                                0 => {
+                                    let l3 = *base.add(8).cast::<*mut u8>();
+                                    let l4 = *base.add(12).cast::<usize>();
+                                    _rt::cabi_dealloc(l3, l4, 1);
+                                }
+                                1 => {}
+                                _ => {}
+                            }
+                        }
+                    }
+                    _rt::cabi_dealloc(base5, len5 * 32, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_select_get_base_expr_cabi<T: GuestSelect>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_base_expr(
+                        SelectBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_constructor_assert_cabi<T: GuestAssert>(
-                    arg0: i32,
-                    arg1: i32,
-                    arg2: i32,
-                    arg3: i32,
-                ) -> i32 {
+                pub unsafe fn _export_method_select_get_default_expr_cabi<
+                    T: GuestSelect,
+                >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let v0 = match arg0 {
-                        0 => {
-                            let e0 = Apply::from_handle(arg1 as u32);
-                            NixExpr::Apply(e0)
+                    let result0 = T::get_default_expr(
+                        SelectBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Some(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            match e {
+                                Expression::Select(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Assert(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::BinaryOperation(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Error(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (3i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Function(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (4i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::FunctionApplication(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (5i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::HasAttribute(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (6i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Identifier(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (7i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::IfThenElse(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (8i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::LetIn(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (9i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::List(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (10i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Path(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (11i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::String(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (12i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (13i32) as u8;
+                                    match e {
+                                        Literal::Float(e) => {
+                                            *ptr1.add(16).cast::<u8>() = (0i32) as u8;
+                                            *ptr1.add(24).cast::<f64>() = _rt::as_f64(e);
+                                        }
+                                        Literal::Integer(e) => {
+                                            *ptr1.add(16).cast::<u8>() = (1i32) as u8;
+                                            *ptr1.add(24).cast::<i64>() = _rt::as_i64(e);
+                                        }
+                                        Literal::Uri => {
+                                            *ptr1.add(16).cast::<u8>() = (2i32) as u8;
+                                        }
+                                    }
+                                }
+                                Expression::UnaryOperation(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (14i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::With(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (15i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Root(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (16i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (17i32) as u8;
+                                    *ptr1.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                            }
                         }
-                        1 => {
-                            let e0 = Assert::from_handle(arg1 as u32);
-                            NixExpr::Assert(e0)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e0 = IfElse::from_handle(arg1 as u32);
-                            NixExpr::IfElse(e0)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e0 = AttrSet::from_handle(arg1 as u32);
-                            NixExpr::AttrSet(e0)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
+                        None => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
                         }
                     };
-                    let v1 = match arg2 {
-                        0 => {
-                            let e1 = Apply::from_handle(arg3 as u32);
-                            NixExpr::Apply(e1)
-                        }
-                        1 => {
-                            let e1 = Assert::from_handle(arg3 as u32);
-                            NixExpr::Assert(e1)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e1 = IfElse::from_handle(arg3 as u32);
-                            NixExpr::IfElse(e1)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e1 = AttrSet::from_handle(arg3 as u32);
-                            NixExpr::AttrSet(e1)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
-                        }
-                    };
-                    let result2 = Assert::new(T::new(v0, v1));
-                    (result2).take_handle() as i32
+                    ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_assert_get_body_cabi<T: GuestAssert>(
+                pub unsafe fn _export_method_assert_get_expr_cabi<T: GuestAssert>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_body(
+                    let result0 = T::get_expr(
                         AssertBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Assert(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Error => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
@@ -1549,453 +3434,1967 @@ pub mod exports {
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Assert(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Error => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_constructor_if_else_cabi<T: GuestIfElse>(
-                    arg0: i32,
-                    arg1: i32,
-                    arg2: i32,
-                    arg3: i32,
-                    arg4: i32,
-                    arg5: i32,
-                ) -> i32 {
+                pub unsafe fn _export_method_binary_operation_get_lhs_cabi<
+                    T: GuestBinaryOperation,
+                >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let v0 = match arg0 {
-                        0 => {
-                            let e0 = Apply::from_handle(arg1 as u32);
-                            NixExpr::Apply(e0)
-                        }
-                        1 => {
-                            let e0 = Assert::from_handle(arg1 as u32);
-                            NixExpr::Assert(e0)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e0 = IfElse::from_handle(arg1 as u32);
-                            NixExpr::IfElse(e0)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e0 = AttrSet::from_handle(arg1 as u32);
-                            NixExpr::AttrSet(e0)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
-                        }
-                    };
-                    let v1 = match arg2 {
-                        0 => {
-                            let e1 = Apply::from_handle(arg3 as u32);
-                            NixExpr::Apply(e1)
-                        }
-                        1 => {
-                            let e1 = Assert::from_handle(arg3 as u32);
-                            NixExpr::Assert(e1)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e1 = IfElse::from_handle(arg3 as u32);
-                            NixExpr::IfElse(e1)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e1 = AttrSet::from_handle(arg3 as u32);
-                            NixExpr::AttrSet(e1)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
-                        }
-                    };
-                    let v2 = match arg4 {
-                        0 => {
-                            let e2 = Apply::from_handle(arg5 as u32);
-                            NixExpr::Apply(e2)
-                        }
-                        1 => {
-                            let e2 = Assert::from_handle(arg5 as u32);
-                            NixExpr::Assert(e2)
-                        }
-                        2 => NixExpr::Error,
-                        3 => {
-                            let e2 = IfElse::from_handle(arg5 as u32);
-                            NixExpr::IfElse(e2)
-                        }
-                        4 => NixExpr::Select,
-                        5 => NixExpr::Str,
-                        6 => NixExpr::Path,
-                        7 => NixExpr::Literal,
-                        8 => NixExpr::Lambda,
-                        9 => NixExpr::LegacyLet,
-                        10 => NixExpr::LetIn,
-                        11 => NixExpr::List,
-                        12 => NixExpr::BinOp,
-                        13 => NixExpr::Paren,
-                        14 => NixExpr::Root,
-                        15 => {
-                            let e2 = AttrSet::from_handle(arg5 as u32);
-                            NixExpr::AttrSet(e2)
-                        }
-                        16 => NixExpr::UnaryOp,
-                        17 => NixExpr::Ident,
-                        18 => NixExpr::With,
-                        19 => NixExpr::HasAttr,
-                        n => {
-                            debug_assert_eq!(n, 20, "invalid enum discriminant");
-                            NixExpr::InvalidNode
-                        }
-                    };
-                    let result3 = IfElse::new(T::new(v0, v1, v2));
-                    (result3).take_handle() as i32
-                }
-                #[doc(hidden)]
-                #[allow(non_snake_case)]
-                pub unsafe fn _export_method_if_else_get_condition_cabi<T: GuestIfElse>(
-                    arg0: *mut u8,
-                ) -> *mut u8 {
-                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_condition(
-                        IfElseBorrow::lift(arg0 as u32 as usize).get(),
+                    let result0 = T::get_lhs(
+                        BinaryOperationBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Assert(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Error => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_if_else_get_body_cabi<T: GuestIfElse>(
+                pub unsafe fn _export_method_binary_operation_get_operator_cabi<
+                    T: GuestBinaryOperation,
+                >(arg0: *mut u8) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_operator(
+                        BinaryOperationBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    result0.clone() as i32
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_binary_operation_get_rhs_cabi<
+                    T: GuestBinaryOperation,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_rhs(
+                        BinaryOperationBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_error_get_message_cabi<T: GuestError>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_message(
+                        ErrorBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0.into_bytes()).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_error_get_message<T: GuestError>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    _rt::cabi_dealloc(l0, l1, 1);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_function_get_body_cabi<T: GuestFunction>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
                     let result0 = T::get_body(
-                        IfElseBorrow::lift(arg0 as u32 as usize).get(),
+                        FunctionBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Assert(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Error => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_method_if_else_get_else_body_cabi<T: GuestIfElse>(
+                pub unsafe fn _export_method_function_application_get_function_cabi<
+                    T: GuestFunctionApplication,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_function(
+                        FunctionApplicationBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_function_application_get_argument_cabi<
+                    T: GuestFunctionApplication,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_argument(
+                        FunctionApplicationBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_has_attribute_get_expr_cabi<
+                    T: GuestHasAttribute,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_expr(
+                        HasAttributeBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_identifier_get_id_cabi<T: GuestIdentifier>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = T::get_else_body(
-                        IfElseBorrow::lift(arg0 as u32 as usize).get(),
+                    let result0 = T::get_id(
+                        IdentifierBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0.into_bytes()).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_identifier_get_id<T: GuestIdentifier>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    _rt::cabi_dealloc(l0, l1, 1);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_if_then_else_get_condition_cabi<
+                    T: GuestIfThenElse,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_condition(
+                        IfThenElseBorrow::lift(arg0 as u32 as usize).get(),
                     );
                     let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
                     match result0 {
-                        NixExpr::Apply(e) => {
+                        Expression::Select(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Assert(e) => {
+                        Expression::Assert(e) => {
                             *ptr1.add(0).cast::<u8>() = (1i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Error => {
+                        Expression::BinaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::IfElse(e) => {
+                        Expression::Error(e) => {
                             *ptr1.add(0).cast::<u8>() = (3i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Select => {
+                        Expression::Function(e) => {
                             *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Str => {
+                        Expression::FunctionApplication(e) => {
                             *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Path => {
+                        Expression::HasAttribute(e) => {
                             *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Literal => {
+                        Expression::Identifier(e) => {
                             *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Lambda => {
+                        Expression::IfThenElse(e) => {
                             *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LegacyLet => {
+                        Expression::LetIn(e) => {
                             *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::LetIn => {
+                        Expression::List(e) => {
                             *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::List => {
+                        Expression::Path(e) => {
                             *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::BinOp => {
+                        Expression::String(e) => {
                             *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Paren => {
+                        Expression::Literal(e) => {
                             *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
                         }
-                        NixExpr::Root => {
+                        Expression::UnaryOperation(e) => {
                             *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::AttrSet(e) => {
+                        Expression::With(e) => {
                             *ptr1.add(0).cast::<u8>() = (15i32) as u8;
-                            *ptr1.add(4).cast::<i32>() = (e).take_handle() as i32;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::UnaryOp => {
+                        Expression::Root(e) => {
                             *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
-                        NixExpr::Ident => {
+                        Expression::AttributeSet(e) => {
                             *ptr1.add(0).cast::<u8>() = (17i32) as u8;
-                        }
-                        NixExpr::With => {
-                            *ptr1.add(0).cast::<u8>() = (18i32) as u8;
-                        }
-                        NixExpr::HasAttr => {
-                            *ptr1.add(0).cast::<u8>() = (19i32) as u8;
-                        }
-                        NixExpr::InvalidNode => {
-                            *ptr1.add(0).cast::<u8>() = (20i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
                         }
                     }
                     ptr1
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
-                pub unsafe fn _export_constructor_attr_set_cabi<T: GuestAttrSet>() -> i32 {
+                pub unsafe fn _export_method_if_then_else_get_true_branch_cabi<
+                    T: GuestIfThenElse,
+                >(arg0: *mut u8) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
-                    let result0 = AttrSet::new(T::new());
-                    (result0).take_handle() as i32
+                    let result0 = T::get_true_branch(
+                        IfThenElseBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_if_then_else_get_false_branch_cabi<
+                    T: GuestIfThenElse,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_false_branch(
+                        IfThenElseBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_let_in_get_binds_cabi<T: GuestLetIn>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_binds(
+                        LetInBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = result0;
+                    let len2 = vec2.len();
+                    let layout2 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec2.len() * 8,
+                        4,
+                    );
+                    let result2 = if layout2.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout2).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout2);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec2.into_iter().enumerate() {
+                        let base = result2.add(i * 8);
+                        {
+                            match e {
+                                Entry::AttributePathValue(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    *base.add(4).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Entry::Inherit(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(4).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = result2;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_let_in_get_binds<T: GuestLetIn>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 4);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_let_in_get_body_cabi<T: GuestLetIn>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_body(
+                        LetInBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_list_node_get_elements_cabi<
+                    T: GuestListNode,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_elements(
+                        ListNodeBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = result0;
+                    let len2 = vec2.len();
+                    let layout2 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec2.len() * 24,
+                        8,
+                    );
+                    let result2 = if layout2.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout2).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout2);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec2.into_iter().enumerate() {
+                        let base = result2.add(i * 24);
+                        {
+                            match e {
+                                Expression::Select(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Assert(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::BinaryOperation(e) => {
+                                    *base.add(0).cast::<u8>() = (2i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Error(e) => {
+                                    *base.add(0).cast::<u8>() = (3i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Function(e) => {
+                                    *base.add(0).cast::<u8>() = (4i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::FunctionApplication(e) => {
+                                    *base.add(0).cast::<u8>() = (5i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::HasAttribute(e) => {
+                                    *base.add(0).cast::<u8>() = (6i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Identifier(e) => {
+                                    *base.add(0).cast::<u8>() = (7i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::IfThenElse(e) => {
+                                    *base.add(0).cast::<u8>() = (8i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::LetIn(e) => {
+                                    *base.add(0).cast::<u8>() = (9i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::List(e) => {
+                                    *base.add(0).cast::<u8>() = (10i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Path(e) => {
+                                    *base.add(0).cast::<u8>() = (11i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::String(e) => {
+                                    *base.add(0).cast::<u8>() = (12i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Literal(e) => {
+                                    *base.add(0).cast::<u8>() = (13i32) as u8;
+                                    match e {
+                                        Literal::Float(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<f64>() = _rt::as_f64(e);
+                                        }
+                                        Literal::Integer(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i64>() = _rt::as_i64(e);
+                                        }
+                                        Literal::Uri => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                        }
+                                    }
+                                }
+                                Expression::UnaryOperation(e) => {
+                                    *base.add(0).cast::<u8>() = (14i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::With(e) => {
+                                    *base.add(0).cast::<u8>() = (15i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::Root(e) => {
+                                    *base.add(0).cast::<u8>() = (16i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Expression::AttributeSet(e) => {
+                                    *base.add(0).cast::<u8>() = (17i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = result2;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_list_node_get_elements<
+                    T: GuestListNode,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 24, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_path_get_parts_cabi<T: GuestPath>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_parts(
+                        PathBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0.into_bytes()).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_path_get_parts<T: GuestPath>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    _rt::cabi_dealloc(l0, l1, 1);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_nix_string_get_parts_cabi<
+                    T: GuestNixString,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_parts(
+                        NixStringBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec3 = result0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 32,
+                        8,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 32);
+                        {
+                            match e {
+                                StringPart::Raw(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    let vec2 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                                    let len2 = vec2.len();
+                                    ::core::mem::forget(vec2);
+                                    *base.add(12).cast::<usize>() = len2;
+                                    *base.add(8).cast::<*mut u8>() = ptr2.cast_mut();
+                                }
+                                StringPart::Dynamic(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    match e {
+                                        Expression::Select(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Assert(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::BinaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Error(e) => {
+                                            *base.add(8).cast::<u8>() = (3i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Function(e) => {
+                                            *base.add(8).cast::<u8>() = (4i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::FunctionApplication(e) => {
+                                            *base.add(8).cast::<u8>() = (5i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::HasAttribute(e) => {
+                                            *base.add(8).cast::<u8>() = (6i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Identifier(e) => {
+                                            *base.add(8).cast::<u8>() = (7i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::IfThenElse(e) => {
+                                            *base.add(8).cast::<u8>() = (8i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::LetIn(e) => {
+                                            *base.add(8).cast::<u8>() = (9i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::List(e) => {
+                                            *base.add(8).cast::<u8>() = (10i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Path(e) => {
+                                            *base.add(8).cast::<u8>() = (11i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::String(e) => {
+                                            *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
+                                            match e {
+                                                Literal::Float(e) => {
+                                                    *base.add(16).cast::<u8>() = (0i32) as u8;
+                                                    *base.add(24).cast::<f64>() = _rt::as_f64(e);
+                                                }
+                                                Literal::Integer(e) => {
+                                                    *base.add(16).cast::<u8>() = (1i32) as u8;
+                                                    *base.add(24).cast::<i64>() = _rt::as_i64(e);
+                                                }
+                                                Literal::Uri => {
+                                                    *base.add(16).cast::<u8>() = (2i32) as u8;
+                                                }
+                                            }
+                                        }
+                                        Expression::UnaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (14i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::With(e) => {
+                                            *base.add(8).cast::<u8>() = (15i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Root(e) => {
+                                            *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len3;
+                    *ptr1.add(0).cast::<*mut u8>() = result3;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_nix_string_get_parts<
+                    T: GuestNixString,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base5 = l0;
+                    let len5 = l1;
+                    for i in 0..len5 {
+                        let base = base5.add(i * 32);
+                        {
+                            let l2 = i32::from(*base.add(0).cast::<u8>());
+                            match l2 {
+                                0 => {
+                                    let l3 = *base.add(8).cast::<*mut u8>();
+                                    let l4 = *base.add(12).cast::<usize>();
+                                    _rt::cabi_dealloc(l3, l4, 1);
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    _rt::cabi_dealloc(base5, len5 * 32, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_unary_operation_get_operator_cabi<
+                    T: GuestUnaryOperation,
+                >(arg0: *mut u8) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_operator(
+                        UnaryOperationBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    result0.clone() as i32
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_unary_operation_get_operand_cabi<
+                    T: GuestUnaryOperation,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_operand(
+                        UnaryOperationBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_nix_with_get_body_cabi<T: GuestNixWith>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_body(
+                        NixWithBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_nix_with_get_namespace_cabi<
+                    T: GuestNixWith,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_namespace(
+                        NixWithBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_root_get_expr_cabi<T: GuestRoot>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_expr(
+                        RootBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result0 {
+                        Expression::Select(e) => {
+                            *ptr1.add(0).cast::<u8>() = (0i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Assert(e) => {
+                            *ptr1.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::BinaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (2i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Error(e) => {
+                            *ptr1.add(0).cast::<u8>() = (3i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Function(e) => {
+                            *ptr1.add(0).cast::<u8>() = (4i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::FunctionApplication(e) => {
+                            *ptr1.add(0).cast::<u8>() = (5i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::HasAttribute(e) => {
+                            *ptr1.add(0).cast::<u8>() = (6i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Identifier(e) => {
+                            *ptr1.add(0).cast::<u8>() = (7i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::IfThenElse(e) => {
+                            *ptr1.add(0).cast::<u8>() = (8i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::LetIn(e) => {
+                            *ptr1.add(0).cast::<u8>() = (9i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::List(e) => {
+                            *ptr1.add(0).cast::<u8>() = (10i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Path(e) => {
+                            *ptr1.add(0).cast::<u8>() = (11i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::String(e) => {
+                            *ptr1.add(0).cast::<u8>() = (12i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Literal(e) => {
+                            *ptr1.add(0).cast::<u8>() = (13i32) as u8;
+                            match e {
+                                Literal::Float(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr1.add(16).cast::<f64>() = _rt::as_f64(e);
+                                }
+                                Literal::Integer(e) => {
+                                    *ptr1.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr1.add(16).cast::<i64>() = _rt::as_i64(e);
+                                }
+                                Literal::Uri => {
+                                    *ptr1.add(8).cast::<u8>() = (2i32) as u8;
+                                }
+                            }
+                        }
+                        Expression::UnaryOperation(e) => {
+                            *ptr1.add(0).cast::<u8>() = (14i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::With(e) => {
+                            *ptr1.add(0).cast::<u8>() = (15i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::Root(e) => {
+                            *ptr1.add(0).cast::<u8>() = (16i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                        Expression::AttributeSet(e) => {
+                            *ptr1.add(0).cast::<u8>() = (17i32) as u8;
+                            *ptr1.add(8).cast::<i32>() = (e).take_handle() as i32;
+                        }
+                    }
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_attribute_set_get_binds_cabi<
+                    T: GuestAttributeSet,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_binds(
+                        AttributeSetBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = result0;
+                    let len2 = vec2.len();
+                    let layout2 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec2.len() * 8,
+                        4,
+                    );
+                    let result2 = if layout2.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout2).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout2);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec2.into_iter().enumerate() {
+                        let base = result2.add(i * 8);
+                        {
+                            match e {
+                                Entry::AttributePathValue(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    *base.add(4).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Entry::Inherit(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(4).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = result2;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_attribute_set_get_binds<
+                    T: GuestAttributeSet,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base2 = l0;
+                    let len2 = l1;
+                    _rt::cabi_dealloc(base2, len2 * 8, 4);
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -2012,176 +5411,100 @@ pub mod exports {
                         Ok(e) => {
                             *ptr2.add(0).cast::<u8>() = (0i32) as u8;
                             match e {
-                                NixExpr::Apply(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (0i32) as u8;
-                                    *ptr2.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                Expression::Select(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (0i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Assert(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (1i32) as u8;
-                                    *ptr2.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                Expression::Assert(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (1i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Error => {
-                                    *ptr2.add(4).cast::<u8>() = (2i32) as u8;
+                                Expression::BinaryOperation(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (2i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::IfElse(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (3i32) as u8;
-                                    *ptr2.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                Expression::Error(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (3i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Select => {
-                                    *ptr2.add(4).cast::<u8>() = (4i32) as u8;
+                                Expression::Function(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (4i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Str => {
-                                    *ptr2.add(4).cast::<u8>() = (5i32) as u8;
+                                Expression::FunctionApplication(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (5i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Path => {
-                                    *ptr2.add(4).cast::<u8>() = (6i32) as u8;
+                                Expression::HasAttribute(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (6i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Literal => {
-                                    *ptr2.add(4).cast::<u8>() = (7i32) as u8;
+                                Expression::Identifier(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (7i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Lambda => {
-                                    *ptr2.add(4).cast::<u8>() = (8i32) as u8;
+                                Expression::IfThenElse(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (8i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::LegacyLet => {
-                                    *ptr2.add(4).cast::<u8>() = (9i32) as u8;
+                                Expression::LetIn(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (9i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::LetIn => {
-                                    *ptr2.add(4).cast::<u8>() = (10i32) as u8;
+                                Expression::List(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (10i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::List => {
-                                    *ptr2.add(4).cast::<u8>() = (11i32) as u8;
+                                Expression::Path(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (11i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::BinOp => {
-                                    *ptr2.add(4).cast::<u8>() = (12i32) as u8;
+                                Expression::String(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (12i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Paren => {
-                                    *ptr2.add(4).cast::<u8>() = (13i32) as u8;
+                                Expression::Literal(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (13i32) as u8;
+                                    match e {
+                                        Literal::Float(e) => {
+                                            *ptr2.add(16).cast::<u8>() = (0i32) as u8;
+                                            *ptr2.add(24).cast::<f64>() = _rt::as_f64(e);
+                                        }
+                                        Literal::Integer(e) => {
+                                            *ptr2.add(16).cast::<u8>() = (1i32) as u8;
+                                            *ptr2.add(24).cast::<i64>() = _rt::as_i64(e);
+                                        }
+                                        Literal::Uri => {
+                                            *ptr2.add(16).cast::<u8>() = (2i32) as u8;
+                                        }
+                                    }
                                 }
-                                NixExpr::Root => {
-                                    *ptr2.add(4).cast::<u8>() = (14i32) as u8;
+                                Expression::UnaryOperation(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (14i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::AttrSet(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (15i32) as u8;
-                                    *ptr2.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                Expression::With(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (15i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::UnaryOp => {
-                                    *ptr2.add(4).cast::<u8>() = (16i32) as u8;
+                                Expression::Root(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (16i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
-                                NixExpr::Ident => {
-                                    *ptr2.add(4).cast::<u8>() = (17i32) as u8;
-                                }
-                                NixExpr::With => {
-                                    *ptr2.add(4).cast::<u8>() = (18i32) as u8;
-                                }
-                                NixExpr::HasAttr => {
-                                    *ptr2.add(4).cast::<u8>() = (19i32) as u8;
-                                }
-                                NixExpr::InvalidNode => {
-                                    *ptr2.add(4).cast::<u8>() = (20i32) as u8;
+                                Expression::AttributeSet(e) => {
+                                    *ptr2.add(8).cast::<u8>() = (17i32) as u8;
+                                    *ptr2.add(16).cast::<i32>() = (e).take_handle() as i32;
                                 }
                             }
                         }
                         Err(e) => {
                             *ptr2.add(0).cast::<u8>() = (1i32) as u8;
-                            match e {
-                                NixParseError::Unexpected(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (0i32) as u8;
-                                    let TextRange { start: start3, end: end3 } = e;
-                                    *ptr2.add(8).cast::<i32>() = _rt::as_i32(start3);
-                                    *ptr2.add(12).cast::<i32>() = _rt::as_i32(end3);
-                                }
-                                NixParseError::UnexpectedExtra(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (1i32) as u8;
-                                    let TextRange { start: start4, end: end4 } = e;
-                                    *ptr2.add(8).cast::<i32>() = _rt::as_i32(start4);
-                                    *ptr2.add(12).cast::<i32>() = _rt::as_i32(end4);
-                                }
-                                NixParseError::UnexpectedWanted(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (2i32) as u8;
-                                    let (t5_0, t5_1, t5_2) = e;
-                                    *ptr2.add(8).cast::<u8>() = (t5_0.clone() as i32) as u8;
-                                    let TextRange { start: start6, end: end6 } = t5_1;
-                                    *ptr2.add(12).cast::<i32>() = _rt::as_i32(start6);
-                                    *ptr2.add(16).cast::<i32>() = _rt::as_i32(end6);
-                                    let vec7 = t5_2;
-                                    let len7 = vec7.len();
-                                    let layout7 = _rt::alloc::Layout::from_size_align_unchecked(
-                                        vec7.len() * 1,
-                                        1,
-                                    );
-                                    let result7 = if layout7.size() != 0 {
-                                        let ptr = _rt::alloc::alloc(layout7).cast::<u8>();
-                                        if ptr.is_null() {
-                                            _rt::alloc::handle_alloc_error(layout7);
-                                        }
-                                        ptr
-                                    } else {
-                                        ::core::ptr::null_mut()
-                                    };
-                                    for (i, e) in vec7.into_iter().enumerate() {
-                                        let base = result7.add(i * 1);
-                                        {
-                                            *base.add(0).cast::<u8>() = (e.clone() as i32) as u8;
-                                        }
-                                    }
-                                    *ptr2.add(24).cast::<usize>() = len7;
-                                    *ptr2.add(20).cast::<*mut u8>() = result7;
-                                }
-                                NixParseError::UnexpectedDoubleBind(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (3i32) as u8;
-                                    let TextRange { start: start8, end: end8 } = e;
-                                    *ptr2.add(8).cast::<i32>() = _rt::as_i32(start8);
-                                    *ptr2.add(12).cast::<i32>() = _rt::as_i32(end8);
-                                }
-                                NixParseError::UnexpectedEof => {
-                                    *ptr2.add(4).cast::<u8>() = (4i32) as u8;
-                                }
-                                NixParseError::UnexpectedEofWanted(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (5i32) as u8;
-                                    let vec9 = e;
-                                    let len9 = vec9.len();
-                                    let layout9 = _rt::alloc::Layout::from_size_align_unchecked(
-                                        vec9.len() * 1,
-                                        1,
-                                    );
-                                    let result9 = if layout9.size() != 0 {
-                                        let ptr = _rt::alloc::alloc(layout9).cast::<u8>();
-                                        if ptr.is_null() {
-                                            _rt::alloc::handle_alloc_error(layout9);
-                                        }
-                                        ptr
-                                    } else {
-                                        ::core::ptr::null_mut()
-                                    };
-                                    for (i, e) in vec9.into_iter().enumerate() {
-                                        let base = result9.add(i * 1);
-                                        {
-                                            *base.add(0).cast::<u8>() = (e.clone() as i32) as u8;
-                                        }
-                                    }
-                                    *ptr2.add(12).cast::<usize>() = len9;
-                                    *ptr2.add(8).cast::<*mut u8>() = result9;
-                                }
-                                NixParseError::DuplicatedArgs(e) => {
-                                    *ptr2.add(4).cast::<u8>() = (6i32) as u8;
-                                    let (t10_0, t10_1) = e;
-                                    let TextRange { start: start11, end: end11 } = t10_0;
-                                    *ptr2.add(8).cast::<i32>() = _rt::as_i32(start11);
-                                    *ptr2.add(12).cast::<i32>() = _rt::as_i32(end11);
-                                    let vec12 = (t10_1.into_bytes()).into_boxed_slice();
-                                    let ptr12 = vec12.as_ptr().cast::<u8>();
-                                    let len12 = vec12.len();
-                                    ::core::mem::forget(vec12);
-                                    *ptr2.add(20).cast::<usize>() = len12;
-                                    *ptr2.add(16).cast::<*mut u8>() = ptr12.cast_mut();
-                                }
-                                NixParseError::RecursionLimitExceeded => {
-                                    *ptr2.add(4).cast::<u8>() = (7i32) as u8;
-                                }
-                                NixParseError::Unknown => {
-                                    *ptr2.add(4).cast::<u8>() = (8i32) as u8;
-                                }
-                            }
+                            let vec3 = (e.into_bytes()).into_boxed_slice();
+                            let ptr3 = vec3.as_ptr().cast::<u8>();
+                            let len3 = vec3.len();
+                            ::core::mem::forget(vec3);
+                            *ptr2.add(12).cast::<usize>() = len3;
+                            *ptr2.add(8).cast::<*mut u8>() = ptr3.cast_mut();
                         }
                     };
                     ptr2
@@ -2193,45 +5516,35 @@ pub mod exports {
                     match l0 {
                         0 => {}
                         _ => {
-                            let l1 = i32::from(*arg0.add(4).cast::<u8>());
-                            match l1 {
-                                0 => {}
-                                1 => {}
-                                2 => {
-                                    let l2 = *arg0.add(20).cast::<*mut u8>();
-                                    let l3 = *arg0.add(24).cast::<usize>();
-                                    let base4 = l2;
-                                    let len4 = l3;
-                                    _rt::cabi_dealloc(base4, len4 * 1, 1);
-                                }
-                                3 => {}
-                                4 => {}
-                                5 => {
-                                    let l5 = *arg0.add(8).cast::<*mut u8>();
-                                    let l6 = *arg0.add(12).cast::<usize>();
-                                    let base7 = l5;
-                                    let len7 = l6;
-                                    _rt::cabi_dealloc(base7, len7 * 1, 1);
-                                }
-                                6 => {
-                                    let l8 = *arg0.add(16).cast::<*mut u8>();
-                                    let l9 = *arg0.add(20).cast::<usize>();
-                                    _rt::cabi_dealloc(l8, l9, 1);
-                                }
-                                7 => {}
-                                _ => {}
-                            }
+                            let l1 = *arg0.add(8).cast::<*mut u8>();
+                            let l2 = *arg0.add(12).cast::<usize>();
+                            _rt::cabi_dealloc(l1, l2, 1);
                         }
                     }
                 }
                 pub trait Guest {
-                    type Apply: GuestApply;
+                    type AttributePathValue: GuestAttributePathValue;
+                    type Inherit: GuestInherit;
+                    type Select: GuestSelect;
                     type Assert: GuestAssert;
-                    type IfElse: GuestIfElse;
-                    type AttrSet: GuestAttrSet;
-                    fn parse(nix_source: _rt::String) -> Result<NixExpr, NixParseError>;
+                    type BinaryOperation: GuestBinaryOperation;
+                    type Error: GuestError;
+                    type Function: GuestFunction;
+                    type FunctionApplication: GuestFunctionApplication;
+                    type HasAttribute: GuestHasAttribute;
+                    type Identifier: GuestIdentifier;
+                    type IfThenElse: GuestIfThenElse;
+                    type LetIn: GuestLetIn;
+                    type ListNode: GuestListNode;
+                    type Path: GuestPath;
+                    type NixString: GuestNixString;
+                    type UnaryOperation: GuestUnaryOperation;
+                    type NixWith: GuestNixWith;
+                    type Root: GuestRoot;
+                    type AttributeSet: GuestAttributeSet;
+                    fn parse(nix_source: _rt::String) -> Result<Expression, _rt::String>;
                 }
-                pub trait GuestApply: 'static {
+                pub trait GuestAttributePathValue: 'static {
                     #[doc(hidden)]
                     unsafe fn _resource_new(val: *mut u8) -> u32
                     where
@@ -2246,7 +5559,7 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-new]apply"]
+                                #[link_name = "[resource-new]attribute-path-value"]
                                 fn new(_: *mut u8) -> u32;
                             }
                             new(val)
@@ -2266,15 +5579,102 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-rep]apply"]
+                                #[link_name = "[resource-rep]attribute-path-value"]
                                 fn rep(_: u32) -> *mut u8;
                             }
                             unsafe { rep(handle) }
                         }
                     }
-                    fn new(arg: NixExpr, lambda: NixExpr) -> Self;
-                    fn get_argument(&self) -> NixExpr;
-                    fn get_lambda(&self) -> NixExpr;
+                    fn get_attr_list(&self) -> _rt::Vec<Attr>;
+                    fn get_expr(&self) -> Expression;
+                }
+                pub trait GuestInherit: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]inherit"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]inherit"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_expr_from(&self) -> Option<Expression>;
+                    fn get_attr_list(&self) -> _rt::Vec<Attr>;
+                }
+                pub trait GuestSelect: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]select"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]select"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_base_expr(&self) -> Expression;
+                    fn get_default_expr(&self) -> Option<Expression>;
                 }
                 pub trait GuestAssert: 'static {
                     #[doc(hidden)]
@@ -2317,11 +5717,10 @@ pub mod exports {
                             unsafe { rep(handle) }
                         }
                     }
-                    fn new(body: NixExpr, condition: NixExpr) -> Self;
-                    fn get_body(&self) -> NixExpr;
-                    fn get_condition(&self) -> NixExpr;
+                    fn get_expr(&self) -> Expression;
+                    fn get_condition(&self) -> Expression;
                 }
-                pub trait GuestIfElse: 'static {
+                pub trait GuestBinaryOperation: 'static {
                     #[doc(hidden)]
                     unsafe fn _resource_new(val: *mut u8) -> u32
                     where
@@ -2336,7 +5735,7 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-new]if-else"]
+                                #[link_name = "[resource-new]binary-operation"]
                                 fn new(_: *mut u8) -> u32;
                             }
                             new(val)
@@ -2356,22 +5755,17 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-rep]if-else"]
+                                #[link_name = "[resource-rep]binary-operation"]
                                 fn rep(_: u32) -> *mut u8;
                             }
                             unsafe { rep(handle) }
                         }
                     }
-                    fn new(
-                        condition: NixExpr,
-                        body: NixExpr,
-                        else_body: NixExpr,
-                    ) -> Self;
-                    fn get_condition(&self) -> NixExpr;
-                    fn get_body(&self) -> NixExpr;
-                    fn get_else_body(&self) -> NixExpr;
+                    fn get_lhs(&self) -> Expression;
+                    fn get_operator(&self) -> BinaryOperator;
+                    fn get_rhs(&self) -> Expression;
                 }
-                pub trait GuestAttrSet: 'static {
+                pub trait GuestError: 'static {
                     #[doc(hidden)]
                     unsafe fn _resource_new(val: *mut u8) -> u32
                     where
@@ -2386,7 +5780,7 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-new]attr-set"]
+                                #[link_name = "[resource-new]error"]
                                 fn new(_: *mut u8) -> u32;
                             }
                             new(val)
@@ -2406,103 +5800,901 @@ pub mod exports {
                         {
                             #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
                             extern "C" {
-                                #[link_name = "[resource-rep]attr-set"]
+                                #[link_name = "[resource-rep]error"]
                                 fn rep(_: u32) -> *mut u8;
                             }
                             unsafe { rep(handle) }
                         }
                     }
-                    fn new() -> Self;
+                    fn get_message(&self) -> _rt::String;
+                }
+                pub trait GuestFunction: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]function"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]function"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    /// get-param: func() -> param;
+                    fn get_body(&self) -> Expression;
+                }
+                pub trait GuestFunctionApplication: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]function-application"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]function-application"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_function(&self) -> Expression;
+                    fn get_argument(&self) -> Expression;
+                }
+                pub trait GuestHasAttribute: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]has-attribute"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]has-attribute"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_expr(&self) -> Expression;
+                }
+                pub trait GuestIdentifier: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]identifier"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]identifier"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_id(&self) -> _rt::String;
+                }
+                pub trait GuestIfThenElse: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]if-then-else"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]if-then-else"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_condition(&self) -> Expression;
+                    fn get_true_branch(&self) -> Expression;
+                    fn get_false_branch(&self) -> Expression;
+                }
+                pub trait GuestLetIn: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]let-in"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]let-in"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_binds(&self) -> _rt::Vec<Entry>;
+                    fn get_body(&self) -> Expression;
+                }
+                pub trait GuestListNode: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]list-node"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]list-node"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_elements(&self) -> _rt::Vec<Expression>;
+                }
+                pub trait GuestPath: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]path"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]path"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_parts(&self) -> _rt::String;
+                }
+                pub trait GuestNixString: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]nix-string"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]nix-string"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_parts(&self) -> _rt::Vec<StringPart>;
+                }
+                pub trait GuestUnaryOperation: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]unary-operation"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]unary-operation"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_operator(&self) -> UnaryOperator;
+                    fn get_operand(&self) -> Expression;
+                }
+                pub trait GuestNixWith: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]nix-with"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]nix-with"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_body(&self) -> Expression;
+                    fn get_namespace(&self) -> Expression;
+                }
+                pub trait GuestRoot: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]root"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]root"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_expr(&self) -> Expression;
+                }
+                pub trait GuestAttributeSet: 'static {
+                    #[doc(hidden)]
+                    unsafe fn _resource_new(val: *mut u8) -> u32
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = val;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-new]attribute-set"]
+                                fn new(_: *mut u8) -> u32;
+                            }
+                            new(val)
+                        }
+                    }
+                    #[doc(hidden)]
+                    fn _resource_rep(handle: u32) -> *mut u8
+                    where
+                        Self: Sized,
+                    {
+                        #[cfg(not(target_arch = "wasm32"))]
+                        {
+                            let _ = handle;
+                            unreachable!();
+                        }
+                        #[cfg(target_arch = "wasm32")]
+                        {
+                            #[link(wasm_import_module = "[export]spotandjake:snow/nix")]
+                            extern "C" {
+                                #[link_name = "[resource-rep]attribute-set"]
+                                fn rep(_: u32) -> *mut u8;
+                            }
+                            unsafe { rep(handle) }
+                        }
+                    }
+                    fn get_binds(&self) -> _rt::Vec<Entry>;
                 }
                 #[doc(hidden)]
                 macro_rules! __export_spotandjake_snow_nix_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[export_name =
-                        "spotandjake:snow/nix#[constructor]apply"] unsafe extern "C" fn
-                        export_constructor_apply(arg0 : i32, arg1 : i32, arg2 : i32, arg3
-                        : i32,) -> i32 { $($path_to_types)*::
-                        _export_constructor_apply_cabi::<<$ty as $($path_to_types)*::
-                        Guest >::Apply > (arg0, arg1, arg2, arg3) } #[export_name =
-                        "spotandjake:snow/nix#[method]apply.get-argument"] unsafe extern
-                        "C" fn export_method_apply_get_argument(arg0 : * mut u8,) -> *
-                        mut u8 { $($path_to_types)*::
-                        _export_method_apply_get_argument_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Apply > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]apply.get-lambda"] unsafe extern
-                        "C" fn export_method_apply_get_lambda(arg0 : * mut u8,) -> * mut
-                        u8 { $($path_to_types)*::
-                        _export_method_apply_get_lambda_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::Apply > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[constructor]assert"] unsafe extern "C" fn
-                        export_constructor_assert(arg0 : i32, arg1 : i32, arg2 : i32,
-                        arg3 : i32,) -> i32 { $($path_to_types)*::
-                        _export_constructor_assert_cabi::<<$ty as $($path_to_types)*::
-                        Guest >::Assert > (arg0, arg1, arg2, arg3) } #[export_name =
-                        "spotandjake:snow/nix#[method]assert.get-body"] unsafe extern "C"
-                        fn export_method_assert_get_body(arg0 : * mut u8,) -> * mut u8 {
-                        $($path_to_types)*:: _export_method_assert_get_body_cabi::<<$ty
+                        "spotandjake:snow/nix#[method]attribute-path-value.get-attr-list"]
+                        unsafe extern "C" fn
+                        export_method_attribute_path_value_get_attr_list(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_attribute_path_value_get_attr_list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::AttributePathValue > (arg0) }
+                        #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]attribute-path-value.get-attr-list"]
+                        unsafe extern "C" fn
+                        _post_return_method_attribute_path_value_get_attr_list(arg0 : *
+                        mut u8,) { $($path_to_types)*::
+                        __post_return_method_attribute_path_value_get_attr_list::<<$ty as
+                        $($path_to_types)*:: Guest >::AttributePathValue > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]attribute-path-value.get-expr"]
+                        unsafe extern "C" fn
+                        export_method_attribute_path_value_get_expr(arg0 : * mut u8,) ->
+                        * mut u8 { $($path_to_types)*::
+                        _export_method_attribute_path_value_get_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::AttributePathValue > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]inherit.get-expr-from"] unsafe
+                        extern "C" fn export_method_inherit_get_expr_from(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_inherit_get_expr_from_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Inherit > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]inherit.get-attr-list"] unsafe
+                        extern "C" fn export_method_inherit_get_attr_list(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_inherit_get_attr_list_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Inherit > (arg0) } #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]inherit.get-attr-list"]
+                        unsafe extern "C" fn
+                        _post_return_method_inherit_get_attr_list(arg0 : * mut u8,) {
+                        $($path_to_types)*::
+                        __post_return_method_inherit_get_attr_list::<<$ty as
+                        $($path_to_types)*:: Guest >::Inherit > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]select.get-base-expr"] unsafe
+                        extern "C" fn export_method_select_get_base_expr(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_select_get_base_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]select.get-default-expr"] unsafe
+                        extern "C" fn export_method_select_get_default_expr(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_select_get_default_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]assert.get-expr"] unsafe extern "C"
+                        fn export_method_assert_get_expr(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_assert_get_expr_cabi::<<$ty
                         as $($path_to_types)*:: Guest >::Assert > (arg0) } #[export_name
                         = "spotandjake:snow/nix#[method]assert.get-condition"] unsafe
                         extern "C" fn export_method_assert_get_condition(arg0 : * mut
                         u8,) -> * mut u8 { $($path_to_types)*::
                         _export_method_assert_get_condition_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Assert > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[constructor]if-else"] unsafe extern "C" fn
-                        export_constructor_if_else(arg0 : i32, arg1 : i32, arg2 : i32,
-                        arg3 : i32, arg4 : i32, arg5 : i32,) -> i32 {
-                        $($path_to_types)*:: _export_constructor_if_else_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::IfElse > (arg0, arg1, arg2, arg3,
-                        arg4, arg5) } #[export_name =
-                        "spotandjake:snow/nix#[method]if-else.get-condition"] unsafe
-                        extern "C" fn export_method_if_else_get_condition(arg0 : * mut
+                        "spotandjake:snow/nix#[method]binary-operation.get-lhs"] unsafe
+                        extern "C" fn export_method_binary_operation_get_lhs(arg0 : * mut
                         u8,) -> * mut u8 { $($path_to_types)*::
-                        _export_method_if_else_get_condition_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::IfElse > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]if-else.get-body"] unsafe extern
-                        "C" fn export_method_if_else_get_body(arg0 : * mut u8,) -> * mut
+                        _export_method_binary_operation_get_lhs_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::BinaryOperation > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]binary-operation.get-operator"]
+                        unsafe extern "C" fn
+                        export_method_binary_operation_get_operator(arg0 : * mut u8,) ->
+                        i32 { $($path_to_types)*::
+                        _export_method_binary_operation_get_operator_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::BinaryOperation > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]binary-operation.get-rhs"] unsafe
+                        extern "C" fn export_method_binary_operation_get_rhs(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_binary_operation_get_rhs_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::BinaryOperation > (arg0) }
+                        #[export_name = "spotandjake:snow/nix#[method]error.get-message"]
+                        unsafe extern "C" fn export_method_error_get_message(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_error_get_message_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Error > (arg0) } #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]error.get-message"]
+                        unsafe extern "C" fn _post_return_method_error_get_message(arg0 :
+                        * mut u8,) { $($path_to_types)*::
+                        __post_return_method_error_get_message::<<$ty as
+                        $($path_to_types)*:: Guest >::Error > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]function.get-body"] unsafe extern
+                        "C" fn export_method_function_get_body(arg0 : * mut u8,) -> * mut
                         u8 { $($path_to_types)*::
-                        _export_method_if_else_get_body_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::IfElse > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[method]if-else.get-else-body"] unsafe
-                        extern "C" fn export_method_if_else_get_else_body(arg0 : * mut
+                        _export_method_function_get_body_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Function > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]function-application.get-function"]
+                        unsafe extern "C" fn
+                        export_method_function_application_get_function(arg0 : * mut u8,)
+                        -> * mut u8 { $($path_to_types)*::
+                        _export_method_function_application_get_function_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::FunctionApplication > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]function-application.get-argument"]
+                        unsafe extern "C" fn
+                        export_method_function_application_get_argument(arg0 : * mut u8,)
+                        -> * mut u8 { $($path_to_types)*::
+                        _export_method_function_application_get_argument_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::FunctionApplication > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]has-attribute.get-expr"] unsafe
+                        extern "C" fn export_method_has_attribute_get_expr(arg0 : * mut
                         u8,) -> * mut u8 { $($path_to_types)*::
-                        _export_method_if_else_get_else_body_cabi::<<$ty as
-                        $($path_to_types)*:: Guest >::IfElse > (arg0) } #[export_name =
-                        "spotandjake:snow/nix#[constructor]attr-set"] unsafe extern "C"
-                        fn export_constructor_attr_set() -> i32 { $($path_to_types)*::
-                        _export_constructor_attr_set_cabi::<<$ty as $($path_to_types)*::
-                        Guest >::AttrSet > () } #[export_name =
-                        "spotandjake:snow/nix#parse"] unsafe extern "C" fn
-                        export_parse(arg0 : * mut u8, arg1 : usize,) -> * mut u8 {
+                        _export_method_has_attribute_get_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::HasAttribute > (arg0) }
+                        #[export_name = "spotandjake:snow/nix#[method]identifier.get-id"]
+                        unsafe extern "C" fn export_method_identifier_get_id(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_identifier_get_id_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Identifier > (arg0) } #[export_name
+                        = "cabi_post_spotandjake:snow/nix#[method]identifier.get-id"]
+                        unsafe extern "C" fn _post_return_method_identifier_get_id(arg0 :
+                        * mut u8,) { $($path_to_types)*::
+                        __post_return_method_identifier_get_id::<<$ty as
+                        $($path_to_types)*:: Guest >::Identifier > (arg0) } #[export_name
+                        = "spotandjake:snow/nix#[method]if-then-else.get-condition"]
+                        unsafe extern "C" fn
+                        export_method_if_then_else_get_condition(arg0 : * mut u8,) -> *
+                        mut u8 { $($path_to_types)*::
+                        _export_method_if_then_else_get_condition_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::IfThenElse > (arg0) } #[export_name
+                        = "spotandjake:snow/nix#[method]if-then-else.get-true-branch"]
+                        unsafe extern "C" fn
+                        export_method_if_then_else_get_true_branch(arg0 : * mut u8,) -> *
+                        mut u8 { $($path_to_types)*::
+                        _export_method_if_then_else_get_true_branch_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::IfThenElse > (arg0) } #[export_name
+                        = "spotandjake:snow/nix#[method]if-then-else.get-false-branch"]
+                        unsafe extern "C" fn
+                        export_method_if_then_else_get_false_branch(arg0 : * mut u8,) ->
+                        * mut u8 { $($path_to_types)*::
+                        _export_method_if_then_else_get_false_branch_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::IfThenElse > (arg0) } #[export_name
+                        = "spotandjake:snow/nix#[method]let-in.get-binds"] unsafe extern
+                        "C" fn export_method_let_in_get_binds(arg0 : * mut u8,) -> * mut
+                        u8 { $($path_to_types)*::
+                        _export_method_let_in_get_binds_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::LetIn > (arg0) } #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]let-in.get-binds"] unsafe
+                        extern "C" fn _post_return_method_let_in_get_binds(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_let_in_get_binds::<<$ty as
+                        $($path_to_types)*:: Guest >::LetIn > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]let-in.get-body"] unsafe extern "C"
+                        fn export_method_let_in_get_body(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_let_in_get_body_cabi::<<$ty
+                        as $($path_to_types)*:: Guest >::LetIn > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]list-node.get-elements"] unsafe
+                        extern "C" fn export_method_list_node_get_elements(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_list_node_get_elements_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::ListNode > (arg0) } #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]list-node.get-elements"]
+                        unsafe extern "C" fn
+                        _post_return_method_list_node_get_elements(arg0 : * mut u8,) {
+                        $($path_to_types)*::
+                        __post_return_method_list_node_get_elements::<<$ty as
+                        $($path_to_types)*:: Guest >::ListNode > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]path.get-parts"] unsafe extern "C"
+                        fn export_method_path_get_parts(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_path_get_parts_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Path > (arg0) } #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]path.get-parts"] unsafe
+                        extern "C" fn _post_return_method_path_get_parts(arg0 : * mut
+                        u8,) { $($path_to_types)*::
+                        __post_return_method_path_get_parts::<<$ty as
+                        $($path_to_types)*:: Guest >::Path > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]nix-string.get-parts"] unsafe
+                        extern "C" fn export_method_nix_string_get_parts(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_nix_string_get_parts_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::NixString > (arg0) } #[export_name
+                        = "cabi_post_spotandjake:snow/nix#[method]nix-string.get-parts"]
+                        unsafe extern "C" fn
+                        _post_return_method_nix_string_get_parts(arg0 : * mut u8,) {
+                        $($path_to_types)*::
+                        __post_return_method_nix_string_get_parts::<<$ty as
+                        $($path_to_types)*:: Guest >::NixString > (arg0) } #[export_name
+                        = "spotandjake:snow/nix#[method]unary-operation.get-operator"]
+                        unsafe extern "C" fn
+                        export_method_unary_operation_get_operator(arg0 : * mut u8,) ->
+                        i32 { $($path_to_types)*::
+                        _export_method_unary_operation_get_operator_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::UnaryOperation > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]unary-operation.get-operand"]
+                        unsafe extern "C" fn
+                        export_method_unary_operation_get_operand(arg0 : * mut u8,) -> *
+                        mut u8 { $($path_to_types)*::
+                        _export_method_unary_operation_get_operand_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::UnaryOperation > (arg0) }
+                        #[export_name = "spotandjake:snow/nix#[method]nix-with.get-body"]
+                        unsafe extern "C" fn export_method_nix_with_get_body(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_nix_with_get_body_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::NixWith > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]nix-with.get-namespace"] unsafe
+                        extern "C" fn export_method_nix_with_get_namespace(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_nix_with_get_namespace_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::NixWith > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]root.get-expr"] unsafe extern "C"
+                        fn export_method_root_get_expr(arg0 : * mut u8,) -> * mut u8 {
+                        $($path_to_types)*:: _export_method_root_get_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Root > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]attribute-set.get-binds"] unsafe
+                        extern "C" fn export_method_attribute_set_get_binds(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_attribute_set_get_binds_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::AttributeSet > (arg0) }
+                        #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]attribute-set.get-binds"]
+                        unsafe extern "C" fn
+                        _post_return_method_attribute_set_get_binds(arg0 : * mut u8,) {
+                        $($path_to_types)*::
+                        __post_return_method_attribute_set_get_binds::<<$ty as
+                        $($path_to_types)*:: Guest >::AttributeSet > (arg0) }
+                        #[export_name = "spotandjake:snow/nix#parse"] unsafe extern "C"
+                        fn export_parse(arg0 : * mut u8, arg1 : usize,) -> * mut u8 {
                         $($path_to_types)*:: _export_parse_cabi::<$ty > (arg0, arg1) }
                         #[export_name = "cabi_post_spotandjake:snow/nix#parse"] unsafe
                         extern "C" fn _post_return_parse(arg0 : * mut u8,) {
                         $($path_to_types)*:: __post_return_parse::<$ty > (arg0) } const _
                         : () = { #[doc(hidden)] #[export_name =
-                        "spotandjake:snow/nix#[dtor]apply"] #[allow(non_snake_case)]
+                        "spotandjake:snow/nix#[dtor]attribute-path-value"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: AttributePathValue::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::AttributePathValue > (rep) } };
+                        const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]inherit"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
-                        Apply::dtor::< <$ty as $($path_to_types)*:: Guest >::Apply >
+                        Inherit::dtor::< <$ty as $($path_to_types)*:: Guest >::Inherit >
+                        (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]select"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Select::dtor::< <$ty as $($path_to_types)*:: Guest >::Select >
                         (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
                         "spotandjake:snow/nix#[dtor]assert"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
                         Assert::dtor::< <$ty as $($path_to_types)*:: Guest >::Assert >
                         (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
-                        "spotandjake:snow/nix#[dtor]if-else"] #[allow(non_snake_case)]
+                        "spotandjake:snow/nix#[dtor]binary-operation"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: BinaryOperation::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::BinaryOperation > (rep) } }; const
+                        _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]error"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
-                        IfElse::dtor::< <$ty as $($path_to_types)*:: Guest >::IfElse >
+                        Error::dtor::< <$ty as $($path_to_types)*:: Guest >::Error >
                         (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
-                        "spotandjake:snow/nix#[dtor]attr-set"] #[allow(non_snake_case)]
+                        "spotandjake:snow/nix#[dtor]function"] #[allow(non_snake_case)]
                         unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
-                        AttrSet::dtor::< <$ty as $($path_to_types)*:: Guest >::AttrSet >
-                        (rep) } }; };
+                        Function::dtor::< <$ty as $($path_to_types)*:: Guest >::Function
+                        > (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]function-application"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: FunctionApplication::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::FunctionApplication > (rep) } };
+                        const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]has-attribute"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: HasAttribute::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::HasAttribute > (rep) } }; const _ :
+                        () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]identifier"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Identifier::dtor::< <$ty as $($path_to_types)*:: Guest
+                        >::Identifier > (rep) } }; const _ : () = { #[doc(hidden)]
+                        #[export_name = "spotandjake:snow/nix#[dtor]if-then-else"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: IfThenElse::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::IfThenElse > (rep) } }; const _ :
+                        () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]let-in"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        LetIn::dtor::< <$ty as $($path_to_types)*:: Guest >::LetIn >
+                        (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]list-node"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        ListNode::dtor::< <$ty as $($path_to_types)*:: Guest >::ListNode
+                        > (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]path"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Path::dtor::< <$ty as $($path_to_types)*:: Guest >::Path > (rep)
+                        } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]nix-string"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        NixString::dtor::< <$ty as $($path_to_types)*:: Guest
+                        >::NixString > (rep) } }; const _ : () = { #[doc(hidden)]
+                        #[export_name = "spotandjake:snow/nix#[dtor]unary-operation"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: UnaryOperation::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::UnaryOperation > (rep) } }; const _
+                        : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]nix-with"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        NixWith::dtor::< <$ty as $($path_to_types)*:: Guest >::NixWith >
+                        (rep) } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]root"] #[allow(non_snake_case)]
+                        unsafe extern "C" fn dtor(rep : * mut u8) { $($path_to_types)*::
+                        Root::dtor::< <$ty as $($path_to_types)*:: Guest >::Root > (rep)
+                        } }; const _ : () = { #[doc(hidden)] #[export_name =
+                        "spotandjake:snow/nix#[dtor]attribute-set"]
+                        #[allow(non_snake_case)] unsafe extern "C" fn dtor(rep : * mut
+                        u8) { $($path_to_types)*:: AttributeSet::dtor::< <$ty as
+                        $($path_to_types)*:: Guest >::AttributeSet > (rep) } }; };
                     };
                 }
                 #[doc(hidden)]
                 pub(crate) use __export_spotandjake_snow_nix_cabi;
-                #[repr(align(4))]
-                struct _RetArea([::core::mem::MaybeUninit<u8>; 28]);
+                #[repr(align(8))]
+                struct _RetArea([::core::mem::MaybeUninit<u8>; 32]);
                 static mut _RET_AREA: _RetArea = _RetArea(
-                    [::core::mem::MaybeUninit::uninit(); 28],
+                    [::core::mem::MaybeUninit::uninit(); 32],
                 );
             }
         }
@@ -2584,76 +6776,49 @@ mod _rt {
         }
     }
     pub use alloc_crate::boxed::Box;
-    pub use alloc_crate::vec::Vec;
     pub use alloc_crate::string::String;
     #[cfg(target_arch = "wasm32")]
     pub fn run_ctors_once() {
         wit_bindgen_rt::run_ctors_once();
     }
-    pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
-        if cfg!(debug_assertions) {
-            String::from_utf8(bytes).unwrap()
-        } else {
-            String::from_utf8_unchecked(bytes)
+    pub fn as_f64<T: AsF64>(t: T) -> f64 {
+        t.as_f64()
+    }
+    pub trait AsF64 {
+        fn as_f64(self) -> f64;
+    }
+    impl<'a, T: Copy + AsF64> AsF64 for &'a T {
+        fn as_f64(self) -> f64 {
+            (*self).as_f64()
         }
     }
-    pub fn as_i32<T: AsI32>(t: T) -> i32 {
-        t.as_i32()
-    }
-    pub trait AsI32 {
-        fn as_i32(self) -> i32;
-    }
-    impl<'a, T: Copy + AsI32> AsI32 for &'a T {
-        fn as_i32(self) -> i32 {
-            (*self).as_i32()
-        }
-    }
-    impl AsI32 for i32 {
+    impl AsF64 for f64 {
         #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
+        fn as_f64(self) -> f64 {
+            self as f64
         }
     }
-    impl AsI32 for u32 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
+    pub fn as_i64<T: AsI64>(t: T) -> i64 {
+        t.as_i64()
+    }
+    pub trait AsI64 {
+        fn as_i64(self) -> i64;
+    }
+    impl<'a, T: Copy + AsI64> AsI64 for &'a T {
+        fn as_i64(self) -> i64 {
+            (*self).as_i64()
         }
     }
-    impl AsI32 for i16 {
+    impl AsI64 for i64 {
         #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
+        fn as_i64(self) -> i64 {
+            self as i64
         }
     }
-    impl AsI32 for u16 {
+    impl AsI64 for u64 {
         #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for i8 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for u8 {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for char {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
-        }
-    }
-    impl AsI32 for usize {
-        #[inline]
-        fn as_i32(self) -> i32 {
-            self as i32
+        fn as_i64(self) -> i64 {
+            self as i64
         }
     }
     pub use alloc_crate::alloc;
@@ -2663,6 +6828,14 @@ mod _rt {
         }
         let layout = alloc::Layout::from_size_align_unchecked(size, align);
         alloc::dealloc(ptr, layout);
+    }
+    pub use alloc_crate::vec::Vec;
+    pub unsafe fn string_lift(bytes: Vec<u8>) -> String {
+        if cfg!(debug_assertions) {
+            String::from_utf8(bytes).unwrap()
+        } else {
+            String::from_utf8_unchecked(bytes)
+        }
     }
     extern crate alloc as alloc_crate;
 }
@@ -2699,49 +6872,60 @@ pub(crate) use __export_rnix_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:spotandjake:snow:rnix:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2287] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xf4\x10\x01A\x02\x01\
-A\x02\x01B+\x01r\x02\x05starty\x03endy\x04\0\x0atext-range\x03\0\0\x01mT\x0dtoke\
-n-comment\x0btoken-error\x10token-whitespace\x0ctoken-assert\x0atoken-else\x08to\
-ken-if\x08token-in\x0dtoken-inherit\x09token-let\x08token-or\x09token-rec\x0atok\
-en-then\x0atoken-with\x0dtoken-l-brace\x0dtoken-r-brace\x0dtoken-l-brack\x0dtoke\
-n-r-brack\x0ctoken-assign\x08token-at\x0btoken-colon\x0btoken-comma\x09token-dot\
-\x0etoken-ellipsis\x0etoken-question\x0ftoken-semicolon\x0dtoken-l-paren\x0dtoke\
-n-r-paren\x0ctoken-concat\x0ctoken-invert\x0ctoken-update\x09token-add\x09token-\
-sub\x09token-mul\x09token-div\x0dtoken-and-and\x0btoken-equal\x11token-implicati\
-on\x0atoken-less\x10token-less-or-eq\x0atoken-more\x10token-more-or-eq\x0ftoken-\
-not-equal\x0btoken-or-or\x0btoken-float\x0btoken-ident\x0dtoken-integer\x12token\
--interpol-end\x14token-interpol-start\x0atoken-path\x09token-uri\x14token-string\
--content\x10token-string-end\x12token-string-start\x0anode-apply\x0bnode-assert\x0d\
-node-attrpath\x0cnode-dynamic\x0anode-error\x0anode-ident\x0cnode-if-else\x0bnod\
-e-select\x0cnode-inherit\x11node-inherit-from\x0bnode-string\x0dnode-interpol\x0b\
-node-lambda\x10node-ident-param\x0fnode-legacy-let\x0bnode-let-in\x09node-list\x0b\
-node-bin-op\x0anode-paren\x0cnode-pattern\x0dnode-pat-bind\x0enode-pat-entry\x09\
-node-root\x0dnode-attr-set\x13node-attrpath-value\x0dnode-unary-op\x0cnode-liter\
-al\x09node-with\x09node-path\x0dnode-has-attr\x04last\x04\0\x0csyntax-token\x03\0\
-\x02\x04\0\x05apply\x03\x01\x04\0\x06assert\x03\x01\x04\0\x07if-else\x03\x01\x04\
-\0\x08attr-set\x03\x01\x01i\x04\x01i\x05\x01i\x06\x01i\x07\x01q\x15\x05apply\x01\
-\x08\0\x06assert\x01\x09\0\x05error\0\0\x07if-else\x01\x0a\0\x06select\0\0\x03st\
-r\0\0\x04path\0\0\x07literal\0\0\x06lambda\0\0\x0alegacy-let\0\0\x06let-in\0\0\x04\
-list\0\0\x06bin-op\0\0\x05paren\0\0\x04root\0\0\x08attr-set\x01\x0b\0\x08unary-o\
-p\0\0\x05ident\0\0\x04with\0\0\x08has-attr\0\0\x0cinvalid-node\0\0\x04\0\x08nix-\
-expr\x03\0\x0c\x01p\x03\x01o\x03\x03\x01\x0e\x01o\x02\x01s\x01q\x09\x0aunexpecte\
-d\x01\x01\0\x10unexpected-extra\x01\x01\0\x11unexpected-wanted\x01\x0f\0\x16unex\
-pected-double-bind\x01\x01\0\x0eunexpected-eof\0\0\x15unexpected-eof-wanted\x01\x0e\
-\0\x0fduplicated-args\x01\x10\0\x18recursion-limit-exceeded\0\0\x07unknown\0\0\x04\
-\0\x0fnix-parse-error\x03\0\x11\x01@\x02\x03arg\x0d\x06lambda\x0d\0\x08\x04\0\x12\
-[constructor]apply\x01\x13\x01h\x04\x01@\x01\x04self\x14\0\x0d\x04\0\x1a[method]\
-apply.get-argument\x01\x15\x04\0\x18[method]apply.get-lambda\x01\x15\x01@\x02\x04\
-body\x0d\x09condition\x0d\0\x09\x04\0\x13[constructor]assert\x01\x16\x01h\x05\x01\
-@\x01\x04self\x17\0\x0d\x04\0\x17[method]assert.get-body\x01\x18\x04\0\x1c[metho\
-d]assert.get-condition\x01\x18\x01@\x03\x09condition\x0d\x04body\x0d\x09else-bod\
-y\x0d\0\x0a\x04\0\x14[constructor]if-else\x01\x19\x01h\x06\x01@\x01\x04self\x1a\0\
-\x0d\x04\0\x1d[method]if-else.get-condition\x01\x1b\x04\0\x18[method]if-else.get\
--body\x01\x1b\x04\0\x1d[method]if-else.get-else-body\x01\x1b\x01@\0\0\x0b\x04\0\x15\
-[constructor]attr-set\x01\x1c\x01j\x01\x0d\x01\x12\x01@\x01\x0anix-sources\0\x1d\
-\x04\0\x05parse\x01\x1e\x04\0\x14spotandjake:snow/nix\x05\0\x04\0\x15spotandjake\
-:snow/rnix\x04\0\x0b\x0a\x01\0\x04rnix\x03\0\0\0G\x09producers\x01\x0cprocessed-\
-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2610] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb7\x13\x01A\x02\x01\
+A\x02\x01B\x87\x01\x04\0\x14attribute-path-value\x03\x01\x04\0\x07inherit\x03\x01\
+\x01i\0\x01i\x01\x01q\x02\x14attribute-path-value\x01\x02\0\x07inherit\x01\x03\0\
+\x04\0\x05entry\x03\0\x04\x01m\x02\x06invert\x06negate\x04\0\x0eunary-operator\x03\
+\0\x06\x01m\x0f\x06concat\x06update\x03add\x03sub\x03mul\x03div\x03and\x05equal\x0b\
+implication\x04less\x0aless-or-eq\x04more\x0amore-or-eq\x09not-equal\x02or\x04\0\
+\x0fbinary-operator\x03\0\x08\x04\0\x06select\x03\x01\x04\0\x06assert\x03\x01\x04\
+\0\x10binary-operation\x03\x01\x04\0\x05error\x03\x01\x04\0\x08function\x03\x01\x04\
+\0\x14function-application\x03\x01\x04\0\x0dhas-attribute\x03\x01\x04\0\x0aident\
+ifier\x03\x01\x04\0\x0cif-then-else\x03\x01\x04\0\x06let-in\x03\x01\x04\0\x09lis\
+t-node\x03\x01\x04\0\x04path\x03\x01\x04\0\x0anix-string\x03\x01\x01q\x03\x05flo\
+at\x01u\0\x07integer\x01x\0\x03uri\0\0\x04\0\x07literal\x03\0\x17\x04\0\x0funary\
+-operation\x03\x01\x04\0\x08nix-with\x03\x01\x04\0\x04root\x03\x01\x04\0\x0dattr\
+ibute-set\x03\x01\x01i\x0a\x01i\x0b\x01i\x0c\x01i\x0d\x01i\x0e\x01i\x0f\x01i\x10\
+\x01i\x11\x01i\x12\x01i\x13\x01i\x14\x01i\x15\x01i\x16\x01i\x19\x01i\x1a\x01i\x1b\
+\x01i\x1c\x01q\x12\x06select\x01\x1d\0\x06assert\x01\x1e\0\x10binary-operation\x01\
+\x1f\0\x05error\x01\x20\0\x08function\x01!\0\x14function-application\x01\"\0\x0d\
+has-attribute\x01#\0\x0aidentifier\x01$\0\x0cif-then-else\x01%\0\x06let-in\x01&\0\
+\x04list\x01'\0\x04path\x01(\0\x06string\x01)\0\x07literal\x01\x18\0\x0funary-op\
+eration\x01*\0\x04with\x01+\0\x04root\x01,\0\x0dattribute-set\x01-\0\x04\0\x0aex\
+pression\x03\0.\x01q\x03\x03str\x01s\0\x05ident\x01$\0\x07dynamic\x01/\0\x04\0\x04\
+attr\x03\00\x01q\x02\x03raw\x01s\0\x07dynamic\x01/\0\x04\0\x0bstring-part\x03\02\
+\x01h\0\x01p1\x01@\x01\x04self4\05\x04\0*[method]attribute-path-value.get-attr-l\
+ist\x016\x01@\x01\x04self4\0/\x04\0%[method]attribute-path-value.get-expr\x017\x01\
+h\x01\x01k/\x01@\x01\x04self8\09\x04\0\x1d[method]inherit.get-expr-from\x01:\x01\
+@\x01\x04self8\05\x04\0\x1d[method]inherit.get-attr-list\x01;\x01h\x0a\x01@\x01\x04\
+self<\0/\x04\0\x1c[method]select.get-base-expr\x01=\x01@\x01\x04self<\09\x04\0\x1f\
+[method]select.get-default-expr\x01>\x01h\x0b\x01@\x01\x04self?\0/\x04\0\x17[met\
+hod]assert.get-expr\x01@\x04\0\x1c[method]assert.get-condition\x01@\x01h\x0c\x01\
+@\x01\x04self\xc1\0\0/\x04\0\x20[method]binary-operation.get-lhs\x01B\x01@\x01\x04\
+self\xc1\0\0\x09\x04\0%[method]binary-operation.get-operator\x01C\x04\0\x20[meth\
+od]binary-operation.get-rhs\x01B\x01h\x0d\x01@\x01\x04self\xc4\0\0s\x04\0\x19[me\
+thod]error.get-message\x01E\x01h\x0e\x01@\x01\x04self\xc6\0\0/\x04\0\x19[method]\
+function.get-body\x01G\x01h\x0f\x01@\x01\x04self\xc8\0\0/\x04\0)[method]function\
+-application.get-function\x01I\x04\0)[method]function-application.get-argument\x01\
+I\x01h\x10\x01@\x01\x04self\xca\0\0/\x04\0\x1e[method]has-attribute.get-expr\x01\
+K\x01h\x11\x01@\x01\x04self\xcc\0\0s\x04\0\x19[method]identifier.get-id\x01M\x01\
+h\x12\x01@\x01\x04self\xce\0\0/\x04\0\"[method]if-then-else.get-condition\x01O\x04\
+\0$[method]if-then-else.get-true-branch\x01O\x04\0%[method]if-then-else.get-fals\
+e-branch\x01O\x01h\x13\x01p\x05\x01@\x01\x04self\xd0\0\0\xd1\0\x04\0\x18[method]\
+let-in.get-binds\x01R\x01@\x01\x04self\xd0\0\0/\x04\0\x17[method]let-in.get-body\
+\x01S\x01h\x14\x01p/\x01@\x01\x04self\xd4\0\0\xd5\0\x04\0\x1e[method]list-node.g\
+et-elements\x01V\x01h\x15\x01@\x01\x04self\xd7\0\0s\x04\0\x16[method]path.get-pa\
+rts\x01X\x01h\x16\x01p3\x01@\x01\x04self\xd9\0\0\xda\0\x04\0\x1c[method]nix-stri\
+ng.get-parts\x01[\x01h\x19\x01@\x01\x04self\xdc\0\0\x07\x04\0$[method]unary-oper\
+ation.get-operator\x01]\x01@\x01\x04self\xdc\0\0/\x04\0#[method]unary-operation.\
+get-operand\x01^\x01h\x1a\x01@\x01\x04self\xdf\0\0/\x04\0\x19[method]nix-with.ge\
+t-body\x01`\x04\0\x1e[method]nix-with.get-namespace\x01`\x01h\x1b\x01@\x01\x04se\
+lf\xe1\0\0/\x04\0\x15[method]root.get-expr\x01b\x01h\x1c\x01@\x01\x04self\xe3\0\0\
+\xd1\0\x04\0\x1f[method]attribute-set.get-binds\x01d\x01j\x01/\x01s\x01@\x01\x0a\
+nix-sources\0\xe5\0\x04\0\x05parse\x01f\x04\0\x14spotandjake:snow/nix\x05\0\x04\0\
+\x15spotandjake:snow/rnix\x04\0\x0b\x0a\x01\0\x04rnix\x03\0\0\0G\x09producers\x01\
+\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

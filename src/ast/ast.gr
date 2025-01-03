@@ -1,0 +1,70 @@
+module Ast
+
+// TODO: Cleanup AST/Refactor
+provide enum BinOp {
+  Concat,
+  Update,
+  Add,
+  Sub,
+  Mul,
+  Div,
+  And,
+  Equal,
+  Implication,
+  Less,
+  LessOrEq,
+  More,
+  MoreOrEq,
+  NotEqual,
+  Or,
+}
+provide enum UnaryOp {
+  Not,
+  Neg,
+}
+provide enum LiteralVal {
+  FloatVal(Float64),
+  IntVal(Int64),
+  UriVal,
+}
+provide enum rec Attr {
+  IdentifierAttr(String),
+  DynamicAttr(Expression),
+  StringAttr(String),
+}
+and provide enum Binding {
+  AttributePathValue{ path: List<Attr>, value: Expression },
+  Inherit{ fromExpr: Option<Expression>, attrs: List<Attr> },
+}
+and provide enum Part<a> {
+  Raw(a),
+  Dynamic(Expression),
+}
+and provide enum Expression {
+  // TODO: Add AttrPath
+  SelectExpr{ base: Expression, default: Option<Expression> },
+  AssertExpr{ expr: Expression, cond: Expression },
+  BinOpExpr{ lhs: Expression, op: BinOp, rhs: Expression },
+  InvalidExpr(String),
+  // TODO: Add Params
+  FunctionExpr{ body: Expression, },
+  // TODO: Add Params
+  FuncAppExpr{ func: Expression, },
+  // TODO: Add attrPath
+  HasAttrExpr{ expr: Expression, },
+  IdentifierExpr(String),
+  IfThenElseExpr{
+    cond: Expression,
+    trueBranch: Expression,
+    falseBranch: Expression,
+  },
+  LetInExpr{ bindings: List<Binding>, body: Expression },
+  ListExpr(List<Expression>),
+  // TODO: Path(Path),
+  StringExpr(List<Part<String>>),
+  LiteralExpr(LiteralVal),
+  UnaryOpExpr{ op: UnaryOp, rhs: Expression },
+  WithExpr{ body: Expression, namespace: Expression },
+  RootExpr(Expression),
+  AttrSetExpr(List<Binding>),
+}

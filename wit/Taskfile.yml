@@ -3,6 +3,14 @@
 version: '3'
 
 tasks:
+  source:
+    sources:
+      - ../nix/wit/nix.wit
+    generates:
+      - ./nix.wit
+    cmds:
+      - rm nix.wit
+      - cp ../nix/wit/nix.wit ./nix.wit
   default:
     deps: [clean]
     cmds:
