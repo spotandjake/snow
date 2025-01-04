@@ -1,0 +1,27 @@
+// Stream library for parsing
+module Stream
+
+from "bytes" include Bytes
+
+provide record Stream {
+  bytes: Bytes,
+  size: Number,
+  index: Number,
+}
+
+provide let make = str => {
+  let bytes = Bytes.make(str)
+  { bytes, size: Bytes.length(bytes), index: 0 }
+}
+
+// provide let checkChar = (stream, char) => Bool
+// provide let checkString = (stream, str) => Bool
+// provide let getChar = (stream) => Char
+// provide let advanceChar = (stream) => Stream
+// provide let advanceString = (stream, str) => Stream
+// provide let expectChar = (stream) => Bool???
+// provide let expectString = (stream) => Bool?????
+
+// Consider adding a new grain pattern matching syntax
+// b"abc"... => checks first byte match <- This might conflict with range syntax
+// ...b"abc" => Checks the last byte match

@@ -77,8 +77,7 @@ pub struct FunctionApplication {
 #[derive(Debug, Clone)]
 pub struct HasAttribute {
   pub expression: Box<Expression>,
-  // TODO: Part
-  // pub attribute_path: Box<[Part]>,
+  pub attr_path: Box<[Attr]>,
 }
 #[derive(Debug, Clone)]
 pub struct Identifier {
@@ -123,7 +122,7 @@ pub struct String_ {
 #[derive(Debug, Clone)]
 pub struct Select {
   pub base_expr: Box<Expression>,
-  // TODO: attr_path
+  pub attr_path: Box<[Attr]>,
   pub default_expr: Option<Box<Expression>>,
 }
 #[derive(Debug, Clone)]

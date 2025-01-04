@@ -5,7 +5,6 @@ version: '3'
 tasks:
   default:
     sources:
-      - src/*.rs
       - src/**/*.rs
       - wit/*.wit
       - Cargo.lock
@@ -20,3 +19,4 @@ tasks:
   clean:
     cmds:
       - rm -f ../dist/nix.wasm
+      - rm -rf ./target

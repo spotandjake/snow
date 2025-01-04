@@ -3,14 +3,19 @@
 version: '3'
 
 tasks:
-  source:
+  copy_buid:
+    deps: [clean]
     sources:
       - ../nix/wit/nix.wit
     generates:
       - ./nix.wit
     cmds:
-      - rm nix.wit
       - cp ../nix/wit/nix.wit ./nix.wit
+  clean:
+    cmds:
+      - rm -rf *.wasm
+      - rm -f ./nix.wit
+  # TODO: Clean this up
   default:
     deps: [clean]
     cmds:
@@ -22,7 +27,5 @@ tasks:
     sources:
       - ./snow.wasm
     cmds:
+      # TODO: Fetch version from central location.
       - warg publish release --name spotandjake:snow --version 0.0.12 snow.wasm
-  clean:
-    cmds:
-      - rm -rf *.wasm

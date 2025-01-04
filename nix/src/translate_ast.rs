@@ -88,6 +88,13 @@ impl nix::GuestSelect for ast::Select {
       None => None,
     }
   }
+  fn get_attr_path(&self) -> Vec<nix::Attr> {
+    self
+      .attr_path
+      .iter()
+      .map(|a| nix::Attr::from(a.clone()))
+      .collect()
+  }
 }
 impl nix::GuestAssert for ast::Assert {
   fn get_expr(&self) -> nix::Expression {
@@ -130,6 +137,13 @@ impl nix::GuestFunctionApplication for ast::FunctionApplication {
 impl nix::GuestHasAttribute for ast::HasAttribute {
   fn get_expr(&self) -> nix::Expression {
     nix::Expression::from(self.expression.as_ref())
+  }
+  fn get_attr_path(&self) -> Vec<nix::Attr> {
+    self
+      .attr_path
+      .iter()
+      .map(|a| nix::Attr::from(a.clone()))
+      .collect()
   }
 }
 impl nix::GuestIdentifier for ast::Identifier {

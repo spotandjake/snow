@@ -41,17 +41,19 @@ and provide enum Part<a> {
   Dynamic(Expression),
 }
 and provide enum Expression {
-  // TODO: Add AttrPath
-  SelectExpr{ base: Expression, default: Option<Expression> },
+  SelectExpr{
+    base: Expression,
+    default: Option<Expression>,
+    attrPath: List<Attr>,
+  },
   AssertExpr{ expr: Expression, cond: Expression },
   BinOpExpr{ lhs: Expression, op: BinOp, rhs: Expression },
   InvalidExpr(String),
   // TODO: Add Params
   FunctionExpr{ body: Expression, },
-  // TODO: Add Params
+  // TODO: Add args
   FuncAppExpr{ func: Expression, },
-  // TODO: Add attrPath
-  HasAttrExpr{ expr: Expression, },
+  HasAttrExpr{ expr: Expression, attrPath: List<Attr> },
   IdentifierExpr(String),
   IfThenElseExpr{
     cond: Expression,

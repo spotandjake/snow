@@ -1122,7 +1122,11 @@ and stringifyRecordHelp = (
   let bracketColor = incrBracketColor(bracketColor)
   writeBracket('{', printBuf, printSettings, bracketCol)
   writeChar(' ', printBuf, printSettings, defaultPrintColors.defaultColor)
-  if (splitLines) writeNewLine(printBuf, printSettings)
+  let mut lastNewLine = false
+  if (splitLines) {
+    writeNewLine(printBuf, printSettings)
+    lastNewLine = true
+  }
   // Write Contents
   for (let mut i = 0; i < Array.length(fields); i += 1) {
     // Get The Field And Value
@@ -1146,10 +1150,15 @@ and stringifyRecordHelp = (
     if (i < Array.length(fields) - 1)
       writeChar(',', printBuf, printSettings, defaultPrintColors.defaultColor)
     writeChar(' ', printBuf, printSettings, defaultPrintColors.defaultColor)
+    lastNewLine = false
     // Write NewLine
-    if (splitLines) writeNewLine(printBuf, printSettings)
+    if (splitLines) {
+      lastNewLine = true
+      writeNewLine(printBuf, printSettings)
+    }
   }
   // Write Close
+  if (lastNewLine) writeIndent(depth, printBuf, printSettings)
   writeBracket('}', printBuf, printSettings, bracketCol)
 }
 and stringifyRecord = (item, depth, bracketColor, printBuf, printSettings) => {

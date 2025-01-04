@@ -24,10 +24,19 @@ This is currently just a place where I am documenting my long-term goals, as Sno
 # TODO
 + [ ] Finish Rnix Bindings
 + [ ] Build nix output using smartdoc
++ [ ] Write snow stream parsing library
 + [ ] Build Snow Parser
+  + [ ] design snow language
+    + [ ] how do overlays work????
 + [ ] Build Snow Cli
   + [ ] Will probably use reaper
 + [ ] Begin work on rest of the snow ecosystem
+  + [ ] use plist to compare and fetch darwin configs
+  + [ ] look into time manager impersistance
+  + [ ] snow configuration manager
+  + [ ] structure configs repo
++ [ ] Cleanup wit publishing
+  + [ ] Publish our actual built component to wa.dev
 
 ## Packaging TODO
 + [ ] Build Nix Derivation

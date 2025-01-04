@@ -2,29 +2,137 @@
 
 Everything in snow-lang is an expression.
 
+### flake.toml
+defines mappings for includes.
+```toml
+description = "" # Optional
+version = "" # Optional
+entry = "" # Points to flake.snow
 
-## Module
-Modules are bassically just nix functions but they are designed to be consumed by the nixOS and nix-darwin module systems, they can optionally be given names and they have take arguments and execute the body.
-### Input
+[dependencies]
+# "package" = source
+
+[inputs] # Do I need this for nix interop, can I evaluate the nix for this info??
+"package" = "github:" # package = source????, should this just link to dependencies???
 ```
-module <Name?>(<arguments>) {
-  <body>
+
+### flake
+This will be compiled along with a flake.toml to generate the nix flake
+```js
+flake <Name> // top level
+// Injected patterns in body
+// flake.version
+// flake.description
+// flake.dependencies
+// flake.inputs
+<includes>
+// expose <expression> | <expression> // look into this
+```
+
+### Include
+This is used by the compiler to include new snow files, this triggers compilation of a given snow file (nix files can be included too) and then they are imported with import to the `<Dependency>` identity, the `@dependency` comes from the toml config.
+> [!NOTE]
+> Do we need a `Dependency` identifier, or should it just 
+```js
+from "@dependency" include Dependency
+```
+
+### Top level module
+Modules physically will look like nix os module with the file identifier just being there for validation when doing an include.
+```js
+// This defines a top level modul, bassically just a function that returns an atribute set
+module <name>(<arguments>) {// This defines a module and gives it a name for use when importing
+<includes>
+<import> // regular nix imports
+<expression> // expression
+// expose <expression> // consider if we can have an expose
 }
 ```
-### Output
-```
-{ <arguments> }: <body>
-```
 
-## Include
-I am not 100% sure how the include system is going to work.
+### Interface
+figure out codegen for this but would turn into a documented module.
 
-## Provide
-I am not 100% sure the output of this yet or how it will work with nix but a provide makes a binding visible to the output.
+### Expression
+As expression in `Nix` work wierdly and I'm targetting the generating the syntax or model of expressions here is a little wierd as it's a configuration language not imperative.
+
+#### DataTypes
+Literals are base data types.
+##### String
+These compile to nix strings
+````rust
+$"String ${binding}" // $ is optional
+$"""
+Multiline string ${binding}
+"""
+````
+##### Integer
+Check out nix and grain integer syntax.
+##### Float
+Check out nix and grain float syntax.
+##### Path
+Paths compile to regular nix paths, with similar semantics
+```rust
+p"./test/${binding}/test.flake"
+```
+##### Uri
+I need to look into nix uri.
+#### AttrSet
+```rust
+{
+  property: <expression>, // binding
+  property, // punning
+  ...spread, // spread, look into order mixing here
+  "name ${test}", // can use string names too
+  property.value: <expression> // can do nested binds, works with strings too
+}
+```
+##### Function
+This get's truned into a curried function if you want them to be non position you can annotate with `named` 
+```rust
+(value, value) => <expression>
+named (value, value) => <expression>
+(value, value) => {
+  <expresssion>
+  // TODO: consider a return statement, vs none
+}
+```
+##### Module
+```js
+module(<arguments>): Interface {
+// just like a function but more apprioriate
+// bassically just a function that returns an attribute set
+// same body semantics as top level module, but no from???
+}
+```
+#### Control Flow
+##### If Statement
+```js
+// can contain blocks
+if (x) <expr> // expr
+else <expr> // optional else
+```
+#### Utility
+##### let
+Figure out how to make this more statment like.
+```js
+let x = 123
+```
+this just becomes let in with whatever comes after it???
+##### Ternary
+```rust
+<condition:expr> ? <true:expr> : <false:expr>
+```
+##### Binops
+Add, Subtract, Concat
+##### Infix
+Not, Negate
+
+### Bindings
+We support destructuring, of attrs and lists, bindings follow nix identifiers.
 
 
 # Language thoughts
-Target - https://github.com/nix-community/rnix-parser for ir
+More Raw But detailed thoughts
 
 provide let, provides to the set - Statement
 -> let x = 1 in

@@ -47,6 +47,7 @@ interface nix {
     resource select {
         get-base-expr: func() -> expression;
         get-default-expr: func() -> option<expression>;
+        get-attr-path: func() -> list<attr>;
     }
     resource assert {
         get-expr: func() -> expression;
@@ -70,7 +71,7 @@ interface nix {
     }
     resource has-attribute {
         get-expr: func() -> expression;
-        // get-attribute_path: func() -> list<part>;
+        get-attr-path: func() -> list<attr>;
     }
     resource identifier {
         get-id: func() -> string;

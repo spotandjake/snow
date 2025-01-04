@@ -10,3 +10,6 @@ tasks:
       - ./grain_component.sh
     cmds:
       - amber build grain_component.sh
+  clean:
+    cmds:
+      - rm -f grain_component.sh

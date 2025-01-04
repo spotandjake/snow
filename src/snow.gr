@@ -23,7 +23,7 @@ provide let _start: () => Void = () => {
       let common_ast = Nix.convertAst(ast)
       GrainPrint.print(
         common_ast,
-        settings={ ...GrainPrint.defaultSettings, forceNewLine: true }
+        // settings={ ...GrainPrint.defaultSettings, forceNewLine: true }
       )
     },
     Err(err) => fail "Failed to parse Nix",

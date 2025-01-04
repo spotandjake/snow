@@ -17,28 +17,14 @@ tasks:
   default:
     cmds:
       - task: nix
-      - task: gen_libs
-      - task: compile
+      - task: generate_snow_sdk
+      - task: build_grain
       - task: compose
   dev:
     deps:
       - default
     cmds:
       - wasmtime --dir=. ./dist/snow.wasm 
-  compile:
-    sources:
-      - ./src/*.gr
-      - ./src/**/*.gr
-      - ./adapters/wasi_snapshot_preview1.command.wasm
-      - ./wit/*.wit
-    generates:
-      - ./dist/snow.gr.wasm
-      - ./dist/snow.c.wasm
-    cmds:
-      - mkdir -p dist
-      # Compile Grain component
-      # grain_component <wit> <world> <adapter> <input> <output>
-      - ./tasks/grain_component.sh ./wit snow ./adapters/wasi_snapshot_preview1.command.wasm  ./src/snow.gr ./dist/snow.c.wasm
   compose:
     sources:
       - ./dist/snow.c.wasm
@@ -47,18 +33,27 @@ tasks:
       - ./dist/snow.wasm
     cmds:
       - wac plug ./dist/snow.c.wasm --plug ./dist/nix.wasm -o ./dist/snow.wasm
-  gen_libs:
-    deps:
-      - wit:source
+  build_grain:
     sources:
-      - wit/*.wit
+      - ./src/**/*.gr
+      - ./adapters/*.wasm
+      - ./wit/*.wit # I don't know if this is needed
     generates:
-      - src/libs/snow.gr
+      - ./dist/snow.gr.wasm
+      - ./dist/snow.c.wasm
     cmds:
-      # Generate Rnix Lib
+      - mkdir -p dist
+      # Compile Grain component
+      # grain_component <wit> <world> <adapter> <input> <output>
+      - ./tasks/grain_component.sh ./wit snow ./adapters/wasi_snapshot_preview1.command.wasm  ./src/snow.gr ./dist/snow.c.wasm
+  generate_snow_sdk:
+    deps: [wit:copy_buid]
+    sources: [wit/*.wit]
+    generates: [src/libs/snow.gr]
+    cmds:
       - wit-bindgen grain wit --out-dir ./src/libs --world snow
   clean:
     cmds:
-      - rm -f ./src/libs/rnix.gr
-      - rm -f ./dist/
-      - rm **.gr.wasm
+      - rm -f ./src/libs/snow.gr # Generated nix li
+      - rm -f ./dist/ # Build Directory
+      - rm **.gr.wasm # Generated Wasm

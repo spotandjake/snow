@@ -93,9 +93,16 @@ mod converters {
   }
   impl From<rnix::ast::Select> for ast::Select {
     fn from(node: rnix::ast::Select) -> Self {
-      // TODO: Attr_path node.attrPath()
+      // TODO: Handle Errors
+      let attr_list = node
+        .attrpath()
+        .unwrap()
+        .attrs()
+        .map(|attr| ast::Attr::from(attr))
+        .collect();
       Self {
         base_expr: box_expr(node.expr()),
+        attr_path: attr_list,
         default_expr: match node.default_expr() {
           Some(expr) => Some(Box::new(Expression::from(expr))),
           None => None,
@@ -226,10 +233,16 @@ mod converters {
   }
   impl From<rnix::ast::HasAttr> for ast::HasAttribute {
     fn from(node: rnix::ast::HasAttr) -> Self {
-      // TODO: attrpath
-      // node.attrpath()
+      // TODO: Handle Errors
+      let attr_list = node
+        .attrpath()
+        .unwrap()
+        .attrs()
+        .map(|attr| ast::Attr::from(attr))
+        .collect();
       Self {
         expression: box_expr(node.expr()),
+        attr_path: attr_list,
       }
     }
   }

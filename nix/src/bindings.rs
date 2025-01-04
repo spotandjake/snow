@@ -3327,6 +3327,170 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
+                pub unsafe fn _export_method_select_get_attr_path_cabi<T: GuestSelect>(
+                    arg0: *mut u8,
+                ) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_attr_path(
+                        SelectBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec3 = result0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 32,
+                        8,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 32);
+                        {
+                            match e {
+                                Attr::Str(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    let vec2 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                                    let len2 = vec2.len();
+                                    ::core::mem::forget(vec2);
+                                    *base.add(12).cast::<usize>() = len2;
+                                    *base.add(8).cast::<*mut u8>() = ptr2.cast_mut();
+                                }
+                                Attr::Ident(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Attr::Dynamic(e) => {
+                                    *base.add(0).cast::<u8>() = (2i32) as u8;
+                                    match e {
+                                        Expression::Select(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Assert(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::BinaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Error(e) => {
+                                            *base.add(8).cast::<u8>() = (3i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Function(e) => {
+                                            *base.add(8).cast::<u8>() = (4i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::FunctionApplication(e) => {
+                                            *base.add(8).cast::<u8>() = (5i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::HasAttribute(e) => {
+                                            *base.add(8).cast::<u8>() = (6i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Identifier(e) => {
+                                            *base.add(8).cast::<u8>() = (7i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::IfThenElse(e) => {
+                                            *base.add(8).cast::<u8>() = (8i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::LetIn(e) => {
+                                            *base.add(8).cast::<u8>() = (9i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::List(e) => {
+                                            *base.add(8).cast::<u8>() = (10i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Path(e) => {
+                                            *base.add(8).cast::<u8>() = (11i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::String(e) => {
+                                            *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
+                                            match e {
+                                                Literal::Float(e) => {
+                                                    *base.add(16).cast::<u8>() = (0i32) as u8;
+                                                    *base.add(24).cast::<f64>() = _rt::as_f64(e);
+                                                }
+                                                Literal::Integer(e) => {
+                                                    *base.add(16).cast::<u8>() = (1i32) as u8;
+                                                    *base.add(24).cast::<i64>() = _rt::as_i64(e);
+                                                }
+                                                Literal::Uri => {
+                                                    *base.add(16).cast::<u8>() = (2i32) as u8;
+                                                }
+                                            }
+                                        }
+                                        Expression::UnaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (14i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::With(e) => {
+                                            *base.add(8).cast::<u8>() = (15i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Root(e) => {
+                                            *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len3;
+                    *ptr1.add(0).cast::<*mut u8>() = result3;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_select_get_attr_path<T: GuestSelect>(
+                    arg0: *mut u8,
+                ) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base5 = l0;
+                    let len5 = l1;
+                    for i in 0..len5 {
+                        let base = base5.add(i * 32);
+                        {
+                            let l2 = i32::from(*base.add(0).cast::<u8>());
+                            match l2 {
+                                0 => {
+                                    let l3 = *base.add(8).cast::<*mut u8>();
+                                    let l4 = *base.add(12).cast::<usize>();
+                                    _rt::cabi_dealloc(l3, l4, 1);
+                                }
+                                1 => {}
+                                _ => {}
+                            }
+                        }
+                    }
+                    _rt::cabi_dealloc(base5, len5 * 32, 8);
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
                 pub unsafe fn _export_method_assert_get_expr_cabi<T: GuestAssert>(
                     arg0: *mut u8,
                 ) -> *mut u8 {
@@ -4146,6 +4310,170 @@ pub mod exports {
                         }
                     }
                     ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_method_has_attribute_get_attr_path_cabi<
+                    T: GuestHasAttribute,
+                >(arg0: *mut u8) -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let result0 = T::get_attr_path(
+                        HasAttributeBorrow::lift(arg0 as u32 as usize).get(),
+                    );
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec3 = result0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 32,
+                        8,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 32);
+                        {
+                            match e {
+                                Attr::Str(e) => {
+                                    *base.add(0).cast::<u8>() = (0i32) as u8;
+                                    let vec2 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                                    let len2 = vec2.len();
+                                    ::core::mem::forget(vec2);
+                                    *base.add(12).cast::<usize>() = len2;
+                                    *base.add(8).cast::<*mut u8>() = ptr2.cast_mut();
+                                }
+                                Attr::Ident(e) => {
+                                    *base.add(0).cast::<u8>() = (1i32) as u8;
+                                    *base.add(8).cast::<i32>() = (e).take_handle() as i32;
+                                }
+                                Attr::Dynamic(e) => {
+                                    *base.add(0).cast::<u8>() = (2i32) as u8;
+                                    match e {
+                                        Expression::Select(e) => {
+                                            *base.add(8).cast::<u8>() = (0i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Assert(e) => {
+                                            *base.add(8).cast::<u8>() = (1i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::BinaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (2i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Error(e) => {
+                                            *base.add(8).cast::<u8>() = (3i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Function(e) => {
+                                            *base.add(8).cast::<u8>() = (4i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::FunctionApplication(e) => {
+                                            *base.add(8).cast::<u8>() = (5i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::HasAttribute(e) => {
+                                            *base.add(8).cast::<u8>() = (6i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Identifier(e) => {
+                                            *base.add(8).cast::<u8>() = (7i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::IfThenElse(e) => {
+                                            *base.add(8).cast::<u8>() = (8i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::LetIn(e) => {
+                                            *base.add(8).cast::<u8>() = (9i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::List(e) => {
+                                            *base.add(8).cast::<u8>() = (10i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Path(e) => {
+                                            *base.add(8).cast::<u8>() = (11i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::String(e) => {
+                                            *base.add(8).cast::<u8>() = (12i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Literal(e) => {
+                                            *base.add(8).cast::<u8>() = (13i32) as u8;
+                                            match e {
+                                                Literal::Float(e) => {
+                                                    *base.add(16).cast::<u8>() = (0i32) as u8;
+                                                    *base.add(24).cast::<f64>() = _rt::as_f64(e);
+                                                }
+                                                Literal::Integer(e) => {
+                                                    *base.add(16).cast::<u8>() = (1i32) as u8;
+                                                    *base.add(24).cast::<i64>() = _rt::as_i64(e);
+                                                }
+                                                Literal::Uri => {
+                                                    *base.add(16).cast::<u8>() = (2i32) as u8;
+                                                }
+                                            }
+                                        }
+                                        Expression::UnaryOperation(e) => {
+                                            *base.add(8).cast::<u8>() = (14i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::With(e) => {
+                                            *base.add(8).cast::<u8>() = (15i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::Root(e) => {
+                                            *base.add(8).cast::<u8>() = (16i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                        Expression::AttributeSet(e) => {
+                                            *base.add(8).cast::<u8>() = (17i32) as u8;
+                                            *base.add(16).cast::<i32>() = (e).take_handle() as i32;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    *ptr1.add(4).cast::<usize>() = len3;
+                    *ptr1.add(0).cast::<*mut u8>() = result3;
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_method_has_attribute_get_attr_path<
+                    T: GuestHasAttribute,
+                >(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    let base5 = l0;
+                    let len5 = l1;
+                    for i in 0..len5 {
+                        let base = base5.add(i * 32);
+                        {
+                            let l2 = i32::from(*base.add(0).cast::<u8>());
+                            match l2 {
+                                0 => {
+                                    let l3 = *base.add(8).cast::<*mut u8>();
+                                    let l4 = *base.add(12).cast::<usize>();
+                                    _rt::cabi_dealloc(l3, l4, 1);
+                                }
+                                1 => {}
+                                _ => {}
+                            }
+                        }
+                    }
+                    _rt::cabi_dealloc(base5, len5 * 32, 8);
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -5675,6 +6003,7 @@ pub mod exports {
                     }
                     fn get_base_expr(&self) -> Expression;
                     fn get_default_expr(&self) -> Option<Expression>;
+                    fn get_attr_path(&self) -> _rt::Vec<Attr>;
                 }
                 pub trait GuestAssert: 'static {
                     #[doc(hidden)]
@@ -5938,6 +6267,7 @@ pub mod exports {
                         }
                     }
                     fn get_expr(&self) -> Expression;
+                    fn get_attr_path(&self) -> _rt::Vec<Attr>;
                 }
                 pub trait GuestIdentifier: 'static {
                     #[doc(hidden)]
@@ -6425,6 +6755,17 @@ pub mod exports {
                         u8,) -> * mut u8 { $($path_to_types)*::
                         _export_method_select_get_default_expr_cabi::<<$ty as
                         $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
+                        "spotandjake:snow/nix#[method]select.get-attr-path"] unsafe
+                        extern "C" fn export_method_select_get_attr_path(arg0 : * mut
+                        u8,) -> * mut u8 { $($path_to_types)*::
+                        _export_method_select_get_attr_path_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]select.get-attr-path"]
+                        unsafe extern "C" fn
+                        _post_return_method_select_get_attr_path(arg0 : * mut u8,) {
+                        $($path_to_types)*::
+                        __post_return_method_select_get_attr_path::<<$ty as
+                        $($path_to_types)*:: Guest >::Select > (arg0) } #[export_name =
                         "spotandjake:snow/nix#[method]assert.get-expr"] unsafe extern "C"
                         fn export_method_assert_get_expr(arg0 : * mut u8,) -> * mut u8 {
                         $($path_to_types)*:: _export_method_assert_get_expr_cabi::<<$ty
@@ -6485,6 +6826,20 @@ pub mod exports {
                         extern "C" fn export_method_has_attribute_get_expr(arg0 : * mut
                         u8,) -> * mut u8 { $($path_to_types)*::
                         _export_method_has_attribute_get_expr_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::HasAttribute > (arg0) }
+                        #[export_name =
+                        "spotandjake:snow/nix#[method]has-attribute.get-attr-path"]
+                        unsafe extern "C" fn
+                        export_method_has_attribute_get_attr_path(arg0 : * mut u8,) -> *
+                        mut u8 { $($path_to_types)*::
+                        _export_method_has_attribute_get_attr_path_cabi::<<$ty as
+                        $($path_to_types)*:: Guest >::HasAttribute > (arg0) }
+                        #[export_name =
+                        "cabi_post_spotandjake:snow/nix#[method]has-attribute.get-attr-path"]
+                        unsafe extern "C" fn
+                        _post_return_method_has_attribute_get_attr_path(arg0 : * mut u8,)
+                        { $($path_to_types)*::
+                        __post_return_method_has_attribute_get_attr_path::<<$ty as
                         $($path_to_types)*:: Guest >::HasAttribute > (arg0) }
                         #[export_name = "spotandjake:snow/nix#[method]identifier.get-id"]
                         unsafe extern "C" fn export_method_identifier_get_id(arg0 : * mut
@@ -6872,9 +7227,9 @@ pub(crate) use __export_rnix_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:spotandjake:snow:rnix:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2610] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb7\x13\x01A\x02\x01\
-A\x02\x01B\x87\x01\x04\0\x14attribute-path-value\x03\x01\x04\0\x07inherit\x03\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2707] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x98\x14\x01A\x02\x01\
+A\x02\x01B\x8b\x01\x04\0\x14attribute-path-value\x03\x01\x04\0\x07inherit\x03\x01\
 \x01i\0\x01i\x01\x01q\x02\x14attribute-path-value\x01\x02\0\x07inherit\x01\x03\0\
 \x04\0\x05entry\x03\0\x04\x01m\x02\x06invert\x06negate\x04\0\x0eunary-operator\x03\
 \0\x06\x01m\x0f\x06concat\x06update\x03add\x03sub\x03mul\x03div\x03and\x05equal\x0b\
@@ -6900,32 +7255,34 @@ ist\x016\x01@\x01\x04self4\0/\x04\0%[method]attribute-path-value.get-expr\x017\x
 h\x01\x01k/\x01@\x01\x04self8\09\x04\0\x1d[method]inherit.get-expr-from\x01:\x01\
 @\x01\x04self8\05\x04\0\x1d[method]inherit.get-attr-list\x01;\x01h\x0a\x01@\x01\x04\
 self<\0/\x04\0\x1c[method]select.get-base-expr\x01=\x01@\x01\x04self<\09\x04\0\x1f\
-[method]select.get-default-expr\x01>\x01h\x0b\x01@\x01\x04self?\0/\x04\0\x17[met\
-hod]assert.get-expr\x01@\x04\0\x1c[method]assert.get-condition\x01@\x01h\x0c\x01\
-@\x01\x04self\xc1\0\0/\x04\0\x20[method]binary-operation.get-lhs\x01B\x01@\x01\x04\
-self\xc1\0\0\x09\x04\0%[method]binary-operation.get-operator\x01C\x04\0\x20[meth\
-od]binary-operation.get-rhs\x01B\x01h\x0d\x01@\x01\x04self\xc4\0\0s\x04\0\x19[me\
-thod]error.get-message\x01E\x01h\x0e\x01@\x01\x04self\xc6\0\0/\x04\0\x19[method]\
-function.get-body\x01G\x01h\x0f\x01@\x01\x04self\xc8\0\0/\x04\0)[method]function\
--application.get-function\x01I\x04\0)[method]function-application.get-argument\x01\
-I\x01h\x10\x01@\x01\x04self\xca\0\0/\x04\0\x1e[method]has-attribute.get-expr\x01\
-K\x01h\x11\x01@\x01\x04self\xcc\0\0s\x04\0\x19[method]identifier.get-id\x01M\x01\
-h\x12\x01@\x01\x04self\xce\0\0/\x04\0\"[method]if-then-else.get-condition\x01O\x04\
-\0$[method]if-then-else.get-true-branch\x01O\x04\0%[method]if-then-else.get-fals\
-e-branch\x01O\x01h\x13\x01p\x05\x01@\x01\x04self\xd0\0\0\xd1\0\x04\0\x18[method]\
-let-in.get-binds\x01R\x01@\x01\x04self\xd0\0\0/\x04\0\x17[method]let-in.get-body\
-\x01S\x01h\x14\x01p/\x01@\x01\x04self\xd4\0\0\xd5\0\x04\0\x1e[method]list-node.g\
-et-elements\x01V\x01h\x15\x01@\x01\x04self\xd7\0\0s\x04\0\x16[method]path.get-pa\
-rts\x01X\x01h\x16\x01p3\x01@\x01\x04self\xd9\0\0\xda\0\x04\0\x1c[method]nix-stri\
-ng.get-parts\x01[\x01h\x19\x01@\x01\x04self\xdc\0\0\x07\x04\0$[method]unary-oper\
-ation.get-operator\x01]\x01@\x01\x04self\xdc\0\0/\x04\0#[method]unary-operation.\
-get-operand\x01^\x01h\x1a\x01@\x01\x04self\xdf\0\0/\x04\0\x19[method]nix-with.ge\
-t-body\x01`\x04\0\x1e[method]nix-with.get-namespace\x01`\x01h\x1b\x01@\x01\x04se\
-lf\xe1\0\0/\x04\0\x15[method]root.get-expr\x01b\x01h\x1c\x01@\x01\x04self\xe3\0\0\
-\xd1\0\x04\0\x1f[method]attribute-set.get-binds\x01d\x01j\x01/\x01s\x01@\x01\x0a\
-nix-sources\0\xe5\0\x04\0\x05parse\x01f\x04\0\x14spotandjake:snow/nix\x05\0\x04\0\
-\x15spotandjake:snow/rnix\x04\0\x0b\x0a\x01\0\x04rnix\x03\0\0\0G\x09producers\x01\
-\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+[method]select.get-default-expr\x01>\x01@\x01\x04self<\05\x04\0\x1c[method]selec\
+t.get-attr-path\x01?\x01h\x0b\x01@\x01\x04self\xc0\0\0/\x04\0\x17[method]assert.\
+get-expr\x01A\x04\0\x1c[method]assert.get-condition\x01A\x01h\x0c\x01@\x01\x04se\
+lf\xc2\0\0/\x04\0\x20[method]binary-operation.get-lhs\x01C\x01@\x01\x04self\xc2\0\
+\0\x09\x04\0%[method]binary-operation.get-operator\x01D\x04\0\x20[method]binary-\
+operation.get-rhs\x01C\x01h\x0d\x01@\x01\x04self\xc5\0\0s\x04\0\x19[method]error\
+.get-message\x01F\x01h\x0e\x01@\x01\x04self\xc7\0\0/\x04\0\x19[method]function.g\
+et-body\x01H\x01h\x0f\x01@\x01\x04self\xc9\0\0/\x04\0)[method]function-applicati\
+on.get-function\x01J\x04\0)[method]function-application.get-argument\x01J\x01h\x10\
+\x01@\x01\x04self\xcb\0\0/\x04\0\x1e[method]has-attribute.get-expr\x01L\x01@\x01\
+\x04self\xcb\0\05\x04\0#[method]has-attribute.get-attr-path\x01M\x01h\x11\x01@\x01\
+\x04self\xce\0\0s\x04\0\x19[method]identifier.get-id\x01O\x01h\x12\x01@\x01\x04s\
+elf\xd0\0\0/\x04\0\"[method]if-then-else.get-condition\x01Q\x04\0$[method]if-the\
+n-else.get-true-branch\x01Q\x04\0%[method]if-then-else.get-false-branch\x01Q\x01\
+h\x13\x01p\x05\x01@\x01\x04self\xd2\0\0\xd3\0\x04\0\x18[method]let-in.get-binds\x01\
+T\x01@\x01\x04self\xd2\0\0/\x04\0\x17[method]let-in.get-body\x01U\x01h\x14\x01p/\
+\x01@\x01\x04self\xd6\0\0\xd7\0\x04\0\x1e[method]list-node.get-elements\x01X\x01\
+h\x15\x01@\x01\x04self\xd9\0\0s\x04\0\x16[method]path.get-parts\x01Z\x01h\x16\x01\
+p3\x01@\x01\x04self\xdb\0\0\xdc\0\x04\0\x1c[method]nix-string.get-parts\x01]\x01\
+h\x19\x01@\x01\x04self\xde\0\0\x07\x04\0$[method]unary-operation.get-operator\x01\
+_\x01@\x01\x04self\xde\0\0/\x04\0#[method]unary-operation.get-operand\x01`\x01h\x1a\
+\x01@\x01\x04self\xe1\0\0/\x04\0\x19[method]nix-with.get-body\x01b\x04\0\x1e[met\
+hod]nix-with.get-namespace\x01b\x01h\x1b\x01@\x01\x04self\xe3\0\0/\x04\0\x15[met\
+hod]root.get-expr\x01d\x01h\x1c\x01@\x01\x04self\xe5\0\0\xd3\0\x04\0\x1f[method]\
+attribute-set.get-binds\x01f\x01j\x01/\x01s\x01@\x01\x0anix-sources\0\xe7\0\x04\0\
+\x05parse\x01h\x04\0\x14spotandjake:snow/nix\x05\0\x04\0\x15spotandjake:snow/rni\
+x\x04\0\x0b\x0a\x01\0\x04rnix\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0d\
+wit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

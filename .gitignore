@@ -6,7 +6,3 @@ old/
 # General
 *.wasm
 !adapters/*.wasm
-
-
-# Rust
-target/
