@@ -3,8 +3,21 @@
 version: '3'
 
 tasks:
+  default:
+    cmds:
+      - task: clean
+      - task: copy_build
+      - task: publish
+  publish:
+    sources:
+      - ./*.wit
+    generates:
+      - ./snow.wasm
+    cmds:
+      - wit build
+      # TODO: Fetch version from central location.
+      - warg publish release --name spotandjake:snow --version 0.0.12 snow.wasm
   copy_buid:
-    deps: [clean]
     sources:
       - ../nix/wit/nix.wit
     generates:
@@ -15,17 +28,3 @@ tasks:
     cmds:
       - rm -rf *.wasm
       - rm -f ./nix.wit
-  # TODO: Clean this up
-  default:
-    deps: [clean]
-    cmds:
-      # Build
-      - wit build
-  publish:
-    deps: 
-      - default
-    sources:
-      - ./snow.wasm
-    cmds:
-      # TODO: Fetch version from central location.
-      - warg publish release --name spotandjake:snow --version 0.0.12 snow.wasm

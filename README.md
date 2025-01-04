@@ -35,16 +35,13 @@ This is currently just a place where I am documenting my long-term goals, as Sno
   + [ ] look into time manager impersistance
   + [ ] snow configuration manager
   + [ ] structure configs repo
-+ [ ] Cleanup wit publishing
-  + [ ] Publish our actual built component to wa.dev
 
 ## Packaging TODO
 + [ ] Build Nix Derivation
 + [ ] Automate Installation of cargo deps, `wasm-tools`, `warg-cli`
 + [ ] Streamline wit management
-+ [ ] Tests
-  + [ ] Rnix Bindings
-  + [ ] Source To Source
-  + [ ] Snow
-  + [ ] Compilation
-  + [ ] Correct formatting
++ [ ] Github CI
+  + [ ] Check formatting
+  + [ ] Build Nix Derivation
+  + [ ] Upload `./dist/snow.wasm` compiler artifact
+  + [ ] Release build for publishing `wit` and changing version

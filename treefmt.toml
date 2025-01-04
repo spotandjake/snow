@@ -5,7 +5,8 @@ command = "rustfmt"
 options = ["--edition", "2021"]
 includes = ["*.rs"]
 
-[formatter.grain]
-command = "grain"
-options = ["format"]
-includes = ["*.gr"]
+# TODO: Configure Grain Formatter
+# TODO: Configure Nix Formatter
+# TODO: Configure Amber Formatter
+# TODO: Configure Task File Formatter???
+# TODO: Configure Toml Formatter
