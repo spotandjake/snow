@@ -1,23 +1,7 @@
+// TODO: Clean this up so the names and types are more consistent with the AST
 package spotandjake:snow;
 
 interface nix {
-    variant attr {
-        str(string),
-        ident(identifier),
-        dynamic(expression),
-    }
-    resource attribute-path-value {
-        get-attr-list: func() -> list<attr>;
-        get-expr: func() -> expression;
-    }
-    resource inherit {
-        get-expr-from: func() -> option<expression>;
-        get-attr-list: func() -> list<attr>;
-    }
-    variant entry {
-        attribute-path-value(attribute-path-value),
-        inherit(inherit),
-    }
     enum unary-operator {
         invert,
         negate,
@@ -38,6 +22,23 @@ interface nix {
         more-or-eq,
         not-equal,
         or,
+    }
+    variant attr {
+        str(string),
+        ident(identifier),
+        dynamic(expression),
+    }
+    resource attribute-path-value {
+        get-attr-list: func() -> list<attr>;
+        get-expr: func() -> expression;
+    }
+    resource inherit {
+        get-expr-from: func() -> option<expression>;
+        get-attr-list: func() -> list<attr>;
+    }
+    variant entry {
+        attribute-path-value(attribute-path-value),
+        inherit(inherit),
     }
     variant string-part {
         raw(string),

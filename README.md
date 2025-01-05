@@ -19,6 +19,9 @@ The heart of the Snow project is the Snow programming language, it can be though
 
 This is currently just a place where I am documenting my long-term goals, as Snow-lang provides a great base to write nix projects, I am thinking I can create a standard library, and a way to wrap the module systems of home-manager, nix-darwin and nixosModules, I can then create a system configurator that reads your system and produces a directory of managed snow files, I might also allow for yaml based inputs.
 
+## Development Resources
++ [Nix Lexer Reference](https://github.com/NixOS/nix/blob/master/src/libexpr/lexer.l)
++ [Rnix](https://github.com/nix-community/rnix-parser)
 
 
 # TODO

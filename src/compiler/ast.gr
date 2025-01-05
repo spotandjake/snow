@@ -1,0 +1,126 @@
+// TODO: Use graindoc to document ast fully with syntax
+module Ast
+
+from "./location.gr" include Location
+use Location.{ type Positioned }
+
+provide enum BinOp {
+  Concat,
+  RecordSpread,
+  NullCoalesce,
+  // Integer Logic
+  Add,
+  Sub,
+  Mul,
+  Div,
+  // Boolean Logic
+  // TODO: Do we want implication??
+  Implication,
+  Equal,
+  NotEqual,
+  LessThan,
+  LessThanEqual,
+  GreaterThan,
+  GreaterThanEqual,
+  And,
+  Or,
+}
+provide enum UnaryOp {
+  Not,
+  Negate,
+}
+
+// TODO: Implement the below types
+provide type IncludeStatement = Void
+provide type Argument = Void
+provide type PathSegment = Void
+// Planning
+// Questions
+// Destructuring????
+// inherit binds???
+// Spread out a let???
+provide type LetBinding = Void
+
+provide type Identifier = String
+provide enum rec TemplateType<a> {
+  TemplateRaw(Positioned<a>),
+  TemplateExpr(Positioned<Expression>),
+}
+and provide type IdentifierPath = List<TemplateType<Identifier>>
+and provide enum RecordEntry {
+  RecordEntryPun(Positioned<IdentifierPath>),
+  RecordEntrySpread(Positioned<IdentifierPath>),
+  RecordEntry(Positioned<IdentifierPath>, Positioned<Expression>),
+}
+and provide enum ListEntry {
+  ListEntryExpr(Positioned<Expression>),
+  ListEntrySpread(Positioned<IdentifierPath>),
+}
+and provide enum Expression {
+  // DataTypes
+  IntegerExpr(Int64),
+  FloatExpr(Float64),
+  StringExpr(List<TemplateType<String>>),
+  PathExpr(List<TemplateType<PathSegment>>),
+  // TODO: Look into uri???
+  DataRecordExpr{ recursive: Bool, entrys: List<RecordEntry> },
+  FunctionExpr{
+    arguments: List<Positioned<Argument>>,
+    // TODO: Should we only allow for one Expression like nix.
+    body: List<Positioned<Expression>>,
+  },
+  ListExpr(List<ListEntry>),
+  // General
+  FunctionApplicationExpr{
+    function: Positioned<Expression>,
+    arguments: List<Positioned<Expression>>,
+  },
+  IfExpr{
+    condition: Positioned<Expression>,
+    trueBranch: Positioned<Expression>,
+    falseBranch: Positioned<Expression>,
+  },
+  LetExpr{
+    bindings: List<Positioned<LetBinding>>,
+    after: Positioned<Expression>,
+  },
+  BinOpExpr{
+    op: BinOp,
+    lhs: Positioned<Expression>,
+    rhs: Positioned<Expression>,
+  },
+  UnaryOpExpr{ op: UnaryOp, operand: Positioned<Expression> },
+  AssertExpr{ condition: Positioned<Expression>, after: Positioned<Expression> },
+  AccessExpr(IdentifierPath),
+}
+
+/**
+ * Ast node representing the top level of a file.
+ */
+provide enum TopLevelAst {
+  /**
+   * A flake is a top level ast node that abstracts a nix `flake.nix`.
+   */
+  Flake{
+    name: Positioned<String>,
+    includes: List<Positioned<IncludeStatement>>,
+    // TODO: Should we only allow for one Expression like nix.
+    body: List<Positioned<Expression>>,
+  },
+  /**
+   * A module is a top level ast node that abstracts a nix module.
+   */
+  Module{
+    name: Positioned<String>,
+    arguments: List<Positioned<Argument>>,
+    includes: List<IncludeStatement>,
+    // TODO: Should we only allow for one Expression like nix.
+    body: Positioned<Expression>,
+  },
+  // TODO: Consider how we might represent a nix file that is not a flake or module
+}
+
+/**
+ * Ast node representing a file.
+ */
+provide type Ast = Positioned<TopLevelAst>

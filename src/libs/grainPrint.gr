@@ -130,7 +130,7 @@ let defaultPrintColors = {
  * This is a great starting place for making your own settings.
  */
 provide let defaultSettings = {
-  colored: true, // TODO: Determine if we can use colors at all
+  colored: true,
   indentAmount: 2,
   maxDepth: Infinity,
   newLineChar: "\n",

@@ -32,16 +32,6 @@ provide record Resource<a> {
   rep: a
 }
 
-provide record AttributePathValue {
-  handle: Int32
-}
-provide record Inherit {
-  handle: Int32
-}
-provide enum Entry {
-  AttributePathValue(AttributePathValue),
-  Inherit(Inherit),
-}
 provide enum UnaryOperator {
   Invert,
   Negate,
@@ -62,6 +52,16 @@ provide enum BinaryOperator {
   MoreOrEq,
   NotEqual,
   Or,
+}
+provide record AttributePathValue {
+  handle: Int32
+}
+provide record Inherit {
+  handle: Int32
+}
+provide enum Entry {
+  AttributePathValue(AttributePathValue),
+  Inherit(Inherit),
 }
 provide record Select {
   handle: Int32

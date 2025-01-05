@@ -1,0 +1,19 @@
+module Compile
+// TODO: Implement Compiler
+from "path" include Path
+from "../libs/fs.gr" include Fs
+from "../libs/grainPrint.gr" include GrainPrint
+from "../libs/snow.gr" include Snow
+from "./parsing/nix.gr" include ParseNix
+
+provide let compile = () => {
+  // Testing
+  let input = Path.fromString("./test.nix")
+  let contents = match (Fs.Utf8.readFile(input)) {
+    Ok(contents) => contents,
+    Err(err) => fail "Failed to read file",
+  }
+
+  let ast = ParseNix.parse(contents)
+  GrainPrint.print(ast)
+}

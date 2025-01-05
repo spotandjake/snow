@@ -1,0 +1,330 @@
+module ParseNix
+
+from "list" include List
+from "../ast.gr" include Ast
+from "../location.gr" include Location
+from "../../libs/snow.gr" include Snow
+from "../../libs/grainPrint.gr" include GrainPrint
+
+module AstConversion {
+  provide let rec convertAttribute = (attribute: Snow.Attr) => {
+    match (attribute) {
+      Ident(id) => {
+        let id = Snow.Nix.Identifier.getId(id)
+        // TODO: Handle Position Information
+        Ast.TemplateRaw(Location.mkPos(loc=Location.mkDummyLoc(), id))
+      },
+      Dynamic(expr) => Ast.TemplateExpr(convertExpression(expr)),
+      // TODO: Debug why this isnt working correctly
+      Str(str) =>
+        Ast.TemplateExpr(
+          // TODO: Handle Position Information
+          Location.mkPos(
+            loc=Location.mkDummyLoc(),
+            Ast.StringExpr(
+              // TODO: Handle Position Information
+              [Ast.TemplateRaw(Location.mkPos(loc=Location.mkDummyLoc(), str))],
+            )
+          ),
+        ),
+    }
+  }
+  and convertExpression = (expr: Snow.Expression) => {
+    match (expr) {
+      // TODO: Consider implementing error
+      Error(e) => fail "Impossible: Error should be handled by parse",
+      Root(node) => {
+        // Get Node Data
+        let expression = Snow.Nix.Root.getExpr(node)
+        // Map Node Data
+        let expression = convertExpression(expression)
+        // Return AST Node
+        expression
+      },
+      Assert(node) => {
+        // Get Node Data
+        let condition = Snow.Nix.Assert.getCondition(node)
+        let after = Snow.Nix.Assert.getExpr(node)
+        // Map Node Data
+        let condition = convertExpression(condition)
+        let after = convertExpression(after)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          value=Ast.AssertExpr{ condition, after }
+        )
+      },
+      IfThenElse(node) => {
+        // Get Node Data
+        let condition = Snow.Nix.IfThenElse.getCondition(node)
+        let trueBranch = Snow.Nix.IfThenElse.getTrueBranch(node)
+        let falseBranch = Snow.Nix.IfThenElse.getFalseBranch(node)
+        // Map Node Data
+        let condition = convertExpression(condition)
+        let trueBranch = convertExpression(trueBranch)
+        let falseBranch = convertExpression(falseBranch)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          value=Ast.IfExpr{ condition, trueBranch, falseBranch }
+        )
+      },
+      BinaryOperation(node) => {
+        // Get Node Data
+        let lhs = Snow.Nix.BinaryOperation.getLhs(node)
+        let operator = Snow.Nix.BinaryOperation.getOperator(node)
+        let rhs = Snow.Nix.BinaryOperation.getRhs(node)
+        // Map Node Data
+        let operator = match (operator) {
+          Concat => Ast.Concat,
+          Update => Ast.RecordSpread,
+          // Integer Logic
+          Add => Ast.Add,
+          Sub => Ast.Sub,
+          Mul => Ast.Mul,
+          Div => Ast.Div,
+          // Boolean Logic
+          Implication => Ast.Implication,
+          Equal => Ast.Equal,
+          NotEqual => Ast.NotEqual,
+          Less => Ast.LessThan,
+          LessOrEq => Ast.LessThanEqual,
+          More => Ast.GreaterThan,
+          MoreOrEq => Ast.GreaterThanEqual,
+          And => Ast.And,
+          Or => Ast.Or,
+        }
+        let lhs = convertExpression(lhs)
+        let rhs = convertExpression(rhs)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          value=Ast.BinOpExpr{ op: operator, lhs, rhs }
+        )
+      },
+      UnaryOperation(node) => {
+        // Get Node Data
+        let operator = Snow.Nix.UnaryOperation.getOperator(node)
+        let operand = Snow.Nix.UnaryOperation.getOperand(node)
+        // Map Node Data
+        let operator = match (operator) {
+          Invert => Ast.Not,
+          Negate => Ast.Negate,
+        }
+        let operand = convertExpression(operand)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          value=Ast.UnaryOpExpr{ op: operator, operand }
+        )
+      },
+      List(node) => {
+        // Get Node Data
+        let elements = Snow.Nix.ListNode.getElements(node)
+        // Map Node Data
+        let elements = List.map(expr => {
+          let entry = convertExpression(expr)
+          Ast.ListEntryExpr(entry)
+        }, elements)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(loc=Location.mkDummyLoc(), value=Ast.ListExpr(elements))
+      },
+      String(node) => {
+        // Get Node Data
+        let parts = Snow.Nix.NixString.getParts(node)
+        // Map Node Data
+        let parts = List.map((part: Snow.StringPart) => {
+          match (part) {
+            // TODO: Handle Position Information
+            Raw(str) =>
+              Ast.TemplateRaw(Location.mkPos(loc=Location.mkDummyLoc(), str)),
+            Dynamic(expr) => Ast.TemplateExpr(convertExpression(expr)),
+          }
+        }, parts)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(loc=Location.mkDummyLoc(), value=Ast.StringExpr(parts))
+      },
+      Literal(node) => {
+        // TODO: Handle Position Information
+        Location.mkPos(loc=Location.mkDummyLoc(), match (node) {
+          Float(data) => Ast.FloatExpr(data),
+          Integer(data) => Ast.IntegerExpr(data),
+          // TODO: Handle Uri
+          Uri => Ast.StringExpr([]),
+        })
+      },
+      Identifier(node) => {
+        // Get Node Data
+        let id = Snow.Nix.Identifier.getId(node)
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          Ast.AccessExpr(
+            // TODO: Handle Position Information
+            [Ast.TemplateRaw(Location.mkPos(loc=Location.mkDummyLoc(), id))],
+          )
+        )
+      },
+      Select(node) => {
+        // Get Node Data
+        let baseExpression = Snow.Nix.Select.getBaseExpr(node)
+        let propertyPath = Snow.Nix.Select.getAttrPath(node)
+        let defaultExpression = Snow.Nix.Select.getDefaultExpr(node)
+        // Map Node Data
+        let baseExpression = convertExpression(baseExpression)
+        let propertyPath = List.map(convertAttribute, propertyPath)
+        let acessExpr = Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          Ast.AccessExpr([Ast.TemplateExpr(baseExpression), ...propertyPath])
+        )
+        match (defaultExpression) {
+          Some(expr) => {
+            let defaultExpression = convertExpression(expr)
+            // TODO: Handle Position Information
+            Location.mkPos(
+              loc=Location.mkDummyLoc(),
+              Ast.BinOpExpr{
+                op: Ast.NullCoalesce,
+                lhs: acessExpr,
+                rhs: defaultExpression
+              }
+            )
+          },
+          None => acessExpr,
+        }
+      },
+      AttributeSet(node) => {
+        // Get Node Data
+        let entrys = Snow.Nix.AttributeSet.getBinds(node)
+        // Map Node Data
+        // variant attr {
+        //   str(string),
+        //   ident(identifier),
+        //   dynamic(expression),
+        // }
+        // resource attribute-path-value {
+        //     get-attr-list: func() -> list<attr>;
+        //     get-expr: func() -> expression;
+        // }
+        let entrys = List.reduce(
+          (entryList, entry: Snow.Entry) => {
+            let entrys = match (entry) {
+              AttributePathValue(data) => {
+                // Get Node Data
+                let attr = Snow.Nix.AttributePathValue.getAttrList(data)
+                let value = Snow.Nix.AttributePathValue.getExpr(data)
+                // Map Node Data
+                let attr = List.map(convertAttribute, attr)
+                let value = convertExpression(value)
+                // Return Entry Node
+                [
+                  Ast.RecordEntry(
+                    // TODO: Handle Position Information
+                    Location.mkPos(loc=Location.mkDummyLoc(), attr),
+                    value,
+                  ),
+                ]
+              },
+              Inherit(data) => {
+                // Handle Attributes
+                let attrs = Snow.Nix.Inherit.getAttrList(data)
+                let attrs = List.map(convertAttribute, attrs)
+                // Handle From Expression
+                let attrs = match (Snow.Nix.Inherit.getExprFrom(data)) {
+                  Some(expr) => {
+                    let expr = convertExpression(expr)
+                    List.map(attr => [Ast.TemplateExpr(expr), attr], attrs)
+                  },
+                  None => List.map(attr => [attr], attrs),
+                }
+                List.map(
+                  attr =>
+                    Ast.RecordEntryPun(
+                      // TODO: Handle Position Information
+                      Location.mkPos(loc=Location.mkDummyLoc(), attr),
+                    ),
+                  attrs
+                )
+              },
+            }
+            List.append(entryList, entrys)
+          },
+          []: List<Ast.RecordEntry>,
+          entrys
+        )
+        // Return AST Node
+        Location.mkPos(
+          // TODO: Handle Position Information
+          loc=Location.mkDummyLoc(),
+          // TODO: Handle Recursive
+          Ast.DataRecordExpr{ recursive: false, entrys }
+        )
+      },
+      // TODO: Need argument and parameter info from rnix
+      // Function(func) => {
+      //   let body = Snow.Nix.Function.getBody(func)
+      //   Ast.FunctionExpr{ body: convertExpr(body) }
+      // },
+      // FunctionApplication(funcApp) => {
+      //   let func = Snow.Nix.FunctionApplication.getFunction(funcApp)
+      //   Ast.FuncAppExpr{ func: convertExpr(func) }
+      // },
+      // TODO: need path info from rnix
+      // Path(node) => fail "Path not implemented convertExpr",
+      // TODO: need to figure out ast representation
+      // HasAttribute(node) => { -> Checks if attrPath exists in expr, expr ? attrPath -> attrPath in expr
+      //   let attrPath = Snow.Nix.HasAttribute.getAttrPath(node)
+      //   let expression = Snow.Nix.HasAttribute.getExpr(node)
+      //   // Get Expr Info
+      //   let expression = convertExpression(expression)
+      //   // Get Attr Info
+      //   print(attrPath)
+      //   print(expression)
+      //   fail "NIY"
+      // },
+      // TODO: need to figure out ast representation
+      // With(node) => { // Might turn into a use expr????
+      //   let body = Snow.Nix.NixWith.getBody(node)
+      //   let namespace = Snow.Nix.NixWith.getNamespace(node)
+      //   Ast.WithExpr{
+      //     body: convertExpr(body),
+      //     namespace: convertExpr(namespace)
+      //   }
+      // },
+      // TODO: Need to figure out bindings
+      // LetIn(node) => {
+      //   let binds = Snow.Nix.LetIn.getBinds(node)
+      //   let body = Snow.Nix.LetIn.getBody(node)
+      //   Ast.LetInExpr{
+      //     bindings: List.map(convertBinding, binds),
+      //     body: convertExpr(body)
+      //   }
+      // },
+      _ => fail "Not Implemented Expression: " ++ toString(expr),
+    }
+  }
+}
+use AstConversion.{ convertExpression }
+
+/**
+ * Parse a nix string into a Snow AST.
+ *
+ * @param str: The nix string to parse
+ *
+ * @returns The parsed AST
+ */
+provide let parse = (str: String) => {
+  let parseResult = Snow.Nix.parse(str)
+  match (parseResult) {
+    Ok(rootExpr) => Ok(convertExpression(rootExpr)),
+    // TODO: Translate Error to common error
+    Err(err) => Err(err),
+  }
+}

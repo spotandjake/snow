@@ -2,6 +2,7 @@
 
 Everything in snow-lang is an expression.
 
+
 ### flake.toml
 defines mappings for includes.
 ```toml
@@ -93,7 +94,6 @@ This get's truned into a curried function if you want them to be non position yo
 named (value, value) => <expression>
 (value, value) => {
   <expresssion>
-  // TODO: consider a return statement, vs none
 }
 ```
 ##### Module
@@ -118,14 +118,19 @@ Figure out how to make this more statment like.
 let x = 123
 ```
 this just becomes let in with whatever comes after it???
-##### Ternary
-```rust
-<condition:expr> ? <true:expr> : <false:expr>
-```
 ##### Binops
 Add, Subtract, Concat
 ##### Infix
 Not, Negate
+##### Nullish coalescing
+This bassically says either take `expr1` or if it is null take `expr2`
+```
+<expr1> ?? <expr2>
+```
+outputs:
+```
+<expr1> ? <expr2>
+```
 
 ### Bindings
 We support destructuring, of attrs and lists, bindings follow nix identifiers.

@@ -1,0 +1,51 @@
+/**
+ * Common utilities for working with source locations.
+ */
+module Location
+// TODO: Implement opaque functions for merging locations and positions
+// TODO: Implement opaque functions for getting location info
+
+/**
+ * A location in the source code.
+ */
+abstract record Location {
+  start: Number,
+  end: Number,
+  // TODO: Add file path, line count and column info
+}
+
+/**
+ * Create a new location.
+ *
+ * @param start: The start character position of the location
+ * @param end: The end character position of the location
+ *
+ * @returns A new location
+ */
+provide let mkLoc = (start, end) => { start, end }
+
+// TODO: Remove DummyLoc and use a proper location
+/**
+ * Create a dummy location.
+ *
+ * @returns A dummy location
+ */
+provide let mkDummyLoc = () => mkLoc(-1, -1)
+
+/**
+ * A value that has a position in the source code.
+ */
+abstract record Positioned<a> {
+  loc: Location,
+  value: a,
+}
+
+/**
+ * Create a new positioned value.
+ *
+ * @param loc: The location of the value
+ * @param value: The value
+ *
+ * @returns A new positioned value
+ */
+provide let mkPos = (loc, value) => { loc, value }
