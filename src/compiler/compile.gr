@@ -11,7 +11,7 @@ provide let compile = () => {
   let input = Path.fromString("./test.nix")
   let contents = match (Fs.Utf8.readFile(input)) {
     Ok(contents) => contents,
-    Err(err) => fail "Failed to read file",
+    Err(err) => fail "Failed to read file: " ++ toString(err),
   }
 
   let ast = ParseNix.parse(contents)

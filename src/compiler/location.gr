@@ -49,3 +49,13 @@ abstract record Positioned<a> {
  * @returns A new positioned value
  */
 provide let mkPos = (loc, value) => { loc, value }
+
+/**
+ * Gets the location of a positioned value.
+ */
+provide let getLocation = pos => pos.loc
+
+/**
+ * Gets the value of a positioned value.
+ */
+provide let getValue = pos => pos.value

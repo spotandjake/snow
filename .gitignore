@@ -3,5 +3,6 @@
 .task/
 
 # General
+dist/
 *.wasm
 !adapters/*.wasm

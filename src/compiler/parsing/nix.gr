@@ -204,15 +204,6 @@ module AstConversion {
         // Get Node Data
         let entrys = Snow.Nix.AttributeSet.getBinds(node)
         // Map Node Data
-        // variant attr {
-        //   str(string),
-        //   ident(identifier),
-        //   dynamic(expression),
-        // }
-        // resource attribute-path-value {
-        //     get-attr-list: func() -> list<attr>;
-        //     get-expr: func() -> expression;
-        // }
         let entrys = List.reduce(
           (entryList, entry: Snow.Entry) => {
             let entrys = match (entry) {
@@ -267,14 +258,31 @@ module AstConversion {
           Ast.DataRecordExpr{ recursive: false, entrys }
         )
       },
-      // TODO: Need argument and parameter info from rnix
+      FunctionApplication(node) => {
+        // Get Node Data
+        let func = Snow.Nix.FunctionApplication.getFunction(node)
+        let arg = Snow.Nix.FunctionApplication.getArgument(node)
+        // Map Node Data
+        let func = convertExpression(func)
+        let arg = convertExpression(arg)
+        // Collopse Function Application
+        let (func, args) = match (Location.getValue(func)) {
+          FunctionApplicationExpr{ function, arguments } => {
+            (function, List.append(arguments, [arg]))
+          },
+          _ => (func, [arg]),
+        }
+        // Return AST Node
+        // TODO: Handle Position Information
+        Location.mkPos(
+          loc=Location.mkDummyLoc(),
+          Ast.FunctionApplicationExpr{ function: func, arguments: args }
+        )
+      },
+      // TODO: Need parameter info from rnix
       // Function(func) => {
       //   let body = Snow.Nix.Function.getBody(func)
       //   Ast.FunctionExpr{ body: convertExpr(body) }
-      // },
-      // FunctionApplication(funcApp) => {
-      //   let func = Snow.Nix.FunctionApplication.getFunction(funcApp)
-      //   Ast.FuncAppExpr{ func: convertExpr(func) }
       // },
       // TODO: need path info from rnix
       // Path(node) => fail "Path not implemented convertExpr",
