@@ -5,7 +5,7 @@ use super::ast;
 // TODO: Handle Comments
 // Converters
 mod converters {
-  use crate::common_ast::ast;
+  use crate::{bindings::exports::spotandjake::snow::nix::Identifier, common_ast::ast};
   use ast::Expression;
   use rnix::{
     self,
@@ -139,6 +139,19 @@ mod converters {
   impl From<rnix::ast::Lambda> for ast::Function {
     fn from(node: rnix::ast::Lambda) -> Self {
       // TODO: Param
+      // node.param();
+      // enum PatternParamEntry {
+      //   PartternParamEntryIdent(Identifier, Option<Expr>),
+      //   PatternParamEntryCollector,
+      // }
+      // struct Pattern {
+      //   entries: Vec<PatternParamEntry>,
+      //   bind: Option<Identifier>,
+      // }
+      // enum Param {
+      //   Pattern(Pattern),
+      //   Identifier(Identifier),
+      // }
       Self {
         body: box_expr(node.body()),
       }

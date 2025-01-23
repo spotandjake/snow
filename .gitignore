@@ -5,4 +5,5 @@
 # General
 dist/
 *.wasm
+*.gro
 !adapters/*.wasm

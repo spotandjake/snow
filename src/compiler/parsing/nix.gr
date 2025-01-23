@@ -6,6 +6,8 @@ from "../location.gr" include Location
 from "../../libs/snow.gr" include Snow
 from "../../libs/grainPrint.gr" include GrainPrint
 
+// TODO: Use this as a reference and make rust output the common ast
+// TODO: Manually free the passed ast resources
 module AstConversion {
   provide let rec convertAttribute = (attribute: Snow.Attr) => {
     match (attribute) {
@@ -266,6 +268,7 @@ module AstConversion {
         let func = convertExpression(func)
         let arg = convertExpression(arg)
         // Collopse Function Application
+        // TODO: Should we be flattening these?
         let (func, args) = match (Location.getValue(func)) {
           FunctionApplicationExpr{ function, arguments } => {
             (function, List.append(arguments, [arg]))
@@ -279,6 +282,23 @@ module AstConversion {
           Ast.FunctionApplicationExpr{ function: func, arguments: args }
         )
       },
+      HasAttribute(node) => {
+        // Get Node Data
+        let expression = Snow.Nix.HasAttribute.getExpr(node)
+        let propertyPath = Snow.Nix.HasAttribute.getAttrPath(node)
+        // Map Node Data
+        let expression = convertExpression(expression)
+        let propertyPath = List.map(convertAttribute, propertyPath)
+        Location.mkPos(
+          // TODO: Handle Position Information
+          loc=Location.mkDummyLoc(),
+          Ast.InExpr{
+            expr: expression,
+            // TODO: Handle Position Information
+            property: Location.mkPos(loc=Location.mkDummyLoc(), propertyPath)
+          }
+        )
+      },
       // TODO: Need parameter info from rnix
       // Function(func) => {
       //   let body = Snow.Nix.Function.getBody(func)
@@ -286,17 +306,6 @@ module AstConversion {
       // },
       // TODO: need path info from rnix
       // Path(node) => fail "Path not implemented convertExpr",
-      // TODO: need to figure out ast representation
-      // HasAttribute(node) => { -> Checks if attrPath exists in expr, expr ? attrPath -> attrPath in expr
-      //   let attrPath = Snow.Nix.HasAttribute.getAttrPath(node)
-      //   let expression = Snow.Nix.HasAttribute.getExpr(node)
-      //   // Get Expr Info
-      //   let expression = convertExpression(expression)
-      //   // Get Attr Info
-      //   print(attrPath)
-      //   print(expression)
-      //   fail "NIY"
-      // },
       // TODO: need to figure out ast representation
       // With(node) => { // Might turn into a use expr????
       //   let body = Snow.Nix.NixWith.getBody(node)
@@ -307,14 +316,56 @@ module AstConversion {
       //   }
       // },
       // TODO: Need to figure out bindings
-      // LetIn(node) => {
-      //   let binds = Snow.Nix.LetIn.getBinds(node)
-      //   let body = Snow.Nix.LetIn.getBody(node)
-      //   Ast.LetInExpr{
-      //     bindings: List.map(convertBinding, binds),
-      //     body: convertExpr(body)
-      //   }
-      // },
+      // let
+      //   x = 1; <- let x = 1
+      //   inherit x; <- Already in scope can be ignored
+      //   inherit (y) z; <- let { z } = y
+      //  in 1 + 2; <- multiple bindings get joined with,
+      // let -> (binds: Pattern | Ident, value: Expr)
+      LetIn(node) => {
+        // Get Node Data
+        let binds = Snow.Nix.LetIn.getBinds(node)
+        let after = Snow.Nix.LetIn.getBody(node)
+        // Map Node Data
+        // TODO: If after is also a let in merge
+        // TODO: How will the following interact with snow as its not a shadow
+        // let test.y = 1; in 1
+        // let test.z = 2; in 1
+        // NIX <-------------------> Snow
+        // let test.y = 1
+        // let test.z = 2 // Property patterns do not shadow each other?????
+        // 1
+        // Should pattern allow for identPaths????
+        let binds = List.map((bind: Snow.Entry) => {
+          match (bind) {
+            AttributePathValue(data) => {
+              // Get Node Data
+              let attr = Snow.Nix.AttributePathValue.getAttrList(data)
+              let value = Snow.Nix.AttributePathValue.getExpr(data)
+              // Map Node Data
+              let attr = List.map(convertAttribute, attr)
+              let value = convertExpression(value)
+              print(attr)
+              print(value)
+              // TODO: Break up attr into an object binding
+              // let <attr> = value
+              void
+            },
+            Inherit(data) => {
+              let inherit_from = Snow.Nix.Inherit.getExprFrom(data)
+              match (inherit_from) {
+                // TODO: Implement Inherit from expression
+                Some(val) => void,
+                // If there is no from the values are already in scope we can omit it
+                None => void,
+              }
+            },
+          }
+        }, binds)
+        let after = convertExpression(after)
+        // Return AST Node
+        fail "NIY LetIn"
+      },
       _ => fail "Not Implemented Expression: " ++ toString(expr),
     }
   }

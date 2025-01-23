@@ -55,5 +55,6 @@ tasks:
   clean:
     cmds:
       - rm -f ./src/libs/snow.gr # Generated nix li
-      - rm -f ./dist/ # Build Directory
-      - rm **.gr.wasm # Generated Wasm
+      - rm -rf ./dist/ # Build Directory
+      - rm -rf **.gro
+      - rm -rf **.gr.wasm # Generated Wasm

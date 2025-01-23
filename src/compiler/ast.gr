@@ -39,10 +39,24 @@ provide type PathSegment = Void
 // Destructuring????
 // inherit binds???
 // Spread out a let???
-provide type LetBinding = Void
 
 provide type Identifier = String
-provide enum rec TemplateType<a> {
+provide enum RecordPatternEntry {
+  RecordPatternEntry(Positioned<Identifier>),
+  RecordPatternEntrySpread,
+}
+provide enum rec Pattern {
+  PatternSimple(Positioned<Identifier>),
+  PatternRecord{
+    entries: List<RecordPatternEntry>,
+    bind: Option<Positioned<Identifier>>,
+  },
+}
+and provide record Bind {
+  bind: Positioned<Pattern>,
+  value: Positioned<Expression>,
+}
+and provide enum TemplateType<a> {
   TemplateRaw(Positioned<a>),
   TemplateExpr(Positioned<Expression>),
 }
@@ -80,10 +94,7 @@ and provide enum Expression {
     trueBranch: Positioned<Expression>,
     falseBranch: Positioned<Expression>,
   },
-  LetExpr{
-    bindings: List<Positioned<LetBinding>>,
-    after: Positioned<Expression>,
-  },
+  LetExpr{ binding: List<Positioned<Bind>>, after: Positioned<Expression> },
   BinOpExpr{
     op: BinOp,
     lhs: Positioned<Expression>,
@@ -92,6 +103,8 @@ and provide enum Expression {
   UnaryOpExpr{ op: UnaryOp, operand: Positioned<Expression> },
   AssertExpr{ condition: Positioned<Expression>, after: Positioned<Expression> },
   AccessExpr(IdentifierPath),
+  // Note: property in expr
+  InExpr{ expr: Positioned<Expression>, property: Positioned<IdentifierPath> },
 }
 
 /**

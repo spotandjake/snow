@@ -221,10 +221,7 @@ let writeEscapedString = (str, printBuf, printSettings, color) => {
   // Write Quote
   Buffer.addChar('"', buf)
   // Scan String
-  // TODO: Use forEachChar
-  String.forEachCodePoint(codePoint => {
-    use WasmI32.{ (>>) }
-    let char = tagChar(WasmI32.fromGrain(codePoint) >> 1n)
+  String.forEachChar(char => {
     // Match The Escaped Chars
     match (char) {
       '\b' => Buffer.addString("\\b", buf),
@@ -273,7 +270,6 @@ let printBufToString = (printBuf, settings) => {
   Buffer.toString(outputBuf)
 }
 // Type MetaData
-// TODO: Rewrite These Sections for better type safety
 @unsafe
 primitive typeMetadata = "@heap.type_metadata"
 primitive builtinId = "@builtin.id"
@@ -592,7 +588,6 @@ let stringifyShortValue = (short, depth, printBuf, printSettings) => {
 
 @unsafe
 let stringifyNumber = (num: Number, printBuf, printSettings) => {
-  // TODO: Support Hex Printing
   let radix = getRadixIndex(printSettings.radix)
   let radix = untagSimpleNumber(radix)
   let radixPrefix = getRadixPrefix(printSettings.radix)
@@ -655,7 +650,6 @@ let stringifyNumber = (num: Number, printBuf, printSettings) => {
         )
       },
       t when t == Tags._GRAIN_BIGINT_BOXED_NUM_TAG => {
-        // TODO: Support Hex
         let val = BI.bigIntToString10(ptr)
         writeString(
           val,
@@ -1046,7 +1040,7 @@ and stringifyAdt = (adt, depth, bracketColor, printBuf, printSettings) => {
         // Make Array of Values
         let mut values = []
         use WasmI32.{ (<), (*), (-), (+) }
-        // TODO: This is a multi-data type array, really consider how gross this is and unsafe this is
+        // NOTE: This is an extremely unsafe multi-data array
         let fields = variantPtr + distToRecordFields
         let recordArity = WasmI32.load(ptr, 16n)
         let recordVariantFields = getFieldArray(fields, recordArity)
@@ -1177,7 +1171,7 @@ and stringifyRecord = (item, depth, bracketColor, printBuf, printSettings) => {
     // Make Array of Values
     let mut values = []
     use WasmI32.{ (<), (*), (-), (+) }
-    // TODO: This is a multi-data type array, really consider how gross this is and unsafe this is
+    // NOTE: This is an extremely unsafe multi-data array
     for (let mut i = 0n; i < recordArity * 4n - 3n; i += 4n) {
       let fieldValue = WasmI32.load(ptr + i, 16n)
       values = [magic(fieldValue), ...values]
@@ -1308,6 +1302,5 @@ provide let print = (a, settings=defaultSettings) => {
   // Stringify
   let str = stringify(a, settings)
   // Print
-  // TODO: Use Unsafe fdWrite instead to avoid the default printChain
   print(str)
 }

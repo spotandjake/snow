@@ -4,7 +4,13 @@ from "./libs/grainPrint.gr" include GrainPrint
 from "./libs/snow.gr" include Snow
 from "./compiler/compile.gr" include Compile
 
-provide let cabi_realloc = Snow.cabi_realloc
+@unsafe
+provide let cabi_realloc = (
+  originalPtr: WasmI32,
+  originalSize: WasmI32,
+  alignment: WasmI32,
+  newSize: WasmI32,
+) => Snow.cabi_realloc(originalPtr, originalSize, alignment, newSize)
 
 provide let _start: () => Void = () => {
   Compile.compile()
